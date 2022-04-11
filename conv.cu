@@ -26,6 +26,12 @@ __global__ void kernel_conv_filter(float *input, float *pre_output, float *weigh
 
 __global__ void kernel_conv_bias(float *pre_output, float *bias)
 {
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    int idy = threadIdx.y + blockIdx.y * blockDim.y;
+    int idz = threadIdx.z + blockIdx.z * blockDim.z;
+
+    pre_output[idx + idy * 24 + idz * 24 * 24] = pre_output[idx + idy * 24 + idz * 24 * 24] + bias[idz];
+
 }
 
 __global__ void kernel_conv_sigmoid(float *pre_output, float *output)
