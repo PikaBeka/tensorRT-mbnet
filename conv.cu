@@ -5,8 +5,10 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
+#include <slenet_params.h>
 
 #define WEIGHT_SIZE 5
+#define POOL_SIZE 4
 class Layer
 {
 public:
@@ -110,7 +112,7 @@ __global__ void kernel_conv_bias(float *pre_output, float *bias)
 
 __global__ void kernel_conv_sigmoid(float *pre_output, float *output)
 {
-    int idx = blockIdx.z * 576 + 24 * threadIdx.x + threadIdx.y;
+    int idx = blockIdx.z * 576 + 24 * threadIdx.y + threadIdx.x;
 
     output[idx] = 1.0 / (1.0 + exp(-pre_output[idx]));
 }
@@ -129,25 +131,79 @@ void maxError(float *arr, float val, float size)
     printf("maxEror = %f (asserted with %f)\n", maxErr, val);
 }
 
+__global__ void kernel_ss1_filter(float *input, float *pre_output, float *weight)
+{
+    int row = threadIdx.y;
+    int col = threadIdx.x;
+
+    float tmp = 0;
+
+    int inp_r = row * 4;
+    int inp_c = col * 4;
+    for (int i = 0; i < POOL_SIZE; i++)
+    {
+        for (int j = 0; j < POOL_SIZE; j++)
+        {
+            int input_idx = (inp_r + i) * 24 + inp_c + j;
+            int weight_idx = i * POOL_SIZE + j;
+            tmp += input[input_idx] * weight[weight_idx];
+        }
+    }
+    int idx = blockIdx.z * 36 + row * 6 + col;
+    pre_output[idx] = tmp;
+}
+
+__global__ void kernel_ss1_bias(float *pre_output, float *bias)
+{
+    pre_output[threadIdx.x + threadIdx.y * 6 + blockIdx.z * 36] += bias[0];
+}
+
+__global__ void kernel_ss1_sigmoid(float *pre_output, float *output)
+{
+    int idx = blockIdx.z * 36 + 6 * threadIdx.y + threadIdx.x;
+
+    output[idx] = 1.0 / (1.0 + exp(-pre_output[idx]));
+}
+
 void forward_pass(float *data, Layer *layer)
 {
     float *data_d;
     cudaMalloc((void **)&data_d, 28 * 28 * sizeof(28));
     cudaMemcpy(data_d, data, 28 * 28 * sizeof(float), cudaMemcpyHostToDevice);
 
+    /*28x28 * 6@5x5 = 6@24x24*/
     dim3 blocks(1, 1, 6);
     dim3 threads(24, 24, 1);
     kernel_conv_filter<<<blocks, threads>>>(data_d, layer->pre_output, layer->weight);
     layer->cpyDeviceToHost(layer->pre_output_h, layer->pre_output);
     maxError(layer->pre_output_h, 25.0f, 24 * 24 * 6);
 
+    /*6@24x24 * 6@1x1 = 6@24x24*/
     kernel_conv_bias<<<blocks, threads>>>(layer->pre_output, layer->bias);
     layer->cpyDeviceToHost(layer->pre_output_h, layer->pre_output);
     maxError(layer->pre_output_h, 24.0f, 24 * 24 * 6);
 
+    /*6@24x24 = 6@24x24*/
     kernel_conv_sigmoid<<<blocks, threads>>>(layer->pre_output, layer->output);
     layer->cpyDeviceToHost(layer->output_h, layer->output);
     maxError(layer->output_h, 1.0f, 24 * 24 * 6);
+
+    Layer pool_layer(4 * 4, 1, 6 * 6 * 6);
+
+    /*6@24x24 * 1@4x4 = 6@6x6*/
+    dim3 pool_blocks(1, 1, 6);
+    dim3 pool_threads(6, 6, 1);
+    kernel_ss1_filter<<<pool_blocks, pool_threads>>>(layer->output, pool_layer.pre_output, pool_layer.weight);
+    pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output);
+    maxError(pool_layer.pre_output_h, -16.0f, 6 * 6 * 6);
+
+    kernel_ss1_bias<<<pool_blocks, pool_threads>>>(pool_layer.pre_output, pool_layer.bias);
+    pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output);
+    maxError(pool_layer.pre_output_h, -17.0f, 6 * 6 * 6);
+
+    kernel_ss1_sigmoid<<<pool_blocks, pool_threads>>>(pool_layer.pre_output, pool_layer.output);
+    pool_layer.cpyDeviceToHost(pool_layer.output_h, pool_layer.output);
+    maxError(pool_layer.output_h, 0.0f, 6 * 6 * 6);
 
     cudaFree(data_d);
 }
