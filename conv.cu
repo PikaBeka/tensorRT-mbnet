@@ -5,10 +5,24 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
-#include <slenet_params.h>
+#include "slenet_params.h"
 
 #define WEIGHT_SIZE 5
 #define POOL_SIZE 4
+#define INSIZE 28
+/*Paths to images*/
+#define IMAGE "./data/t10k-images.idx3-ubyte"
+#define LABEL "./data/t10k-labels.idx1-ubyte"
+/*Number of images*/
+#define SIZE 10000
+/*How many images to print, Chnage it to test*/
+#define TEST_NUMER 4
+
+typedef struct mnist_data
+{
+    double data[INSIZE][INSIZE];
+    unsigned int label;
+} mnist_data;
 class Layer
 {
 public:
@@ -80,6 +94,100 @@ public:
         free(pre_output_h);
     }
 };
+
+static unsigned int mnist_bin_to_int(char *tmp)
+{
+    unsigned int res;
+    // 4 bytes, so each is 8 bits. total 32;
+    for (int i = 0; i < 4; i++)
+    {
+        res <<= 8;
+        res = res | (unsigned char)tmp[i];
+    }
+    return res;
+}
+
+static int mnist_load(const char *image_filename, const char *label_filename,
+                      mnist_data **data_set, unsigned int *count)
+{
+    /*Open image file*/
+    FILE *image_file = fopen(image_filename, "rb");
+    if (image_file == NULL)
+    {
+        printf("Image file was not found. Please check the location\n");
+        fputs("File error", stderr);
+        exit(1);
+    }
+
+    /*Open label file*/
+    FILE *label_file = fopen(label_filename, "rb");
+    if (label_file == NULL)
+    {
+        printf("Label file was not found. Please check the location\n");
+        fputs("File error", stderr);
+        exit(1);
+    }
+
+    int image_data[4], label_data[2];
+
+    /*Loads essential data from image file*/
+    for (int i = 0; i < 4; i++)
+    {
+        char toRead[4];
+        fread(toRead, 1, 4, image_file);
+        image_data[i] = mnist_bin_to_int(toRead);
+    }
+
+    /*Loads essential data from label file*/
+    for (int i = 0; i < 2; i++)
+    {
+        char toRead[4];
+        fread(toRead, 1, 4, label_file);
+        label_data[i] = mnist_bin_to_int(toRead);
+    }
+
+    /*Prints checked values*/
+    // printf("image magic number = %d (should be 2051)\n", image_data[0]);
+    // printf("label magic number = %d (should be 2049)\n", label_data[0]);
+    // printf("image total number = %d (should be 10000)\n", image_data[1]);
+    // printf("label total number = %d (should be 10000)\n", label_data[1]);
+    // printf("rows = %d, cols = %d (both should be 28)\n", image_data[2], image_data[3]);
+
+    /*Initializes the buffers with the count of images*/
+    int cnt = 0;
+    char labels[label_data[1]];
+    char image[image_data[1] * image_data[2] * image_data[3]];
+
+    /*Read all labels and iamges*/
+    fread(labels, 1, label_data[1], label_file);
+    fread(image, 1, image_data[1] * image_data[2] * image_data[3], image_file);
+
+    int start = 0, limit = 28 * 28;
+
+    /*iterate all images and labels*/
+    for (int i = 0; i < image_data[1]; i++)
+    {
+        mnist_data *d = &(*data_set)[i]; // pointer to the memory of the first element
+        d->label = labels[i];            // store label
+        int k = 0;
+        for (int j = start; j < limit; j++) // stores the double value of images
+        {
+            d->data[k / 28][k % 28] = abs(image[j] / 255.0);
+            k++;
+        }
+        /*Require to control the image iteration*/
+        start = limit;
+        limit += 28 * 28;
+        cnt++;
+    }
+    *count = cnt;
+
+    /*Close files*/
+    fclose(label_file);
+    fclose(image_file);
+
+    return 0;
+}
 
 __global__ void kernel_conv_filter(float *input, float *pre_output, float *weight)
 {
@@ -210,6 +318,17 @@ void forward_pass(float *data, Layer *layer)
 
 int main()
 {
+
+    int ret;
+    int i;
+    mnist_data *test_set = (mnist_data *)malloc(SIZE * sizeof(mnist_data));
+    static unsigned int test_cnt = 0; // load data
+    if (ret = mnist_load("data/t10k-images.idx3-ubyte", "data/t10k-labels.idx1-ubyte", &test_set,
+                         &test_cnt) != 0)
+        printf("An error occurred: %d \n", ret);
+    else
+        printf("test_cnt = %d \n", test_cnt);
+
     float data[28 * 28];
     for (int i = 0; i < 28 * 28; i++)
         data[i] = -1.0f;
