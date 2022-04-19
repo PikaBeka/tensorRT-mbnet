@@ -296,9 +296,6 @@ __global__ void kernel_fc1(float *input, float *pre_output, float *weight)
     int c = idx % 10;
     float tempC = 0.0f;
 
-    __shared__ float shm[28][28];
-    __shared__ float shw[5][5];
-
     for (int i = 0; i < 6; i++)
     {
         for (int j = 0; j < 6; j++)
@@ -333,9 +330,9 @@ void maxError(float *arr, float val, float size)
     float maxErr = 0;
     for (int i = 0; i < size; i++)
     {
-        printf("%f \n", arr[i]);
+        maxErr = max(maxErr, abs(arr[i] - val));
     }
-    // printf("maxEror = %f (asserted with %f)\n", maxErr, val);
+    printf("maxEror = %f (asserted with %f)\n", maxErr, val);
 }
 
 Layer conv_layer(5 * 5, 6, 6 * 24 * 24);
