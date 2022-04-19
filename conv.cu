@@ -210,20 +210,32 @@ __global__ void kernel_conv_filter(float *input, float *pre_output, float *weigh
 {
     int row = threadIdx.y;
     int col = threadIdx.x;
+    float temp = 0.0;
+    __shared__ float shm[28][28];
+    __shared__ float shw[5][5];
+    shm[row][col] = input[row * 28 + col];
 
-    float temp = 0;
-
-    for (int i = 0; i < WEIGHT_SIZE; i++)
+    if (row < 5 && col < 5)
     {
-        for (int j = 0; j < WEIGHT_SIZE; j++)
-        {
-            int input_idx = (row + i) * 28 + (col + j);
-            int block_idx = blockIdx.z * 25 + i * WEIGHT_SIZE + j;
-            temp += input[input_idx] * weight[block_idx];
-        }
+        shw[row][col] = weight[blockIdx.z * 25 + row * 5 + col];
     }
-    int idx = blockIdx.z * 576 + row * 24 + col;
-    pre_output[idx] = temp;
+
+    __syncthreads();
+
+    if (row < 24 && col < 24)
+    {
+        for (int i = 0; i < WEIGHT_SIZE; i++)
+        {
+            for (int j = 0; j < WEIGHT_SIZE; j++)
+            {
+                // int input_idx = (row + i) * 28 + (col + j);
+                // int block_idx = blockIdx.z * 25 + i * WEIGHT_SIZE + j;
+                temp += shm[row + i][col + j] * shw[i][j];
+            }
+        }
+        int idx = blockIdx.z * 576 + row * 24 + col;
+        pre_output[idx] = temp;
+    }
 }
 
 __global__ void kernel_conv_bias(float *pre_output, float *bias)
@@ -239,7 +251,7 @@ __global__ void kernel_conv_sigmoid(float *pre_output, float *output)
 {
     int idx = blockIdx.z * 576 + 24 * threadIdx.y + threadIdx.x;
 
-    output[idx] = 1.0 / (1.0 + exp(-pre_output[idx]));
+    output[idx] = 1 / (1 + exp(-pre_output[idx]));
 }
 
 // SUBSAMPLING LAYER
@@ -258,7 +270,7 @@ __global__ void kernel_ss1_filter(float *input, float *pre_output, float *weight
         {
             int input_idx = (inp_r + i) * 24 + inp_c + j;
             int weight_idx = i * POOL_SIZE + j;
-            tmp += input[input_idx] * weight[weight_idx];
+            tmp += input[blockIdx.z * 24 * 24 + input_idx] * weight[weight_idx];
         }
     }
     int idx = blockIdx.z * 36 + row * 6 + col;
@@ -274,7 +286,7 @@ __global__ void kernel_ss1_sigmoid(float *pre_output, float *output)
 {
     int idx = blockIdx.z * 36 + 6 * threadIdx.y + threadIdx.x;
 
-    output[idx] = 1.0 / (1.0 + exp(-pre_output[idx]));
+    output[idx] = 1 / (1 + exp(-pre_output[idx]));
 }
 
 // FULLY CONNECTED LAYER
@@ -283,6 +295,9 @@ __global__ void kernel_fc1(float *input, float *pre_output, float *weight)
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     int c = idx % 10;
     float tempC = 0.0f;
+
+    __shared__ float shm[28][28];
+    __shared__ float shw[5][5];
 
     for (int i = 0; i < 6; i++)
     {
@@ -296,24 +311,6 @@ __global__ void kernel_fc1(float *input, float *pre_output, float *weight)
     }
 
     pre_output[c] = tempC;
-
-    /*
-    int x = threadIdx.x;
-    int y = threadIdx.y;
-    int z = threadIdx.z;
-    int idw = blockIdx.x;
-    __shared__ float temp[6 * 6 * 6];
-
-    temp[x + y * 6 + z * 6 * 6] = input[x + y * 6 + z * 6 * 6] * weight[x + y * 6 + z * 6 * 6 + idw * 6 * 6 * 6];
-
-    __syncthreads();
-    if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0) {
-        for (int i = 1; i < 216; i++) {
-            temp[0] += temp[i];
-        }
-        pre_output[idw] = temp[0];
-    }
-    */
 }
 
 __global__ void kernel_fc1_bias(float *pre_output, float *bias)
@@ -336,12 +333,9 @@ void maxError(float *arr, float val, float size)
     float maxErr = 0;
     for (int i = 0; i < size; i++)
     {
-        if (arr[i] != val)
-        {
-            maxErr = std::max(maxErr, abs(arr[i] - val));
-        }
+        printf("%f \n", arr[i]);
     }
-    printf("maxEror = %f (asserted with %f)\n", maxErr, val);
+    // printf("maxEror = %f (asserted with %f)\n", maxErr, val);
 }
 
 Layer conv_layer(5 * 5, 6, 6 * 24 * 24);
@@ -375,25 +369,26 @@ static double forward_pass(double data[28][28])
     cudaEventRecord(start, 0);
 
     float *data_d;
-    cudaMalloc((void **)&data_d, 28 * 28 * sizeof(28));
+    cudaMalloc((void **)&data_d, 28 * 28 * sizeof(float));
     cudaMemcpy(data_d, input, 28 * 28 * sizeof(float), cudaMemcpyHostToDevice);
 
     /*28x28 * 6@5x5 = 6@24x24*/
-    dim3 blocks(1, 1, 6);
-    dim3 threads(24, 24, 1);
-    kernel_conv_filter<<<blocks, threads>>>(data_d, conv_layer.pre_output, conv_layer.weight);
+    dim3 conv_blocks(1, 1, 6);
+    dim3 conv_threads(28, 28, 1);
+    kernel_conv_filter<<<conv_blocks, conv_threads>>>(data_d, conv_layer.pre_output, conv_layer.weight);
 
-    conv_layer.cpyDeviceToHost(conv_layer.pre_output_h, conv_layer.pre_output, 6 * 24 * 24);
+    // conv_layer.cpyDeviceToHost(conv_layer.pre_output_h, conv_layer.pre_output, 6 * 24 * 24);
     // printf("Verifying Convolutional filtering layer: ");
     // maxError(conv_layer.pre_output_h, 25.0f, 24 * 24 * 6);
-
+    dim3 blocks(1, 1, 6);
+    dim3 threads(24, 24, 1);
     kernel_conv_bias<<<blocks, threads>>>(conv_layer.pre_output, conv_layer.bias);
-    conv_layer.cpyDeviceToHost(conv_layer.pre_output_h, conv_layer.pre_output, 24 * 24 * 6);
+    // conv_layer.cpyDeviceToHost(conv_layer.pre_output_h, conv_layer.pre_output, 24 * 24 * 6);
     // printf("Verifying Convolutional bias layer: ");
     // maxError(conv_layer.pre_output_h, 26.0f, 24 * 24 * 6);
 
     kernel_conv_sigmoid<<<blocks, threads>>>(conv_layer.pre_output, conv_layer.output);
-    conv_layer.cpyDeviceToHost(conv_layer.output_h, conv_layer.output, 24 * 24 * 6);
+    // conv_layer.cpyDeviceToHost(conv_layer.output_h, conv_layer.output, 24 * 24 * 6);
     // printf("Verifying Convolutional sigmoid layer: ");
     // maxError(conv_layer.output_h, 1.0f, 24 * 24 * 6);
 
@@ -403,34 +398,34 @@ static double forward_pass(double data[28][28])
     kernel_ss1_filter<<<pool_blocks, pool_threads>>>(conv_layer.output, pool_layer.pre_output, pool_layer.weight);
 
     // kernel_ss1_filter << <pool_blocks, pool_threads >> > (conv_layer.output, pool_layer.pre_output, pool_layer.weight);
-    pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output, 6 * 6 * 6);
+    // pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output, 6 * 6 * 6);
     // printf("Verifying Subsampling filtering layer: ");
     // maxError(pool_layer.pre_output_h, 16.0f, 6 * 6 * 6);
 
     kernel_ss1_bias<<<pool_blocks, pool_threads>>>(pool_layer.pre_output, pool_layer.bias);
-    pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output, 6 * 6 * 6);
+    // pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output, 6 * 6 * 6);
     // printf("Verifying Subsampling bias layer: ");
     // maxError(pool_layer.pre_output_h, 17.0f, 6 * 6 * 6);
 
     kernel_ss1_sigmoid<<<pool_blocks, pool_threads>>>(pool_layer.pre_output, pool_layer.output);
-    pool_layer.cpyDeviceToHost(pool_layer.output_h, pool_layer.output, 6 * 6 * 6);
+    // pool_layer.cpyDeviceToHost(pool_layer.output_h, pool_layer.output, 6 * 6 * 6);
     // printf("Verifying Subsampling sigmoid layer: ");
     // maxError(pool_layer.output_h, 1.0f, 6 * 6 * 6);
 
     /*6@6x6 * 10@6x6x6 = 10@1x1*/
     kernel_fc1<<<10 * 216 / 16, 16>>>(pool_layer.output, fl_layer.pre_output, fl_layer.weight);
     // kernel_fc1 << <dim3(10, 1, 1), dim3(6, 6, 6) >> > (pool_layer.output, fl_layer.pre_output, fl_layer.weight);
-    fl_layer.cpyDeviceToHost(fl_layer.pre_output_h, fl_layer.pre_output, 10);
+    // fl_layer.cpyDeviceToHost(fl_layer.pre_output_h, fl_layer.pre_output, 10);
     // printf("Verifying Fully-Connected layer: ");
     // maxError(fl_layer.pre_output_h, 216.0f, 10);
 
     kernel_fc1_bias<<<1, 10>>>(fl_layer.pre_output, fl_layer.bias);
-    fl_layer.cpyDeviceToHost(fl_layer.pre_output_h, fl_layer.pre_output, 10);
+    // fl_layer.cpyDeviceToHost(fl_layer.pre_output_h, fl_layer.pre_output, 10);
     // printf("Verifying Fully-Connected bias layer: ");
     // maxError(fl_layer.pre_output_h, 217.0f, 10);
 
     kernel_fc1_sigmoid<<<1, 10>>>(fl_layer.pre_output, fl_layer.output);
-    fl_layer.cpyDeviceToHost(fl_layer.output_h, fl_layer.output, 10);
+    // fl_layer.cpyDeviceToHost(fl_layer.output_h, fl_layer.output, 10);
     // printf("Verifying Fully-Connected sigmoid layer: ");
     // maxError(fl_layer.output_h, 1.0f, 10);
 
@@ -449,12 +444,12 @@ static double forward_pass(double data[28][28])
 
 int main()
 {
-    double data[28][28];
-    for (int i = 0; i < 28; i++)
-        for (int j = 0; j < 28; j++)
-            data[i][j] = 1.0f;
+    // double data[28][28];
+    // for (int i = 0; i < 28; i++)
+    //     for (int j = 0; j < 28; j++)
+    //         data[i][j] = 1.0f;
 
-    forward_pass(data);
+    // forward_pass(data);
 
     // return 0;
 
@@ -470,7 +465,7 @@ int main()
         printf("test_cnt = %d \n", test_cnt);
 
     cpyTrainedValues();
-
+    // forward_pass(test_set[0].data);
     // return 0;
     unsigned int error = 0;
     unsigned int max = 0;
