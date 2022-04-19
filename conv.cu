@@ -262,19 +262,31 @@ __global__ void kernel_ss1_filter(float *input, float *pre_output, float *weight
 
     float tmp = 0;
 
-    int inp_r = row * 4;
-    int inp_c = col * 4;
-    for (int i = 0; i < POOL_SIZE; i++)
+    __shared__ float shm[24][24];
+    __shared__ float shw[4][4];
+
+    if (row < 4 && col < 4)
     {
-        for (int j = 0; j < POOL_SIZE; j++)
-        {
-            int input_idx = (inp_r + i) * 24 + inp_c + j;
-            int weight_idx = i * POOL_SIZE + j;
-            tmp += input[blockIdx.z * 24 * 24 + input_idx] * weight[weight_idx];
-        }
+        shw[row][col] = weight[row * POOL_SIZE + col];
     }
-    int idx = blockIdx.z * 36 + row * 6 + col;
-    pre_output[idx] = tmp;
+    shm[row][col] = input[blockIdx.z * 24 * 24 + row * 24 + col];
+
+    __syncthreads();
+
+    if (row % 4 == 0 && col % 4 == 0)
+    {
+        for (int i = 0; i < POOL_SIZE; i++)
+        {
+            for (int j = 0; j < POOL_SIZE; j++)
+            {
+                // int input_idx = (row + i) * 24 + col + j;
+                // int weight_idx = i * POOL_SIZE + j;
+                tmp += shm[row + i][col + j] * shw[i][j];
+            }
+        }
+        int idx = blockIdx.z * 36 + (row / 4) * 6 + (col / 4);
+        pre_output[idx] = tmp;
+    }
 }
 
 __global__ void kernel_ss1_bias(float *pre_output, float *bias)
@@ -390,15 +402,17 @@ static double forward_pass(double data[28][28])
     // maxError(conv_layer.output_h, 1.0f, 24 * 24 * 6);
 
     /*6@24x24 * 1@4x4 = 6@6x6*/
-    dim3 pool_blocks(1, 1, 6);
-    dim3 pool_threads(6, 6, 1);
-    kernel_ss1_filter<<<pool_blocks, pool_threads>>>(conv_layer.output, pool_layer.pre_output, pool_layer.weight);
+    dim3 pool_filter_blocks(1, 1, 6);
+    dim3 pool_filter_threads(24, 24, 1);
+    kernel_ss1_filter<<<pool_filter_blocks, pool_filter_threads>>>(conv_layer.output, pool_layer.pre_output, pool_layer.weight);
 
     // kernel_ss1_filter << <pool_blocks, pool_threads >> > (conv_layer.output, pool_layer.pre_output, pool_layer.weight);
     // pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output, 6 * 6 * 6);
     // printf("Verifying Subsampling filtering layer: ");
     // maxError(pool_layer.pre_output_h, 16.0f, 6 * 6 * 6);
 
+    dim3 pool_blocks(1, 1, 6);
+    dim3 pool_threads(6, 6, 1);
     kernel_ss1_bias<<<pool_blocks, pool_threads>>>(pool_layer.pre_output, pool_layer.bias);
     // pool_layer.cpyDeviceToHost(pool_layer.pre_output_h, pool_layer.pre_output, 6 * 6 * 6);
     // printf("Verifying Subsampling bias layer: ");
@@ -410,7 +424,7 @@ static double forward_pass(double data[28][28])
     // maxError(pool_layer.output_h, 1.0f, 6 * 6 * 6);
 
     /*6@6x6 * 10@6x6x6 = 10@1x1*/
-    kernel_fc1<<<10 * 216 / 16, 16>>>(pool_layer.output, fl_layer.pre_output, fl_layer.weight);
+    kernel_fc1<<<10 * 216 / 256, 256>>>(pool_layer.output, fl_layer.pre_output, fl_layer.weight);
     // kernel_fc1 << <dim3(10, 1, 1), dim3(6, 6, 6) >> > (pool_layer.output, fl_layer.pre_output, fl_layer.weight);
     // fl_layer.cpyDeviceToHost(fl_layer.pre_output_h, fl_layer.pre_output, 10);
     // printf("Verifying Fully-Connected layer: ");
