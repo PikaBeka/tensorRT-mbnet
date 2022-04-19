@@ -308,13 +308,17 @@ __global__ void kernel_fc1(float *input, float *pre_output, float *weight)
     int c = idx % 10;
     float tempC = 0.0f;
 
+    __shared__ float shm[6 * 6 * 6];
+    shm[idx % 216] = input[idx % 216];
+    __syncthreads();
+
     for (int i = 0; i < 6; i++)
     {
         for (int j = 0; j < 6; j++)
         {
             for (int k = 0; k < 6; k++)
             {
-                tempC += weight[c * 6 * 6 * 6 + i * 6 * 6 + j * 6 + k] * input[i * 6 * 6 + j * 6 + k];
+                tempC += weight[c * 6 * 6 * 6 + i * 6 * 6 + j * 6 + k] * shm[i * 6 * 6 + j * 6 + k];
             }
         }
     }
