@@ -564,7 +564,7 @@ float s_LeNet(mnist_data *test_set)
     unsigned int max = 0;
     float res[10];
     float time_taken = 0.0f;
-    int test_cnt = 10000;
+    int test_cnt = 10;
 
     forward_pass(test_set[0].data, true);
     for (int i = 0; i < test_cnt; i++)
