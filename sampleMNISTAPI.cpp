@@ -22,13 +22,14 @@
 //! Command: ./sample_mnist_api [-h or --help] [-d=/path/to/data/dir or --datadir=/path/to/data/dir]
 //! [--useDLACore=<int>]
 //!
+// g++ -std=c++11 -o sample -I /usr/local/cuda/targets/x86_64-linux/include/ -I /usr/local/cuda/include -L/$CUDA_HOME/lib64 *.cpp *.cc *.pb.cc -lnvinfer -lcuda -lcudart -lnvonnxparser -pthread -lprotobuf -lpthread -w
 
-#include "common/argsParser.h"
-#include "common/buffers.h"
-#include "common/common.h"
-#include "common/logger.h"
+#include "argsParser.h"
+#include "buffers.h"
+#include "common.h"
+#include "logger.h"
 
-#include "NvCaffeParser.h"
+// #include "NvCaffeParser.h"
 #include "NvInfer.h"
 #include <cuda_runtime_api.h>
 
@@ -53,6 +54,12 @@ struct SampleMNISTAPIParams : public samplesCommon::SampleParams
     std::string weightsFile;     //!< The filename of the weights file
     std::string mnistMeansProto; //!< The proto file containing means
 };
+
+typedef struct mnist_data
+{
+    double data[28][28];
+    unsigned int label;
+} mnist_data;
 
 //! \brief  The SampleMNISTAPI class implements the MNIST API sample
 //!
@@ -101,12 +108,12 @@ private:
     //!
     //! \brief Reads the input  and stores the result in a managed buffer
     //!
-    bool processInput(const samplesCommon::BufferManager &buffers);
+    bool processInput(const samplesCommon::BufferManager &buffers, mnist_data **data_set);
 
     //!
     //! \brief Classifies digits and verify result
     //!
-    bool verifyOutput(const samplesCommon::BufferManager &buffers);
+    bool verifyOutput(const samplesCommon::BufferManager &buffers, mnist_data **data_set);
 
     //!
     //! \brief Loads weights from weights file
@@ -287,11 +294,34 @@ bool SampleMNISTAPI::infer()
         return false;
     }
 
+    mnist_data *test_set;
     // Read the input data into the managed buffers
     ASSERT(mParams.inputTensorNames.size() == 1);
-    if (!processInput(buffers))
+    if (!processInput(buffers, &test_set))
     {
         return false;
+    }
+
+    float *hostDataBuffer = static_cast<float *>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
+    for (int i = 0; i < mParams.inputH; i++)
+    {
+        for (int j = 0; j < mParams.inputW; j++)
+        {
+            hostDataBuffer[i * 28 + j] = test_set[0].data[i][j];
+        }
+    }
+
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
+
+    for (int i = 0; i < mParams.inputH; i++)
+    {
+        for (int j = 0; j < mParams.inputW; j++)
+        {
+            std::cout << hostDataBuffer[i * 28 + j] << " ";
+        }
+
+        std::cout << std::endl;
     }
 
     // Memcpy from host input buffers to device input buffers
@@ -307,7 +337,7 @@ bool SampleMNISTAPI::infer()
     buffers.copyOutputToHost();
 
     // Verify results
-    if (!verifyOutput(buffers))
+    if (!verifyOutput(buffers, &test_set))
     {
         return false;
     }
@@ -315,52 +345,151 @@ bool SampleMNISTAPI::infer()
     return true;
 }
 
+static unsigned int mnist_bin_to_int(unsigned char *tmp)
+{
+    // Converting the binary char value to the integer value
+    unsigned int result = 0;
+    short charSize = 4;
+    short multiplier = 256;
+
+    for (int i = 0; i < charSize; i++)
+    {
+        unsigned int temp = tmp[i];
+
+        for (int j = 0; j < charSize - i - 1; j++)
+            temp *= multiplier;
+
+        result += temp;
+    }
+
+    // Returning the integer value
+    return result;
+}
+
 //!
 //! \brief Reads the input and stores the result in a managed buffer
 //!
-bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers)
+bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, mnist_data **data_set)
 {
-    // Read a random digit file
-    srand(unsigned(time(nullptr)));
-    std::vector<uint8_t> fileData(mParams.inputH * mParams.inputW);
-    mNumber = rand() % mParams.outputSize;
-    readPGMFile(locateFile(std::to_string(mNumber) + ".pgm", mParams.dataDirs), fileData.data(), mParams.inputH,
-                mParams.inputW);
+    FILE *images;
+    FILE *labels;
 
-    // Print ASCII representation of digit image
-    std::cout << "\nInput:\n"
-              << std::endl;
-    for (int i = 0; i < mParams.inputH * mParams.inputW; i++)
+    unsigned char *imagesBuffer;
+    unsigned char *labelsBuffer;
+
+    long imagesFileSize;
+    long labelsFileSize;
+
+    short unsignedIntSize = 4;
+    short unsignedByteSize = 1;
+
+    unsigned int imageMagicNumber;
+    unsigned int labelMagicNumber;
+    unsigned int imageTotalNumber;
+    unsigned int labelTotalNumber;
+    unsigned int rows, cols;
+
+    // Opening image and label files of the test
+    images = fopen("data/t10k-images.idx3-ubyte", "rb");
+
+    if (images == NULL)
     {
-        std::cout << (" .:-=+*#%@"[fileData[i] / 26]) << (((i + 1) % mParams.inputW) ? "" : "\n");
+        printf("Error! Images file cannot be read!\n");
+        return 1;
     }
 
-    // Parse mean file
-    auto parser = SampleUniquePtr<nvcaffeparser1::ICaffeParser>(nvcaffeparser1::createCaffeParser());
-    if (!parser)
+    labels = fopen("data/t10k-labels.idx1-ubyte", "rb");
+
+    if (images == NULL)
     {
-        return false;
+        printf("Error! Labels file cannot be read!\n");
+        return 1;
     }
 
-    auto meanBlob = SampleUniquePtr<nvcaffeparser1::IBinaryProtoBlob>(
-        parser->parseBinaryProto(locateFile(mParams.mnistMeansProto, mParams.dataDirs).c_str()));
-    if (!meanBlob)
+    fseek(images, 0, SEEK_END);
+    fseek(labels, 0, SEEK_END);
+
+    imagesFileSize = ftell(images);
+    labelsFileSize = ftell(labels);
+
+    fseek(images, 0, SEEK_SET);
+    fseek(labels, 0, SEEK_SET);
+
+    imagesBuffer = (unsigned char *)malloc(sizeof(unsigned char) * imagesFileSize);
+
+    if (imagesBuffer == NULL)
     {
-        return false;
+        printf("Error! Memory error has occured!\n");
+        return 2;
     }
 
-    const float *meanData = reinterpret_cast<const float *>(meanBlob->getData());
-    if (!meanData)
+    labelsBuffer = (unsigned char *)malloc(sizeof(unsigned char) * labelsFileSize);
+
+    if (labelsBuffer == NULL)
     {
-        return false;
+        printf("Error! Memory error has occured!\n");
+        return 2;
     }
 
-    // Subtract mean from image
-    float *hostDataBuffer = static_cast<float *>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
-    for (int i = 0; i < mParams.inputH * mParams.inputW; i++)
+    // Reading a magic number
+    fread(imagesBuffer, unsignedIntSize, 1, images);
+    fread(labelsBuffer, unsignedIntSize, 1, labels);
+    imageMagicNumber = mnist_bin_to_int(imagesBuffer);
+    labelMagicNumber = mnist_bin_to_int(labelsBuffer);
+    printf("Image magic number: %d\n", imageMagicNumber);
+    printf("Label magic number: %d\n", labelMagicNumber);
+
+    // Reading a number of images and label files
+    fread(imagesBuffer, unsignedIntSize, 1, images);
+    fread(labelsBuffer, unsignedIntSize, 1, labels);
+    imageTotalNumber = mnist_bin_to_int(imagesBuffer);
+    labelTotalNumber = mnist_bin_to_int(labelsBuffer);
+    printf("Number of images: %d\n", imageTotalNumber);
+    printf("Number of labels: %d\n", labelTotalNumber);
+
+    // Check whether the number of images and label files is the same
+    if (imageTotalNumber != labelTotalNumber)
     {
-        hostDataBuffer[i] = float(fileData[i]) - meanData[i];
+        printf("Error! The number of images and the number of labels are different!\n");
+        return 3;
     }
+    else
+    {
+        printf("The number of images and the number of labels are the same!\n");
+    }
+
+    // Check the number of rows and columns
+    fread(imagesBuffer, unsignedIntSize, 1, images);
+    rows = mnist_bin_to_int(imagesBuffer);
+    fread(imagesBuffer, unsignedIntSize, 1, images);
+    cols = mnist_bin_to_int(imagesBuffer);
+    printf("Rows: %d\n", rows);
+    printf("Cols: %d\n", cols);
+
+    *data_set = (mnist_data *)malloc(sizeof(mnist_data) * imageTotalNumber);
+
+    // Load image data as double type
+    for (int i = 0; i < imageTotalNumber; i++)
+    {
+        fread(imagesBuffer, rows * cols, 1, images);
+        fread(labelsBuffer, unsignedByteSize, 1, labels);
+
+        for (int j = 0; j < 28; j++)
+        {
+            for (int k = 0; k < 28; k++)
+            {
+                (*data_set)[i].data[j][k] = imagesBuffer[j * 28 + k] / 255.0;
+            }
+        }
+
+        (*data_set)[i].label = labelsBuffer[0];
+    }
+
+    // Closing opened files
+    fclose(images);
+    fclose(labels);
+    free(imagesBuffer);
+    free(labelsBuffer);
 
     return true;
 }
@@ -370,7 +499,7 @@ bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers)
 //!
 //! \return whether the classification output matches expectations
 //!
-bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers)
+bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, mnist_data **data_set)
 {
     float *prob = static_cast<float *>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
     std::cout << "\nOutput:\n"
@@ -386,9 +515,10 @@ bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers)
         }
         std::cout << i << ": " << std::string(int(std::floor(prob[i] * 10 + 0.5f)), '*') << std::endl;
     }
+    std::cout << "Predicted: " << idx << ", but expected: " << (*data_set)[0].label << std::endl;
     std::cout << std::endl;
 
-    return idx == mNumber && maxVal > 0.9f;
+    return idx == (*data_set)[0].label;
 }
 
 //!
