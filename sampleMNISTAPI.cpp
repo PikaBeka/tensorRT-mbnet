@@ -28,10 +28,12 @@
 #include "buffers.h"
 #include "common.h"
 #include "logger.h"
+#include "mbnet.h"
 
 // #include "NvCaffeParser.h"
 #include "NvInfer.h"
 #include <cuda_runtime_api.h>
+#include "slenet_params.h"
 
 #include <cstdlib>
 #include <fstream>
@@ -41,6 +43,11 @@
 using samplesCommon::SampleUniquePtr;
 
 const std::string gSampleName = "TensorRT.sample_mnist_api";
+
+float *input = (float *)malloc(sizeof(float) * C * HW * HW);
+float *weight = (float *)malloc(sizeof(float) * RS * RS * K * C);
+float *bias = (float *)malloc(sizeof(float) * K);
+float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
 //!
 //! \brief The SampleMNISTAPIParams structure groups the additional parameters required by
@@ -54,12 +61,6 @@ struct SampleMNISTAPIParams : public samplesCommon::SampleParams
     std::string weightsFile;     //!< The filename of the weights file
     std::string mnistMeansProto; //!< The proto file containing means
 };
-
-typedef struct mnist_data
-{
-    double data[28][28];
-    unsigned int label;
-} mnist_data;
 
 //! \brief  The SampleMNISTAPI class implements the MNIST API sample
 //!
@@ -108,17 +109,17 @@ private:
     //!
     //! \brief Reads the input  and stores the result in a managed buffer
     //!
-    bool processInput(const samplesCommon::BufferManager &buffers, mnist_data **data_set);
+    bool processInput(const samplesCommon::BufferManager &buffers, float *input);
 
     //!
     //! \brief Classifies digits and verify result
     //!
-    bool verifyOutput(const samplesCommon::BufferManager &buffers, mnist_data **data_set);
+    bool verifyOutput(const samplesCommon::BufferManager &buffers, float *input, float *weight);
 
     //!
     //! \brief Loads weights from weights file
     //!
-    std::map<std::string, nvinfer1::Weights> loadWeights(const std::string &file);
+    std::map<std::string, nvinfer1::Weights> loadWeights(const std::string &file, float *weight);
 };
 
 //!
@@ -131,7 +132,7 @@ private:
 //!
 bool SampleMNISTAPI::build()
 {
-    mWeightMap = loadWeights(locateFile(mParams.weightsFile, mParams.dataDirs));
+    mWeightMap = loadWeights(locateFile(mParams.weightsFile, mParams.dataDirs), weight);
 
     auto builder = SampleUniquePtr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(sample::gLogger.getTRTLogger()));
     if (!builder)
@@ -181,57 +182,21 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
 {
     // Create input tensor of shape { 1, 1, 28, 28 }
     ITensor *data = network->addInput(
-        mParams.inputTensorNames[0].c_str(), DataType::kFLOAT, Dims4{1, 1, mParams.inputH, mParams.inputW});
+        mParams.inputTensorNames[0].c_str(), DataType::kFLOAT, Dims4{1, C, HW, HW});
     ASSERT(data);
-
-    // Create scale layer with default power/shift and specified scale parameter.
-    const float scaleParam = 0.0125f;
-    const Weights power{DataType::kFLOAT, nullptr, 0};
-    const Weights shift{DataType::kFLOAT, nullptr, 0};
-    const Weights scale{DataType::kFLOAT, &scaleParam, 1};
-    IScaleLayer *scale_1 = network->addScale(*data, ScaleMode::kUNIFORM, shift, scale, power);
-    ASSERT(scale_1);
 
     // Add convolution layer with 20 outputs and a 5x5 filter.
     IConvolutionLayer *conv1 = network->addConvolutionNd(
-        *scale_1->getOutput(0), 20, Dims{2, {5, 5}}, mWeightMap["conv1filter"], mWeightMap["conv1bias"]);
-    ASSERT(conv1);
+        *data, K, Dims{2, {5, 5}}, mWeightMap["c1_weight"], mWeightMap["c1_bias"]);
     conv1->setStride(DimsHW{1, 1});
-
-    // Add max pooling layer with stride of 2x2 and kernel size of 2x2.
-    IPoolingLayer *pool1 = network->addPoolingNd(*conv1->getOutput(0), PoolingType::kMAX, Dims{2, {2, 2}});
-    ASSERT(pool1);
-    pool1->setStride(DimsHW{2, 2});
-
-    // Add second convolution layer with 50 outputs and a 5x5 filter.
-    IConvolutionLayer *conv2 = network->addConvolutionNd(
-        *pool1->getOutput(0), 50, Dims{2, {5, 5}}, mWeightMap["conv2filter"], mWeightMap["conv2bias"]);
-    ASSERT(conv2);
-    conv2->setStride(DimsHW{1, 1});
-
-    // Add second max pooling layer with stride of 2x2 and kernel size of 2x3>
-    IPoolingLayer *pool2 = network->addPoolingNd(*conv2->getOutput(0), PoolingType::kMAX, Dims{2, {2, 2}});
-    ASSERT(pool2);
-    pool2->setStride(DimsHW{2, 2});
-
-    // Add fully connected layer with 500 outputs.
-    IFullyConnectedLayer *ip1 = network->addFullyConnected(*pool2->getOutput(0), 500, mWeightMap["ip1filter"], mWeightMap["ip1bias"]);
-    ASSERT(ip1);
-
-    // Add activation layer using the ReLU algorithm.
-    IActivationLayer *relu1 = network->addActivation(*ip1->getOutput(0), ActivationType::kRELU);
-    ASSERT(relu1);
-
-    // Add second fully connected layer with 20 outputs.
-    IFullyConnectedLayer *ip2 = network->addFullyConnected(
-        *relu1->getOutput(0), mParams.outputSize, mWeightMap["ip2filter"], mWeightMap["ip2bias"]);
-    ASSERT(ip2);
+    conv1->setPadding(DimsHW{0, 0});
+    ASSERT(conv1);
 
     // Add softmax layer to determine the probability.
-    ISoftMaxLayer *prob = network->addSoftMax(*ip2->getOutput(0));
-    ASSERT(prob);
-    prob->getOutput(0)->setName(mParams.outputTensorNames[0].c_str());
-    network->markOutput(*prob->getOutput(0));
+    // ISoftMaxLayer *prob = network->addSoftMax(*sigmoid3->getOutput(0));
+    // ASSERT(prob);
+    conv1->getOutput(0)->setName(mParams.outputTensorNames[0].c_str());
+    network->markOutput(*conv1->getOutput(0));
 
     // Build engine
     config->setMaxWorkspaceSize(16_MiB);
@@ -294,34 +259,11 @@ bool SampleMNISTAPI::infer()
         return false;
     }
 
-    mnist_data *test_set;
     // Read the input data into the managed buffers
     ASSERT(mParams.inputTensorNames.size() == 1);
-    if (!processInput(buffers, &test_set))
+    if (!processInput(buffers, input))
     {
         return false;
-    }
-
-    float *hostDataBuffer = static_cast<float *>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
-    for (int i = 0; i < mParams.inputH; i++)
-    {
-        for (int j = 0; j < mParams.inputW; j++)
-        {
-            hostDataBuffer[i * 28 + j] = test_set[0].data[i][j];
-        }
-    }
-
-    std::cout << std::fixed;
-    std::cout << std::setprecision(2);
-
-    for (int i = 0; i < mParams.inputH; i++)
-    {
-        for (int j = 0; j < mParams.inputW; j++)
-        {
-            std::cout << hostDataBuffer[i * 28 + j] << " ";
-        }
-
-        std::cout << std::endl;
     }
 
     // Memcpy from host input buffers to device input buffers
@@ -337,7 +279,7 @@ bool SampleMNISTAPI::infer()
     buffers.copyOutputToHost();
 
     // Verify results
-    if (!verifyOutput(buffers, &test_set))
+    if (!verifyOutput(buffers, input, weight))
     {
         return false;
     }
@@ -345,151 +287,39 @@ bool SampleMNISTAPI::infer()
     return true;
 }
 
-static unsigned int mnist_bin_to_int(unsigned char *tmp)
-{
-    // Converting the binary char value to the integer value
-    unsigned int result = 0;
-    short charSize = 4;
-    short multiplier = 256;
-
-    for (int i = 0; i < charSize; i++)
-    {
-        unsigned int temp = tmp[i];
-
-        for (int j = 0; j < charSize - i - 1; j++)
-            temp *= multiplier;
-
-        result += temp;
-    }
-
-    // Returning the integer value
-    return result;
-}
-
 //!
 //! \brief Reads the input and stores the result in a managed buffer
 //!
-bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, mnist_data **data_set)
+bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, float *input)
 {
-    FILE *images;
-    FILE *labels;
+    srand(time(0));
 
-    unsigned char *imagesBuffer;
-    unsigned char *labelsBuffer;
+    float *hostDataBuffer = static_cast<float *>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
+    float temp = 1.0f;
 
-    long imagesFileSize;
-    long labelsFileSize;
-
-    short unsignedIntSize = 4;
-    short unsignedByteSize = 1;
-
-    unsigned int imageMagicNumber;
-    unsigned int labelMagicNumber;
-    unsigned int imageTotalNumber;
-    unsigned int labelTotalNumber;
-    unsigned int rows, cols;
-
-    // Opening image and label files of the test
-    images = fopen("data/t10k-images.idx3-ubyte", "rb");
-
-    if (images == NULL)
+    for (int i = 0; i < C; i++)
     {
-        printf("Error! Images file cannot be read!\n");
-        return 1;
-    }
-
-    labels = fopen("data/t10k-labels.idx1-ubyte", "rb");
-
-    if (images == NULL)
-    {
-        printf("Error! Labels file cannot be read!\n");
-        return 1;
-    }
-
-    fseek(images, 0, SEEK_END);
-    fseek(labels, 0, SEEK_END);
-
-    imagesFileSize = ftell(images);
-    labelsFileSize = ftell(labels);
-
-    fseek(images, 0, SEEK_SET);
-    fseek(labels, 0, SEEK_SET);
-
-    imagesBuffer = (unsigned char *)malloc(sizeof(unsigned char) * imagesFileSize);
-
-    if (imagesBuffer == NULL)
-    {
-        printf("Error! Memory error has occured!\n");
-        return 2;
-    }
-
-    labelsBuffer = (unsigned char *)malloc(sizeof(unsigned char) * labelsFileSize);
-
-    if (labelsBuffer == NULL)
-    {
-        printf("Error! Memory error has occured!\n");
-        return 2;
-    }
-
-    // Reading a magic number
-    fread(imagesBuffer, unsignedIntSize, 1, images);
-    fread(labelsBuffer, unsignedIntSize, 1, labels);
-    imageMagicNumber = mnist_bin_to_int(imagesBuffer);
-    labelMagicNumber = mnist_bin_to_int(labelsBuffer);
-    printf("Image magic number: %d\n", imageMagicNumber);
-    printf("Label magic number: %d\n", labelMagicNumber);
-
-    // Reading a number of images and label files
-    fread(imagesBuffer, unsignedIntSize, 1, images);
-    fread(labelsBuffer, unsignedIntSize, 1, labels);
-    imageTotalNumber = mnist_bin_to_int(imagesBuffer);
-    labelTotalNumber = mnist_bin_to_int(labelsBuffer);
-    printf("Number of images: %d\n", imageTotalNumber);
-    printf("Number of labels: %d\n", labelTotalNumber);
-
-    // Check whether the number of images and label files is the same
-    if (imageTotalNumber != labelTotalNumber)
-    {
-        printf("Error! The number of images and the number of labels are different!\n");
-        return 3;
-    }
-    else
-    {
-        printf("The number of images and the number of labels are the same!\n");
-    }
-
-    // Check the number of rows and columns
-    fread(imagesBuffer, unsignedIntSize, 1, images);
-    rows = mnist_bin_to_int(imagesBuffer);
-    fread(imagesBuffer, unsignedIntSize, 1, images);
-    cols = mnist_bin_to_int(imagesBuffer);
-    printf("Rows: %d\n", rows);
-    printf("Cols: %d\n", cols);
-
-    *data_set = (mnist_data *)malloc(sizeof(mnist_data) * imageTotalNumber);
-
-    // Load image data as double type
-    for (int i = 0; i < imageTotalNumber; i++)
-    {
-        fread(imagesBuffer, rows * cols, 1, images);
-        fread(labelsBuffer, unsignedByteSize, 1, labels);
-
-        for (int j = 0; j < 28; j++)
+        for (int j = 0; j < HW; j++)
         {
-            for (int k = 0; k < 28; k++)
+            for (int k = 0; k < HW; k++)
             {
-                (*data_set)[i].data[j][k] = imagesBuffer[j * 28 + k] / 255.0;
+                temp = (float)(rand() % 100) - 100.0;
+                input[i * HW * HW + j * HW + k] = temp;
+                hostDataBuffer[i * HW * HW + j * HW + k] = temp;
             }
         }
-
-        (*data_set)[i].label = labelsBuffer[0];
     }
 
-    // Closing opened files
-    fclose(images);
-    fclose(labels);
-    free(imagesBuffer);
-    free(labelsBuffer);
+    // for (int i = 0; i < C; i++)
+    // {
+    //     for (int j = 0; j < HW; j++)
+    //     {
+    //         for (int k = 0; k < HW; k++)
+    //         {
+    //             printf("%d_%d_%d: %f\n", i, j, k, hostDataBuffer[i * HW * HW + j * HW + k]);
+    //         }
+    //     }
+    // }
 
     return true;
 }
@@ -499,26 +329,53 @@ bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, m
 //!
 //! \return whether the classification output matches expectations
 //!
-bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, mnist_data **data_set)
+bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, float *input, float *weight)
 {
-    float *prob = static_cast<float *>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
-    std::cout << "\nOutput:\n"
-              << std::endl;
-    float maxVal{0.0f};
-    int idx{0};
-    for (int i = 0; i < mParams.outputSize; i++)
-    {
-        if (maxVal < prob[i])
-        {
-            maxVal = prob[i];
-            idx = i;
-        }
-        std::cout << i << ": " << std::string(int(std::floor(prob[i] * 10 + 0.5f)), '*') << std::endl;
-    }
-    std::cout << "Predicted: " << idx << ", but expected: " << (*data_set)[0].label << std::endl;
-    std::cout << std::endl;
+    output = static_cast<float *>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
+    bool answer = true;
+    printf("The configuration is %d_%d_%d\n", C, HW, K);
 
-    return idx == (*data_set)[0].label;
+    // for (int i = 0; i < K; i++)
+    // {
+    //     for (int j = 0; j < PQ; j++)
+    //     {
+    //         for (int k = 0; k < PQ; k++)
+    //         {
+    //             if (output[i * PQ * PQ + j * PQ + k] != 25.0)
+    //             {
+    //                 printf("%d_%d_%d: %f\n", i, j, k, output[i * PQ * PQ + j * PQ + k]);
+    //             }
+    //         }
+    //     }
+    // }
+
+    for (int i = 0; i < K; i++)
+    {
+        for (int j = 0; j < PQ; j++)
+        {
+            for (int k = 0; k < PQ; k++)
+            {
+                float tempC = 0.0f;
+                for (int l = 0; l < C; l++)
+                {
+                    for (int m = 0; m < RS; m++)
+                    {
+                        for (int t = 0; t < RS; t++)
+                        {
+                            tempC += weight[i * C * RS * RS + l * RS * RS + m * RS + t] * input[l * HW * HW + (j + m) * HW + (k + t)];
+                        }
+                    }
+                }
+                if (output[i * PQ * PQ + j * PQ + k] != tempC)
+                {
+                    printf("The error is here. The actual result is %f, should be %f on (%d, %d, %d)\n", output[i * PQ * PQ + j * PQ + k], tempC, i, j, k);
+                    answer = false;
+                }
+            }
+        }
+    }
+
+    return answer;
 }
 
 //!
@@ -535,64 +392,44 @@ bool SampleMNISTAPI::teardown()
 //! \details TensorRT weight files have a simple space delimited format
 //!          [type] [size] <data x size in hex>
 //!
-std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::string &file)
+std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::string &file, float *weight)
 {
-    sample::gLogInfo << "Loading weights: " << file << std::endl;
-
-    // Open weights file
-    std::ifstream input(file, std::ios::binary);
-    ASSERT(input.is_open() && "Unable to load weight file.");
-
-    // Read number of weight blobs
-    int32_t count;
-    input >> count;
-    ASSERT(count > 0 && "Invalid weight map file.");
-
     std::map<std::string, nvinfer1::Weights> weightMap;
-    while (count--)
+
+    for (int i = 0; i < K; i++)
     {
-        nvinfer1::Weights wt{DataType::kFLOAT, nullptr, 0};
-        int type;
-        uint32_t size;
-
-        // Read name and type of blob
-        std::string name;
-        input >> name >> std::dec >> type >> size;
-        wt.type = static_cast<DataType>(type);
-
-        // Load blob
-        if (wt.type == DataType::kFLOAT)
-        {
-            // Use uint32_t to create host memory to avoid additional conversion.
-            auto mem = new samplesCommon::TypedHostMemory<uint32_t, nvinfer1::DataType::kFLOAT>(size);
-            weightsMemory.emplace_back(mem);
-            uint32_t *val = mem->raw();
-            for (uint32_t x = 0; x < size; ++x)
-            {
-                input >> std::hex >> val[x];
-            }
-            wt.values = val;
-        }
-        else if (wt.type == DataType::kHALF)
-        {
-            // HalfMemory's raw type is uint16_t
-            auto mem = new samplesCommon::HalfMemory(size);
-            weightsMemory.emplace_back(mem);
-            auto val = mem->raw();
-            for (uint32_t x = 0; x < size; ++x)
-            {
-                input >> std::hex >> val[x];
-            }
-            wt.values = val;
-        }
-
-        wt.count = size;
-        weightMap[name] = wt;
+        bias[i] = 0.0f;
     }
+
+    Weights wt_c1_bias{DataType::kFLOAT, nullptr, 0};
+    wt_c1_bias.type = DataType::kFLOAT;
+    wt_c1_bias.values = bias;
+    wt_c1_bias.count = K;
+    weightMap["c1_bias"] = wt_c1_bias;
+
+    for (int i = 0; i < K; i++)
+    {
+        for (int t = 0; t < C; t++)
+        {
+            for (int j = 0; j < RS; j++)
+            {
+                for (int k = 0; k < RS; k++)
+                {
+                    weight[i * (C * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100) - 100.0;
+                    // weight[i * (C * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                }
+            }
+        }
+    }
+
+    Weights wt_c1_weight{DataType::kFLOAT, nullptr, 0};
+    wt_c1_weight.type = DataType::kFLOAT;
+    wt_c1_weight.values = weight;
+    wt_c1_weight.count = K * C * RS * RS;
+    weightMap["c1_weight"] = wt_c1_weight;
 
     return weightMap;
 }
-
 //!
 //! \brief Initializes members of the params struct using the command line args
 //!
@@ -614,9 +451,9 @@ SampleMNISTAPIParams initializeSampleParams(const samplesCommon::Args &args)
     params.int8 = args.runInInt8;
     params.fp16 = args.runInFp16;
 
-    params.inputH = 28;
-    params.inputW = 28;
-    params.outputSize = 10;
+    params.inputH = HW;
+    params.inputW = HW;
+    params.outputSize = K * PQ * PQ;
     params.weightsFile = "mnistapi.wts";
     params.mnistMeansProto = "mnist_mean.binaryproto";
 
