@@ -438,8 +438,8 @@ SampleMNISTAPIParams initializeSampleParams(const samplesCommon::Args &args)
     SampleMNISTAPIParams params;
     if (args.dataDirs.empty()) //!< Use default directories if user hasn't provided directory paths
     {
-        params.dataDirs.push_back("data/mnist/");
-        params.dataDirs.push_back("data/samples/mnist/");
+        params.dataDirs.push_back(".");
+        params.dataDirs.push_back(".");
     }
     else //!< Use the data directory provided by the user
     {
@@ -454,8 +454,8 @@ SampleMNISTAPIParams initializeSampleParams(const samplesCommon::Args &args)
     params.inputH = HW;
     params.inputW = HW;
     params.outputSize = K * PQ * PQ;
-    params.weightsFile = "mnistapi.wts";
-    params.mnistMeansProto = "mnist_mean.binaryproto";
+    params.weightsFile = "";
+    params.mnistMeansProto = "";
 
     return params;
 }
@@ -483,18 +483,18 @@ void printHelpInfo()
 int main(int argc, char **argv)
 {
     samplesCommon::Args args;
-    bool argsOK = samplesCommon::parseArgs(args, argc, argv);
-    if (!argsOK)
-    {
-        sample::gLogError << "Invalid arguments" << std::endl;
-        printHelpInfo();
-        return EXIT_FAILURE;
-    }
-    if (args.help)
-    {
-        printHelpInfo();
-        return EXIT_SUCCESS;
-    }
+    // bool argsOK = samplesCommon::parseArgs(args, argc, argv);
+    // if (!argsOK)
+    // {
+    //     sample::gLogError << "Invalid arguments" << std::endl;
+    //     printHelpInfo();
+    //     return EXIT_FAILURE;
+    // }
+    // if (args.help)
+    // {
+    //     printHelpInfo();
+    //     return EXIT_SUCCESS;
+    // }
 
     auto sampleTest = sample::gLogger.defineTest(gSampleName, argc, argv);
 
@@ -508,9 +508,12 @@ int main(int argc, char **argv)
     {
         return sample::gLogger.reportFail(sampleTest);
     }
-    if (!sample.infer())
+    for (int i = 0; i < N; i++)
     {
-        return sample::gLogger.reportFail(sampleTest);
+        if (!sample.infer())
+        {
+            return sample::gLogger.reportFail(sampleTest);
+        }
     }
     if (!sample.teardown())
     {
