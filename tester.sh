@@ -21,7 +21,7 @@ sed -i 's/define DIRECT .*/define DIRECT 0/' $in_file
 sed -i 's/define CONV_SHARED .*/define CONV_SHARED 0/' $in_file
 sed -i 's/define CUDNN .*/define CUDNN 0/' $in_file
 sed -i 's/define DARKNET .*/define DARKNET 0/' $in_file
-sed -i 's/define TENSORRT .*/define TENSORRT 0/' $in_file
+sed -i 's/define TRT .*/define TRT 0/' $in_file
 sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
 
 mkdir -p "metrics"

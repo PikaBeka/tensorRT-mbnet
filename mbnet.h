@@ -1,4 +1,4 @@
-#define images 1 // number of images in batch
+#define images 2 // number of images in batch
 #define BATCH 1
 
 #define input_channels 1
@@ -23,7 +23,7 @@
 #define CUDNN 0
 #define DARKNET 0
 
-#define TRT 1
+#define TRT 0
 
 #define GEMM_GLOBAL 0
 

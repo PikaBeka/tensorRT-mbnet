@@ -1,1 +1,130 @@
-======== Error: application not found.
+==15389== NVPROF is profiling process 15389, command: ./mbnet
+==15389== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
+==15389== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
+==15389== Profiling application: ./mbnet
+==15389== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:    5.58%  1.7981ms         3  599.35us  598.05us  600.67us  void gemv2N_kernel<int, int, float2, float2, float2, int=128, int=8, int=4, int=4, int=1, cublasGemvParams<cublasGemvTensorStridedBatched<float2 const >, cublasGemvTensorStridedBatched<float2>, float2>>(float2 const )
+                    3.16%  1.0178ms         5  203.55us  78.565us  673.96us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=5, int=5, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    2.90%  935.48us         5  187.10us  172.91us  229.68us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=4>, fused::KpqkPtrWriter<float, int=1, int=1, int=4>, float, float, int=5, int=3, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    2.89%  930.39us        16  58.149us  56.515us  60.964us  void op_generic_tensor_kernel<int=3, float, float, float, int=256, cudnnGenericOp_t=0, cudnnNanPropagation_t=0, int=0>(cudnnTensorStruct, float*, cudnnTensorStruct, float const *, cudnnTensorStruct, float const *, float, float, float, cudnnActivationStruct, reducedDivisorArray, int)
+                    2.87%  924.15us        10  92.415us  87.205us  108.33us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=2, int=5, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    2.85%  917.81us         7  131.12us  122.25us  156.17us  void implicit_convolve_sgemm<float, float, int=1024, int=5, int=5, int=3, int=3, int=3, int=1, bool=0, bool=0, bool=1>(int, int, int, float const *, int, float*, float const *, kernel_conv_params, __int64, int, float, float, int, float const *, float const *, bool, int, int)
+                    2.43%  782.19us        10  78.218us  70.564us  98.085us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=2, int=5, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    2.11%  678.28us         4  169.57us  160.07us  195.69us  trt_maxwell_scudnn_128x32_relu_large_nn_v1
+                    2.10%  676.74us         4  169.19us  155.95us  191.92us  trt_maxwell_scudnn_128x128_relu_small_nn_v0
+                    2.09%  674.79us         4  168.70us  156.97us  203.53us  trt_maxwell_scudnn_128x128_relu_large_nn_v0
+                    2.09%  674.12us         4  168.53us  160.33us  192.01us  trt_maxwell_scudnn_128x128_relu_large_nn_v1
+                    2.07%  665.96us         4  166.49us  157.83us  191.60us  trt_maxwell_scudnn_128x128_relu_medium_nn_v0
+                    2.04%  658.02us         4  164.51us  155.43us  188.43us  trt_maxwell_scudnn_128x128_relu_medium_nn_v1
+                    1.99%  642.15us         4  160.54us  151.37us  186.83us  trt_maxwell_scudnn_128x128_relu_interior_nn_v0
+                    1.98%  637.45us         4  159.36us  151.63us  181.61us  trt_maxwell_scudnn_128x128_relu_interior_nn_v1
+                    1.97%  635.59us         4  158.90us  151.37us  180.75us  trt_maxwell_scudnn_128x128_relu_small_nn_v1
+                    1.97%  633.64us         4  158.41us  149.29us  184.49us  trt_maxwell_scudnn_128x32_relu_medium_nn_v1
+                    1.96%  630.66us         5  126.13us  100.68us  187.53us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=4>, fused::KpqkPtrWriter<float, int=1, int=1, int=4>, float, float, int=5, int=3, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.95%  628.39us        10  62.838us  58.500us  71.044us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=4, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.88%  605.03us         5  121.01us  115.21us  124.52us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=5, int=5, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.86%  599.23us         4  149.81us  142.89us  169.77us  trt_maxwell_scudnn_128x64_relu_large_nn_v0
+                    1.85%  595.71us         3  198.57us  194.41us  205.93us  void cudnn::cnn::im2col4d_kernel<float, long>(cudnn::cnn::im2col4d_params, cudnnConvolutionStruct, cudnnTensorStruct, float const *, cudnnTensorStruct*)
+                    1.84%  593.79us         4  148.45us  141.93us  167.37us  trt_maxwell_scudnn_128x64_relu_medium_nn_v0
+                    1.79%  577.02us         4  144.26us  136.39us  165.99us  trt_maxwell_scudnn_128x64_relu_small_nn_v0
+                    1.77%  571.62us         3  190.54us  187.11us  197.07us  void gemv2T_kernel_val<int, int, float2, float2, float2, int=128, int=16, int=2, int=2, bool=0, cublasGemvParams<cublasGemvTensorStridedBatched<float2 const >, cublasGemvTensorStridedBatched<float2>, float2>>(float2 const , float2, float2)
+                    1.77%  570.28us        98  5.8190us     992ns  62.788us  [CUDA memset]
+                    1.72%  554.69us         4  138.67us  131.46us  158.35us  trt_maxwell_scudnn_128x64_relu_interior_nn_v0
+                    1.71%  550.59us         4  137.65us  128.17us  164.33us  trt_maxwell_scudnn_128x32_relu_small_nn_v1
+                    1.70%  546.43us         4  136.61us  128.49us  160.65us  trt_maxwell_scudnn_128x64_relu_large_nn_v1
+                    1.68%  542.75us         3  180.92us  176.17us  185.93us  void explicit_convolve_sgemm<float, int, int=128, int=6, int=7, int=3, int=3, int=5, int=0, bool=0>(int, int, int, float const *, int, float const *, int, float*, kernel_conv_params, __int64, int, __int64, int, float, float, int, float const *, float const *)
+                    1.65%  531.39us         4  132.85us  123.69us  159.05us  trt_maxwell_scudnn_128x32_relu_interior_nn_v1
+                    1.63%  526.62us         5  105.32us  90.853us  130.66us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=3, int=5, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.63%  524.54us         4  131.14us  122.12us  156.36us  trt_maxwell_scudnn_128x64_relu_medium_nn_v1
+                    1.61%  519.55us         4  129.89us  116.42us  170.15us  trt_maxwell_scudnn_128x64_relu_small_nn_v1
+                    1.60%  514.34us       144  3.5710us     800ns  8.6410us  [CUDA memcpy HtoD]
+                    1.51%  485.98us         4  121.50us  112.26us  149.07us  trt_maxwell_scudnn_128x32_relu_medium_nn_v0
+                    1.50%  482.78us         4  120.69us  112.81us  143.69us  trt_maxwell_scudnn_128x64_relu_interior_nn_v1
+                    1.48%  477.40us         4  119.35us  113.19us  136.26us  trt_maxwell_scudnn_128x32_relu_large_nn_v0
+                    1.47%  472.64us         8  59.079us  49.315us  92.198us  void CUTENSOR_NAMESPACE::permutationKernelPLC3<CUTENSOR_NAMESPACE::VectorWrite2DTensorView<unsigned char=0, unsigned char=1, bool=0, unsigned int=4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::VectorRead2DTensorView<unsigned char=1, unsigned char=0, bool=0, unsigned int=4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::ThreadLevelElementwise<CUTENSOR_NAMESPACE::ElementwiseConfig2DCommonCase<CUTENSOR_NAMESPACE::GeneralUnarySmall<float>, CUTENSOR_NAMESPACE::GeneralBinary<float>, int=2, int=64, int=64, int=256, char=4, bool=0, bool=1, bool=1, bool=1, bool=0>, float>, CUTENSOR_NAMESPACE::ElementwiseRuntimePLC3<float, float, float, float>::Params>(unsigned int=4)
+                    1.38%  443.74us         4  110.93us  105.13us  127.53us  trt_maxwell_scudnn_128x32_relu_small_nn_v0
+                    1.36%  438.01us         5  87.601us  79.204us  118.31us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=4, int=5, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.34%  432.22us         5  86.443us  82.501us  100.81us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=5, int=2, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.31%  420.99us         4  105.25us  99.526us  121.77us  trt_maxwell_scudnn_128x32_relu_interior_nn_v0
+                    1.18%  379.03us         7  54.147us  45.603us  62.628us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=3, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.13%  365.56us         5  73.111us  68.484us  87.621us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=2, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    1.05%  338.32us         3  112.77us  109.35us  119.05us  void fft2d_r2c_32x32<float, bool=0, unsigned int=5, bool=1>(float2*, float const *, int, int, int, int, int, int, int, int, int, cudnn::reduced_divisor, bool, int2, int, int)
+                    1.05%  337.17us         6  56.195us  23.521us  91.109us  void fft2d_r2c_16x16<float>(float2*, float const *, int, int, int, int, int, int, int, int)
+                    1.02%  330.10us         5  66.019us  60.964us  84.005us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=6, int=4, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    0.99%  318.71us         5  63.741us  60.803us  69.860us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=2, int=3, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    0.98%  315.63us         5  63.126us  58.243us  79.364us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=5, int=4, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    0.97%  313.21us        48  6.5250us  5.6320us  8.0010us  [CUDA memcpy DtoD]
+                    0.87%  280.66us         5  56.131us  49.443us  78.085us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=3, int=5, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    0.83%  266.70us         5  53.340us  50.403us  63.492us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=4, int=4, int=2, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    0.81%  260.62us         5  52.124us  49.346us  60.324us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=2, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+                    0.73%  234.90us        24  9.7870us  8.9600us  12.352us  void cask_trt::computeOffsetsKernel<bool=0, bool=0>(cask_trt::ComputeOffsetsParams)
+                    0.60%  193.84us         3  64.611us  63.684us  65.603us  void fft2d_r2c_32x32<float, bool=0, unsigned int=1, bool=0>(float2*, float const *, int, int, int, int, int, int, int, int, int, cudnn::reduced_divisor, bool, int2, int, int)
+                    0.53%  170.25us         3  56.749us  53.059us  63.747us  void fft2d_c2r_32x32<float, bool=0, bool=0, unsigned int=1, bool=0, bool=0>(float*, float2 const *, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, bool, float*, float*, int2, int, int)
+                    0.44%  142.22us         3  47.405us  40.226us  61.764us  void fft2d_c2r_16x16<float, bool=0>(float*, float2*, int, int, int, int, int, int, int, int, int, int, float, float, int, float*, float*)
+                    0.24%  77.379us        27  2.8650us  2.2720us  9.7610us  [CUDA memcpy DtoH]
+                    0.22%  71.396us         4  17.849us  16.193us  22.401us  void genericReformat::copyPackedKernel<float, float, bool=1, bool=1, genericReformat::IdentityCoordMapper<int=4>, int=4>(unsigned int, unsigned int, void const *, genericReformat::ArrayN<genericReformat::IdentityCoordMapper<int=4>>, genericReformat::ArrayNWithReducedDivisors<genericReformat::IdentityCoordMapper<int=4>>, genericReformat::ArrayN, int, int, int, float const *, void*, genericReformat::ArrayN, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayN, int, int, int, float const , int=4)
+                    0.16%  49.987us         4  12.496us  10.560us  17.953us  void genericReformat::copyPackedKernel<float, float, bool=1, bool=1, genericReformat::ArrayN<int=4>, int=4>(unsigned int, unsigned int, void const *, genericReformat::ArrayN<genericReformat::ArrayN<int=4>>, genericReformat::ArrayNWithReducedDivisors<genericReformat::ArrayN<int=4>>, void const *, int, int, int, float const *, void*, void const *, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayNWithReducedDivisors, void const *, int, int, int, float const , int=4)
+                    0.15%  46.819us         3  15.606us  14.401us  17.857us  void flip_filter<float, float>(float*, float const *, int, int, int, int)
+      API calls:   25.07%  2.66183s        41  64.923ms  3.2960us  2.65387s  cudaStreamCreateWithFlags
+                   23.03%  2.44588s        42  58.235ms  7.7440us  2.44514s  cudaMemGetInfo
+                   19.77%  2.09940s       299  7.0214ms  29.793us  2.08171s  cudaLaunchKernel
+                   16.05%  1.70405s       242  7.0415ms  1.4400us  1.26999s  cudaFree
+                   14.16%  1.50338s       159  9.4552ms  9.1840us  179.74ms  cuModuleUnload
+                    1.01%  106.82ms       233  458.45us  137.00us  7.3887ms  cudaEventSynchronize
+                    0.30%  31.830ms       191  166.65us  14.433us  1.0587ms  cudaMalloc
+                    0.19%  20.379ms       272  74.923us     833ns  508.56us  cudaMemcpyAsync
+                    0.09%  9.9582ms       510  19.525us  1.6640us  110.37us  cudaEventRecord
+                    0.07%  7.2914ms       233  31.293us  13.633us  260.30us  cudaStreamAddCallback
+                    0.06%  6.0946ms        20  304.73us  44.642us  2.5411ms  cudaMemcpy
+                    0.04%  4.0712ms        98  41.543us  14.593us  228.30us  cudaMemsetAsync
+                    0.03%  2.7529ms         5  550.59us  80.836us  881.64us  cudaHostAlloc
+                    0.03%  2.6898ms        65  41.382us  2.8480us  1.3594ms  cudaStreamSynchronize
+                    0.02%  2.6066ms         5  521.31us  47.106us  903.24us  cudaFreeHost
+                    0.02%  1.7536ms       233  7.5260us  3.7440us  39.618us  cudaEventElapsedTime
+                    0.01%  1.3957ms       466  2.9950us     864ns  95.172us  cudaDeviceGetAttribute
+                    0.01%  873.89us        23  37.995us  29.570us  60.482us  cudaCreateTextureObject
+                    0.01%  799.36us        20  39.968us  26.305us  74.435us  cudaGetDeviceProperties
+                    0.01%  704.83us       568  1.2400us     416ns  47.458us  cuDeviceGetAttribute
+                    0.01%  656.38us       234  2.8050us  1.5360us  21.377us  cudaEventCreateWithFlags
+                    0.01%  553.31us       237  2.3340us  1.3440us  21.025us  cudaEventDestroy
+                    0.00%  487.16us        20  24.357us  3.0720us  410.74us  cudaStreamCreateWithPriority
+                    0.00%  474.87us       527     901ns     480ns  3.5850us  cudaGetLastError
+                    0.00%  447.70us        64  6.9950us  3.4240us  25.377us  cudaStreamDestroy
+                    0.00%  419.54us        35  11.986us  4.5120us  43.330us  cudaDeviceSynchronize
+                    0.00%  277.80us        23  12.078us  8.7360us  22.721us  cudaDestroyTextureObject
+                    0.00%  161.80us        38  4.2570us  1.2170us  21.825us  cudaGetDevice
+                    0.00%  147.56us        60  2.4590us  1.6320us  8.7050us  cudaStreamWaitEvent
+                    0.00%  83.908us         6  13.984us  10.656us  18.561us  cuDeviceTotalMem
+                    0.00%  45.985us         3  15.328us  12.256us  18.817us  cudaStreamCreate
+                    0.00%  28.802us         3  9.6000us  5.7610us  14.528us  cudaEventCreate
+                    0.00%  28.290us         5  5.6580us  5.0890us  6.1760us  cuInit
+                    0.00%  26.048us         5  5.2090us  3.5840us  6.3360us  cudaHostGetDevicePointer
+                    0.00%  23.553us        16  1.4720us     416ns  7.7130us  cudaGetDeviceCount
+                    0.00%  18.816us        23     818ns     608ns  1.4400us  cudaCreateChannelDesc
+                    0.00%  13.985us         8  1.7480us  1.0240us  3.4250us  cuDeviceGetCount
+                    0.00%  13.152us         5  2.6300us  2.0800us  4.3840us  cudaDeviceGetStreamPriorityRange
+                    0.00%  12.864us         5  2.5720us  1.7600us  4.1600us  cuDriverGetVersion
+                    0.00%  11.616us         6  1.9360us  1.6000us  2.4320us  cuDeviceGetName
+                    0.00%  9.4080us         7  1.3440us     864ns  2.2720us  cuDeviceGet
+                    0.00%  7.8400us        12     653ns     384ns  1.2160us  cudaRuntimeGetVersion
+                    0.00%  5.3120us         8     664ns     576ns     960ns  cudaPeekAtLastError
+                    0.00%  4.1600us         6     693ns     544ns     992ns  cuDeviceGetUuid
+                    0.00%  4.0960us         6     682ns     480ns     896ns  cudaDriverGetVersion
+                    0.00%  3.3600us         2  1.6800us  1.5360us  1.8240us  cuDevicePrimaryCtxRelease
+
+==15389== NVTX result:
+==15389==   Thread "<unnamed>" (id = 2026754064)
+==15389==     Domain "TensorRT"
+==15389==       Range "(Unnamed Layer* 0) [Convolution]"
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+          Range:  100.00%  191.78us         2  95.891us  92.483us  99.300us  (Unnamed Layer* 0) [Convolution]
+ GPU activities:  100.00%  124.94us         2  62.468us  62.308us  62.628us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=3, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+      API calls:  100.00%  168.46us         2  84.227us  80.675us  87.780us  cudaLaunchKernel
+
+==15389==       Range "ExecutionContext::execute"
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+          Range:  100.00%  1.8124ms         2  906.18us  297.16us  1.5152ms  ExecutionContext::execute
+ GPU activities:  100.00%  124.94us         2  62.468us  62.308us  62.628us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=3, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
+      API calls:  100.00%  168.46us         2  84.227us  80.675us  87.780us  cudaLaunchKernel
+

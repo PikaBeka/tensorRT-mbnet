@@ -283,6 +283,7 @@ bool SampleMNISTAPI::infer()
     // Verify results
     if (debug && !verifyOutput(buffers, input, weight))
     {
+	printf("Verification failed\n");
         return false;
     }
 
@@ -335,7 +336,7 @@ bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, f
 {
     output = static_cast<float *>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
     bool answer = true;
-    printf("The configuration is %d_%d_%d\n", input_channels, HW, K);
+    //printf("The configuration is %d_%d_%d\n", input_channels, HW, K);
 
     // for (int i = 0; i < K; i++)
     // {
@@ -843,6 +844,8 @@ __global__ void gemm_global_kernel(float matB[K][input_channels * RS * RS], floa
 
 void pass(int argc, char **argv)
 {
+
+#if TRT
     samplesCommon::Args args;
 
     auto sampleTest = sample::gLogger.defineTest(gSampleName, argc, argv);
@@ -854,6 +857,7 @@ void pass(int argc, char **argv)
     sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
 
     sample.build();
+#endif
 
     for (int batch = 0; batch < images; batch++)
     {
@@ -1110,7 +1114,10 @@ int main(int argc, char **argv)
 {
     pass(argc, argv);
 
+#if TRT
+#else
     free(output);
     free(weight);
     free(input);
+#endif
 }
