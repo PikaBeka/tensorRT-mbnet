@@ -32,4 +32,4 @@
 #define CONV_TPB MIN(1024, MAX(K *LIM *LIM, K *RS *RS)) // threads per block (150)
 
 #define UNROLL_TPB MIN(1024, K *RS *RS)
-#define UNROLL_NB ((PQ * PQ * C + UNROLL_TPB) / UNROLL_TPB)
+#define UNROLL_NB ((PQ * PQ * input_channels + UNROLL_TPB) / UNROLL_TPB)
