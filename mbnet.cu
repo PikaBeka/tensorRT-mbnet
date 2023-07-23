@@ -283,7 +283,7 @@ bool SampleMNISTAPI::infer()
     // Verify results
     if (debug && !verifyOutput(buffers, input, weight))
     {
-	printf("Verification failed\n");
+        printf("Verification failed\n");
         return false;
     }
 
@@ -336,7 +336,7 @@ bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, f
 {
     output = static_cast<float *>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
     bool answer = true;
-    //printf("The configuration is %d_%d_%d\n", input_channels, HW, K);
+    // printf("The configuration is %d_%d_%d\n", input_channels, HW, K);
 
     // for (int i = 0; i < K; i++)
     // {
@@ -857,6 +857,12 @@ void pass(int argc, char **argv)
     sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
 
     sample.build();
+#else
+    float *d_input, *d_weight, *d_output;
+
+    cudaMalloc((void **)&d_input, BATCH * input_channels * HW * HW * sizeof(float));
+    cudaMalloc((void **)&d_weight, RS * RS * K * input_channels * sizeof(float));
+    cudaMalloc((void **)&d_output, BATCH * PQ * PQ * K * sizeof(float));
 #endif
 
     for (int batch = 0; batch < images; batch++)
@@ -864,11 +870,6 @@ void pass(int argc, char **argv)
 #if TRT
 #else
         fillWithValues(input, weight);
-        float *d_input, *d_weight, *d_output;
-
-        cudaMalloc((void **)&d_input, BATCH * input_channels * HW * HW * sizeof(float));
-        cudaMalloc((void **)&d_weight, RS * RS * K * input_channels * sizeof(float));
-        cudaMalloc((void **)&d_output, BATCH * PQ * PQ * K * sizeof(float));
 
         cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(d_weight, weight, RS * RS * K * input_channels * sizeof(float), cudaMemcpyHostToDevice);
@@ -1082,7 +1083,6 @@ void pass(int argc, char **argv)
         }
 
 #if TRT
-        sample.teardown();
 #else
         cudaMemcpy(output, d_output, BATCH * PQ * PQ * K * sizeof(float), cudaMemcpyDeviceToHost);
         cudaError_t err = cudaGetLastError();
@@ -1096,18 +1096,21 @@ void pass(int argc, char **argv)
         {
             verification(input, weight, output);
         }
-
         cudnnDestroyTensorDescriptor(input_descriptor);
         cudnnDestroyTensorDescriptor(output_descriptor);
         cudnnDestroyFilterDescriptor(filter_descriptor);
         cudnnDestroyConvolutionDescriptor(convolution_descriptor);
         cudnnDestroy(cudnn);
-
-        cudaFree(d_output);
-        cudaFree(d_weight);
-        cudaFree(d_input);
 #endif
     }
+
+#if TRT
+    sample.teardown();
+#else
+    cudaFree(d_output);
+    cudaFree(d_weight);
+    cudaFree(d_input);
+#endif
 }
 
 int main(int argc, char **argv)
