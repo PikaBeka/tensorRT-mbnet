@@ -23,6 +23,7 @@ sed -i 's/define CUDNN .*/define CUDNN 0/' $in_file
 sed -i 's/define DARKNET .*/define DARKNET 0/' $in_file
 sed -i 's/define TRT .*/define TRT 0/' $in_file
 sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
+sed -i 's/define UNROLL .*/define UNROLL 0/' $in_file
 
 mkdir -p "metrics"
 
@@ -60,6 +61,7 @@ fi
 
 if [[ "${method}" == "unroll_cublass" ]]; then
 	echo 'Running mbnet with unroll_cublass method\n'
+    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
 fi
 
 if [[ "${method}" == "tensorrt" ]]; then
@@ -83,11 +85,6 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     sed -i 's/define HW .*/define HW '${HW[$i]}'/' ${in_file} # change HW
     sed -i 's/define K .*/define K '${K[$i]}'/' ${in_file} # change K
 	/usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w # compile it
-
-	#if [[ "${method}" == "tensorrt" ]]; then
-    #    g++ -std=c++11 -o mbnet -I /usr/local/cuda-10.2/targets/aarch64-linux/include/ -I/usr/local/cuda-10.2/include -L/usr/local/cuda-10.2/targets/aarch64-linux/lib/ S-LeNet-conv/*.cpp S-LeNet-conv/*.cc -lnvinfer -lcuda -lcudart -lnvonnxparser -pthread -lprotobuf -lpthread -w  # compile it
-    #else
-            #fi
 
     if [[ "$is_metrics" = true ]]
     then
