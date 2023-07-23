@@ -1,9 +1,9 @@
 #define images 1 // number of images in batch
 #define BATCH 1
 
-#define input_channels 6
-#define HW 8
-#define K 32
+#define input_channels 1
+#define HW 256
+#define K 6
 
 #define RS 5 // kernel height and width
 #define STRIDE 1

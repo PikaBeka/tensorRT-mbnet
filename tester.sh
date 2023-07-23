@@ -82,7 +82,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     sed -i 's/define input_channels .*/define input_channels '${C[$i]}'/' ${in_file} # change C
     sed -i 's/define HW .*/define HW '${HW[$i]}'/' ${in_file} # change HW
     sed -i 's/define K .*/define K '${K[$i]}'/' ${in_file} # change K
-	/usr/local/cuda-10.2/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w # compile it
+	/usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w # compile it
 
 	#if [[ "${method}" == "tensorrt" ]]; then
     #    g++ -std=c++11 -o mbnet -I /usr/local/cuda-10.2/targets/aarch64-linux/include/ -I/usr/local/cuda-10.2/include -L/usr/local/cuda-10.2/targets/aarch64-linux/lib/ S-LeNet-conv/*.cpp S-LeNet-conv/*.cc -lnvinfer -lcuda -lcudart -lnvonnxparser -pthread -lprotobuf -lpthread -w  # compile it
@@ -92,13 +92,13 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     if [[ "$is_metrics" = true ]]
     then
     #echo 'metrics run'
-        /usr/local/cuda-10.2/bin/nvprof --aggregate-mode on --log-file metrics/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --metrics dram_utilization ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
+        /usr/local/cuda/bin/nvprof --aggregate-mode on --log-file metrics/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --metrics dram_utilization ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
     else
         if [[ "$is_trace" = true ]]
         then
-            /usr/local/cuda-10.2/bin/nvprof --log-file trace/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --print-gpu-trace ./mbnet
+            /usr/local/cuda/bin/nvprof --log-file trace/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --print-gpu-trace ./mbnet
         else
-            /usr/local/cuda-10.2/bin/nvprof --log-file ${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt ./mbnet # stroe nvprof into the txt file 
+            /usr/local/cuda/bin/nvprof --log-file ${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt ./mbnet # stroe nvprof into the txt file 
         fi
     fi
 done
