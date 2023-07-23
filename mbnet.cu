@@ -863,18 +863,8 @@ void pass(int argc, char **argv)
     cudaMalloc((void **)&d_input, BATCH * input_channels * HW * HW * sizeof(float));
     cudaMalloc((void **)&d_weight, RS * RS * K * input_channels * sizeof(float));
     cudaMalloc((void **)&d_output, BATCH * PQ * PQ * K * sizeof(float));
-#endif
-
-    for (int batch = 0; batch < images; batch++)
-    {
-#if TRT
-#else
-        fillWithValues(input, weight);
-
-        cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_weight, weight, RS * RS * K * input_channels * sizeof(float), cudaMemcpyHostToDevice);
-
-        cudnnHandle_t cudnn;
+#if CUDNN
+    cudnnHandle_t cudnn;
         CHECK_CUDNN(cudnnCreate(&cudnn));
 
         // Create input tensor
@@ -932,7 +922,18 @@ void pass(int argc, char **argv)
                                                height,
                                                width));
 #endif
-        {
+#endif
+
+    for (int batch = 0; batch < images; batch++)
+    {
+#if TRT
+#else
+        fillWithValues(input, weight);
+
+        cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_weight, weight, RS * RS * K * input_channels * sizeof(float), cudaMemcpyHostToDevice);
+#endif
+
 #if ARRAY_NAIVE
             int threads = min(64, HW * HW);
             int total = K * (PQ * PQ);
@@ -1080,7 +1081,6 @@ void pass(int argc, char **argv)
             cudaFree(gemm_B);
             cudaFree(gemm_C);
 #endif
-        }
 
 #if TRT
 #else
@@ -1096,11 +1096,6 @@ void pass(int argc, char **argv)
         {
             verification(input, weight, output);
         }
-        cudnnDestroyTensorDescriptor(input_descriptor);
-        cudnnDestroyTensorDescriptor(output_descriptor);
-        cudnnDestroyFilterDescriptor(filter_descriptor);
-        cudnnDestroyConvolutionDescriptor(convolution_descriptor);
-        cudnnDestroy(cudnn);
 #endif
     }
 
@@ -1110,6 +1105,14 @@ void pass(int argc, char **argv)
     cudaFree(d_output);
     cudaFree(d_weight);
     cudaFree(d_input);
+
+#if CUDNN
+	cudnnDestroyTensorDescriptor(input_descriptor);
+        cudnnDestroyTensorDescriptor(output_descriptor);
+        cudnnDestroyFilterDescriptor(filter_descriptor);
+        cudnnDestroyConvolutionDescriptor(convolution_descriptor);
+        cudnnDestroy(cudnn);
+#endif
 #endif
 }
 

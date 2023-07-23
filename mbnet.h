@@ -2,7 +2,7 @@
 #define BATCH 1
 
 #define input_channels 1
-#define HW 400
+#define HW 32
 #define K 6
 
 #define RS 5 // kernel height and width
@@ -20,7 +20,7 @@
 #define DIRECT 0
 #define CONV_SHARED 0
 
-#define CUDNN 0
+#define CUDNN 1
 #define DARKNET 0
 
 #define TRT 0
