@@ -63,7 +63,7 @@ if [[ "${method}" == "unroll_cublass" ]]; then
 fi
 
 if [[ "${method}" == "tensorrt" ]]; then
-	sed -i 's/define TENSORRT .*/define TENSORRT 1/' $in_file
+	sed -i 's/define TRT .*/define TRT 1/' $in_file
 	echo 'Running mbnet with tenssort method\n'
 fi
 
