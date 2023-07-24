@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(array_naive array_tiling direct_shared unroll_cublass tenssort cudnn cudnn_opt) # folder names created, output path for created txt files
+out_path=(array_naive array_tiling direct_shared unroll_cublass unroll_global tenssort cudnn cudnn_opt) # folder names created, output path for created txt files
 
 # configuratin files in the format (C, HW, K)
 C=(1 1 1 1 1 1 1 1 1 1 3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32) # 30
@@ -34,7 +34,7 @@ do
     esac
 done
 
-if [ "${method}" != "array_naive" ] && [ "${method}" != "array_tiling" ] && [ "${method}" != "direct_shared" ] && [ "${method}" != "unroll_cublass" ] && [ "${method}" != "tensorrt" ] && [ "${method}" != "cudnn" ]; then
+if [ "${method}" != "array_naive" ] && [ "${method}" != "array_tiling" ] && [ "${method}" != "direct_shared" ] && [ "${method}" != "unroll_cublass" ] && [ "${method}" != "unroll_global" ] && [ "${method}" != "tensorrt" ] && [ "${method}" != "cudnn" ] && [ "${method}" != "cudnn_opt" ]; then
     echo "ERROR: Please supply one of the methods: array_naive, array_tiling, direct_shared, unroll_cublass, tensorrt, cudnn"
     exit
 fi
@@ -64,6 +64,12 @@ if [[ "${method}" == "unroll_cublass" ]]; then
     sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
 fi
 
+if [[ "${method}" == "unroll_global" ]]; then
+	echo 'Running mbnet with unroll_global method\n'
+    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+	sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 1/' $in_file
+fi
+
 if [[ "${method}" == "tensorrt" ]]; then
 	sed -i 's/define TRT .*/define TRT 1/' $in_file
 	echo 'Running mbnet with tenssort method\n'
@@ -75,7 +81,7 @@ if [[ "${method}" == "cudnn" ]]; then
 fi
 
 if [[ "${method}" == "cudnn_opt" ]]; then
-	echo 'Running mbnet with cudnn method\n'
+	echo 'Running mbnet with cudnn optimized method\n'
     sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
 	sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
 fi

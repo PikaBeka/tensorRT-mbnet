@@ -501,8 +501,8 @@ void fillWithValues(float *input, float *weight)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[b * input_channels * HW * HW + i * HW * HW + j * HW + k] = (float)(rand() % 100) - 100.0;
-                    // input[i * HW * HW + j * HW + k] = 1.0f;
+                    input[i * HW * HW + j * HW + k] = (float)(rand() % 100);
+                    //input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
         }
@@ -516,8 +516,8 @@ void fillWithValues(float *input, float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100) - 100.0;
-                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100)	;
+                    //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -546,7 +546,7 @@ void verification(float *input, float *weight, float *output)
                             }
                         }
                     }
-                    if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > max(0.01 * tempC, 100.0))
+                    if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 1)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         exit(-1);
@@ -907,6 +907,15 @@ void pass(int argc, char **argv)
                                            height,
                                            width));
 #endif
+
+#if UNROLL
+        float *im2col_A, *gemm_B, *gemm_C;
+
+        cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
+        cudaMalloc(&gemm_B, sizeof(float) * K * input_channels * RS * RS);
+        cudaMalloc(&gemm_C, sizeof(float) * PQ * PQ * K);
+#endif
+
 #endif
 
     for (int batch = 0; batch < images; batch++)
@@ -951,6 +960,7 @@ void pass(int argc, char **argv)
         size_t free_memory, total_memory;
         int requested_algo_count = 10, returned_algo_count = 0;
         float min_time = 1000000; // 1000 sec
+	cudnnConvolutionFwdAlgo_t convolution_algorithm;
 
         // FWD
         cudnnConvolutionFwdAlgoPerf_t conv_fwd_results[100];
@@ -981,7 +991,7 @@ void pass(int argc, char **argv)
             }
         }
 #else
-        cudnnConvolutionFwdAlgo_t convolution_algorithm = CUDNN_CONVOLUTION_FWD_ALGO_GEMM;
+        convolution_algorithm = CUDNN_CONVOLUTION_FWD_ALGO_GEMM;
 #endif
 
         // Allocate memory for workspace
@@ -1024,11 +1034,6 @@ void pass(int argc, char **argv)
 #if UNROLL
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
-        float *im2col_A, *gemm_B, *gemm_C;
-
-        cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
-        cudaMalloc(&gemm_B, sizeof(float) * K * input_channels * RS * RS);
-        cudaMalloc(&gemm_C, sizeof(float) * PQ * PQ * K);
         im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
                                                                                      (float *)d_input,         // data_im,
                                                                                      HW,                       // height,
@@ -1068,9 +1073,6 @@ void pass(int argc, char **argv)
         cudaError_t status = (cudaError_t)cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
                                                       n, m, k, &alpha, b, n, a, k, &beta, c, n);
 #endif
-        cudaFree(im2col_A);
-        cudaFree(gemm_B);
-        cudaFree(gemm_C);
 #endif
 
 #if TRT
@@ -1085,21 +1087,25 @@ void pass(int argc, char **argv)
 #endif
     }
 
+#if TRT
+    sample.teardown();
+#else
     if (debug)
     {
         verification(input, weight, output);
     }
-
-#if TRT
-    sample.teardown();
-#else
-
 #if CUDNN
     cudnnDestroyTensorDescriptor(input_descriptor);
     cudnnDestroyTensorDescriptor(output_descriptor);
     cudnnDestroyFilterDescriptor(filter_descriptor);
     cudnnDestroyConvolutionDescriptor(convolution_descriptor);
     cudnnDestroy(cudnn);
+#endif
+
+#if UNROLL
+	cudaFree(im2col_A);
+        cudaFree(gemm_B);
+        cudaFree(gemm_C);
 #endif
 
     cudaFree(d_output);

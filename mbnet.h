@@ -1,8 +1,8 @@
-#define images 2 // number of images in batch
+#define images 1 // number of images in batch
 #define BATCH 1
 
 #define input_channels 1
-#define HW 320
+#define HW 400
 #define K 6
 
 #define RS 5 // kernel height and width
@@ -17,15 +17,15 @@
 
 #define ARRAY_TILING 0
 
-#define DIRECT 1
-#define CONV_SHARED 1
+#define DIRECT 0
+#define CONV_SHARED 0
 
 #define CUDNN 0
 #define DARKNET 0
 
 #define TRT 0
 
-#define UNROLL 0
+#define UNROLL 1
 #define GEMM_GLOBAL 0
 
 #define GRID ((PQ + LIM - 1) / LIM)                     // (37)
