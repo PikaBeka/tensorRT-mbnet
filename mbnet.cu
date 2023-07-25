@@ -502,7 +502,7 @@ void fillWithValues(float *input, float *weight)
                 for (int k = 0; k < HW; k++)
                 {
                     input[i * HW * HW + j * HW + k] = (float)(rand() % 100);
-                    //input[i * HW * HW + j * HW + k] = 1.0f;
+                    // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
         }
@@ -516,8 +516,8 @@ void fillWithValues(float *input, float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100)	;
-                    //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
+                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -909,11 +909,11 @@ void pass(int argc, char **argv)
 #endif
 
 #if UNROLL
-        float *im2col_A, *gemm_B, *gemm_C;
+    float *im2col_A, *gemm_B, *gemm_C;
 
-        cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
-        cudaMalloc(&gemm_B, sizeof(float) * K * input_channels * RS * RS);
-        cudaMalloc(&gemm_C, sizeof(float) * PQ * PQ * K);
+    cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
+    cudaMalloc(&gemm_B, sizeof(float) * K * input_channels * RS * RS);
+    cudaMalloc(&gemm_C, sizeof(float) * PQ * PQ * K);
 #endif
 
 #endif
@@ -960,7 +960,7 @@ void pass(int argc, char **argv)
         size_t free_memory, total_memory;
         int requested_algo_count = 10, returned_algo_count = 0;
         float min_time = 1000000; // 1000 sec
-	cudnnConvolutionFwdAlgo_t convolution_algorithm;
+        cudnnConvolutionFwdAlgo_t convolution_algorithm;
 
         // FWD
         cudnnConvolutionFwdAlgoPerf_t conv_fwd_results[100];
@@ -1070,8 +1070,27 @@ void pass(int argc, char **argv)
         // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
         const float alpha = 1, beta = 0;
         cublasHandle_t handle = blas_handle();
-        cudaError_t status = (cudaError_t)cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
-                                                      n, m, k, &alpha, b, n, a, k, &beta, c, n);
+        cudaError_t status = (cudaError_t)cublasSgemm(
+            handle,
+            CUBLAS_OP_N,
+            CUBLAS_OP_N,
+            n,
+            m,
+            k,
+            &alpha,
+            b,
+            n,
+            a,
+            k,
+            &beta,
+            c,
+            n);
+
+        if (status != cudaSuccess)
+        {
+            printf("The error is %d", status);
+            return;
+        }
 #endif
 #endif
 
@@ -1103,9 +1122,9 @@ void pass(int argc, char **argv)
 #endif
 
 #if UNROLL
-	cudaFree(im2col_A);
-        cudaFree(gemm_B);
-        cudaFree(gemm_C);
+    cudaFree(im2col_A);
+    cudaFree(gemm_B);
+    cudaFree(gemm_C);
 #endif
 
     cudaFree(d_output);
