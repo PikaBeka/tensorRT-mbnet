@@ -419,7 +419,7 @@ std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100) - 100.0;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
                     // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
@@ -485,11 +485,7 @@ void printHelpInfo()
 }
 #endif
 
-#if TRT
-#else
-//--------------------------------------------------------------------------------------Auxilory functions---------------------------------------------------------------------------------------------------
-/*Function to fill input and weight matrix with random values*/
-void fillWithValues(float *input, float *weight)
+void fillInputWithValues(float *input)
 {
     srand(time(0));
 
@@ -502,11 +498,20 @@ void fillWithValues(float *input, float *weight)
                 for (int k = 0; k < HW; k++)
                 {
                     input[i * HW * HW + j * HW + k] = (float)(rand() % 100);
-                    // input[i * HW * HW + j * HW + k] = 1.0f;
+                    //input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
         }
     }
+}
+
+#if TRT
+#else
+//--------------------------------------------------------------------------------------Auxilory functions---------------------------------------------------------------------------------------------------
+/*Function to fill input and weight matrix with random values*/
+void fillWeightWithValues(float *weight)
+{
+    srand(time(0));
 
     for (int i = 0; i < K; i++)
     {
@@ -516,8 +521,8 @@ void fillWithValues(float *input, float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
-                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                     weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
+                    //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -549,6 +554,7 @@ void verification(float *input, float *weight, float *output)
                     if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 1)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
+			printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
                         exit(-1);
                     }
                 }
@@ -833,16 +839,17 @@ void pass(int argc, char **argv)
 #if TRT
     samplesCommon::Args args;
 
-    auto sampleTest = sample::gLogger.defineTest(gSampleName, argc, argv);
+    //auto sampleTest = sample::gLogger.defineTest(gSampleName, argc, argv);
 
-    sample::gLogger.reportTestStart(sampleTest);
+    //sample::gLogger.reportTestStart(sampleTest);
 
     SampleMNISTAPI sample(initializeSampleParams(args));
 
-    sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
+    //sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
 
     sample.build();
 #else
+    fillWeightWithValues(weight);
     float *d_input, *d_weight, *d_output;
 
     cudaMalloc((void **)&d_input, BATCH * input_channels * HW * HW * sizeof(float));
@@ -914,16 +921,17 @@ void pass(int argc, char **argv)
     cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
     cudaMalloc(&gemm_B, sizeof(float) * K * input_channels * RS * RS);
     cudaMalloc(&gemm_C, sizeof(float) * PQ * PQ * K);
+
+    cublasHandle_t handle = blas_handle();
 #endif
 
 #endif
 
     for (int batch = 0; batch < images; batch++)
     {
+	fillInputWithValues(input);
 #if TRT
 #else
-        fillWithValues(input, weight);
-
         cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(d_weight, weight, RS * RS * K * input_channels * sizeof(float), cudaMemcpyHostToDevice);
 #endif
@@ -955,12 +963,11 @@ void pass(int argc, char **argv)
 #endif
 
 #if CUDNN
-
+	cudnnConvolutionFwdAlgo_t convolution_algorithm;
 #if DARKNET
         size_t free_memory, total_memory;
         int requested_algo_count = 10, returned_algo_count = 0;
         float min_time = 1000000; // 1000 sec
-        cudnnConvolutionFwdAlgo_t convolution_algorithm;
 
         // FWD
         cudnnConvolutionFwdAlgoPerf_t conv_fwd_results[100];
@@ -1045,13 +1052,15 @@ void pass(int argc, char **argv)
                                                                                      PQ,                       // width_col,
                                                                                      (float *)im2col_A);       // data_col);
 
-        // printf("Verifying im2col_A: ");
-        // float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
-        // cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
-        // verify_im2col(verification, 1.0f);
+        //printf("Verifying im2col_A: ");
+        //float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
+        //cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
+        //verify_im2col(verification, 1.0f);
 
         ker2row_kernel<<<K, input_channels * RS * RS>>>((float(*)[input_channels * RS * RS]) gemm_B,
                                                         (float(*)[input_channels][RS][RS])d_weight);
+	//cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
+        //verify_im2col(verification, 1.0f);
 
 #if GEMM_GLOBAL
         int total = K * PQ * PQ;
@@ -1069,7 +1078,6 @@ void pass(int argc, char **argv)
 
         // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
         const float alpha = 1, beta = 0;
-        cublasHandle_t handle = blas_handle();
         cudaError_t status = (cudaError_t)cublasSgemm(
             handle,
             CUBLAS_OP_N,
@@ -1092,6 +1100,7 @@ void pass(int argc, char **argv)
             return;
         }
 #endif
+
 #endif
 
 #if TRT
