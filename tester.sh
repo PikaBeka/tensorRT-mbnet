@@ -1,6 +1,9 @@
 #!/bin/bash
 
-out_path=(array_naive array_tiling direct_shared unroll_cublass unroll_global tenssort cudnn cudnn_opt) # folder names created, output path for created txt files
+out_path=(direct_shared unroll_cublass tenssort cudnn cudnn_opt) # folder names created, output path for created txt files
+
+metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_warp gld_efficiency gst_efficiency shared_efficiency shared_utilization
+           l2_utilization global_hit_rate tex_cache_hit_rate tex_utilization ipc inst_issued inst_executed issue_slot_utilization dram_utilization)
 
 # configuratin files in the format (C, HW, K)
 C=(1 1 1 1 1 1 1 1 1 1 3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32) # 30
@@ -30,7 +33,8 @@ mkdir -p "metrics"
 while getopts m: flag
 do
     case "${flag}" in
-        m) method="${OPTARG}";;
+        method) method="${OPTARG}";;
+        metric) metric="${OPTARG}";;
     esac
 done
 
@@ -40,8 +44,17 @@ if [ "${method}" != "array_naive" ] && [ "${method}" != "array_tiling" ] && [ "$
 fi
 
 mkdir -p "${method}"
-mkdir -p "metrics/${method}"
 mkdir -p "trace/${method}"
+
+for i in ${!metrics[@]}; do
+    for j in ${!out_path[@]}; do
+        mkdir -p "metrics/${metrics[$i]}/${out_path[$j]}"
+    done
+done
+
+if [[ "${metric}" != "None" ]]; then
+    is_metrics=true
+fi
 
 if [[ "${method}" == "array_naive" ]]; then
 	echo 'Running mbnet with array_naive method\n'
@@ -95,7 +108,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     if [[ "$is_metrics" = true ]]
     then
     #echo 'metrics run'
-        /usr/local/cuda/bin/nvprof --aggregate-mode on --log-file metrics/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --metrics dram_utilization ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
+        /usr/local/cuda/bin/nvprof --aggregate-mode on --log-file metrics/${metric}/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --metrics ${metric} ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
     else
         if [[ "$is_trace" = true ]]
         then
