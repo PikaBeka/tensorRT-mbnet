@@ -20,10 +20,10 @@
 #define DIRECT 0
 #define CONV_SHARED 0
 
-#define CUDNN 1
-#define DARKNET 1
+#define CUDNN 0
+#define DARKNET 0
 
-#define TRT 0
+#define TRT 1
 
 #define UNROLL 0
 #define GEMM_GLOBAL 0
