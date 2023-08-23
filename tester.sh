@@ -10,6 +10,11 @@ C=(1 1 1 1 1 1 1 1 1 1 3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32) # 30
 HW=(256 400 320 256 128 32 256 64 256 64 150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8) # 30
 K=(3 6 6 6 6 6 9 9 12 12 16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64) # 30
 
+#C=(3 96 256 384 384)
+#HW=(64 26 12 12 12)
+#K=(96 256 384 384 256)
+#RS=(11 5 3 3 3)
+
 #input file to change macro define
 in_file=mbnet.h
 
@@ -103,13 +108,14 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     sed -i 's/define input_channels .*/define input_channels '${C[$i]}'/' ${in_file} # change C
     sed -i 's/define HW .*/define HW '${HW[$i]}'/' ${in_file} # change HW
     sed -i 's/define K .*/define K '${K[$i]}'/' ${in_file} # change K
-	/usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w # compile it
-
+    #sed -i 's/define RS .*/define RS '${RS[$i]}'/' ${in_file} # change RS
+		
     if [[ "$is_metrics" = true ]]
     then
     #echo 'metrics run'
         /usr/local/cuda/bin/nvprof --aggregate-mode on --log-file metrics/${metric}/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --metrics ${metric} ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
     else
+	/usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w
         if [[ "$is_trace" = true ]]
         then
             /usr/local/cuda/bin/nvprof --log-file trace/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --print-gpu-trace ./mbnet

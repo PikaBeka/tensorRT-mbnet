@@ -52,13 +52,13 @@ float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
 int debug = 1;
 
-double buffManager = 0;
-double process = 0;
-double ItD = 0;
-double OtH = 0;
-double exec = 0;
+//double buffManager = 0;
+//double process = 0;
+//double ItD = 0;
+//double OtH = 0;
+//double exec = 0;
 
-clock_t start, end;
+//clock_t start, end;
 
 #if TRT
 //------------------------------------------------------------------------------------------TensorRT--------------------------------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
 
     // Add convolution layer with 20 outputs and a 5x5 filter.
     IConvolutionLayer *conv1 = network->addConvolutionNd(
-        *data, K, Dims{2, {5, 5}}, mWeightMap["c1_weight"], mWeightMap["c1_bias"]);
+        *data, K, Dims{2, {RS, RS}}, mWeightMap["c1_weight"], mWeightMap["c1_bias"]);
     conv1->setStride(DimsHW{1, 1});
     conv1->setPadding(DimsHW{0, 0});
     ASSERT(conv1);
@@ -264,7 +264,7 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
 bool SampleMNISTAPI::infer()
 {
     // Create RAII buffer manager object
-    start = clock();
+    //start = clock();
     samplesCommon::BufferManager buffers(mEngine);
 
     auto context = SampleUniquePtr<nvinfer1::IExecutionContext>(mEngine->createExecutionContext());
@@ -272,39 +272,39 @@ bool SampleMNISTAPI::infer()
     {
         return false;
     }
-    end = clock();
-    buffManager += ((double)(end - start)) / CLOCKS_PER_SEC;
+    //end = clock();
+    //buffManager += ((double)(end - start)) / CLOCKS_PER_SEC;
 
     // Read the input data into the managed buffers
-    start = clock();
+    //start = clock();
     ASSERT(mParams.inputTensorNames.size() == 1);
     if (!processInput(buffers, input))
     {
         return false;
     }
-    end = clock();
-    process += ((double)(end - start)) / CLOCKS_PER_SEC;
+    //end = clock();
+    //process += ((double)(end - start)) / CLOCKS_PER_SEC;
 
     // Memcpy from host input buffers to device input buffers
-    start = clock();
+    //start = clock();
     buffers.copyInputToDevice();
-    end = clock();
-    ItD += ((double)(end - start)) / CLOCKS_PER_SEC;
+    //end = clock();
+    //ItD += ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    start = clock();
+    //start = clock();
     bool status = context->executeV2(buffers.getDeviceBindings().data());
     if (!status)
     {
         return false;
     }
-    end = clock();
-    exec += ((double)(end - start)) / CLOCKS_PER_SEC;
+    //end = clock();
+    //exec += ((double)(end - start)) / CLOCKS_PER_SEC;
 
     // Memcpy from device output buffers to host output buffers
-    start = clock();
+    //start = clock();
     buffers.copyOutputToHost();
-    end = clock();
-    OtH += ((double)(end - start)) / CLOCKS_PER_SEC;
+    //end = clock();
+    //OtH += ((double)(end - start)) / CLOCKS_PER_SEC;
 
     // Verify results
     if (debug && !verifyOutput(buffers, input, weight))
@@ -880,6 +880,8 @@ void pass(int argc, char **argv)
     cudaMalloc((void **)&d_input, BATCH * input_channels * HW * HW * sizeof(float));
     cudaMalloc((void **)&d_weight, RS * RS * K * input_channels * sizeof(float));
     cudaMalloc((void **)&d_output, BATCH * PQ * PQ * K * sizeof(float));
+
+    cudaMemcpy(d_weight, weight, RS * RS * K * input_channels * sizeof(float), cudaMemcpyHostToDevice);
 #if CUDNN
     cudnnHandle_t cudnn;
     CHECK_CUDNN(cudnnCreate(&cudnn));
@@ -958,7 +960,7 @@ void pass(int argc, char **argv)
 #if TRT
 #else
         cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_weight, weight, RS * RS * K * input_channels * sizeof(float), cudaMemcpyHostToDevice);
+        
 #endif
 
 #if ARRAY_NAIVE
@@ -1170,11 +1172,11 @@ void pass(int argc, char **argv)
 int main(int argc, char **argv)
 {
     pass(argc, argv);
-    printf("Creating buffer Manager %f seconds\n",buffManager);
-    printf("Processing input %f seconds\n",process);
-    printf("Copying Input to Device %f seconds\n",ItD);
-    printf("Copying Output to Host %f seconds\n",OtH);
-    printf("Executing %f seconds\n",exec);
+    //printf("Creating buffer Manager %f seconds\n",buffManager);
+    //printf("Processing input %f seconds\n",process);
+    //printf("Copying Input to Device %f seconds\n",ItD);
+    //printf("Copying Output to Host %f seconds\n",OtH);
+    //printf("Executing %f seconds\n",exec);
 #if TRT
 #else
     free(output);
