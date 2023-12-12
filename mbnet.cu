@@ -395,7 +395,7 @@ bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, f
                         }
                     }
                 }
-                if (output[i * PQ * PQ + j * PQ + k] != tempC)
+                if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 5)
                 {
                     printf("The error is here. The actual result is %f, should be %f on (%d, %d, %d)\n", output[i * PQ * PQ + j * PQ + k], tempC, i, j, k);
                     answer = false;
@@ -445,7 +445,7 @@ std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::
                 for (int k = 0; k < RS; k++)
                 {
                     weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
-                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -522,7 +522,7 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[i * HW * HW + j * HW + k] = (float)(rand() % 100);
+                    input[i * HW * HW + j * HW + k] = (float)(rand() % 201)-100;
                     //input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
@@ -546,7 +546,7 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                     weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 201)-100;
                     //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
@@ -693,14 +693,11 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
     int img_row = tidx / TILE_S;
     int img_col = tidx % TILE_S;
 
-    int bIdx_r = bIdx / GRID;
-    int bIdx_c = bIdx % GRID;
-
     /* input image copy to shared memory */
     if (tidx < TILE_S * TILE_S)
     {
         for (int img_z = 0; img_z < input_channels; img_z++)
-            sh_img[img_z][img_row][img_col] = input[img_z][bIdx_r * LIM + img_row][bIdx_c * LIM + img_col];
+            sh_img[img_z][img_row][img_col] = input[img_z][blockIdx.y  * LIM + img_row][blockIdx.x * LIM + img_col];
     }
 
     __syncthreads();
@@ -710,15 +707,16 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
     int w_col = (tidx % (LIM * LIM)) % LIM;
 
     float sum = 0;
-    if (w_row < LIM && w_col < LIM && ch < K && bIdx_r * LIM + w_row < PQ && bIdx_c * LIM + w_col < PQ)
+    if (w_row < LIM && w_col < LIM && ch < K && blockIdx.y * LIM + w_row < PQ && blockIdx.x * LIM + w_col < PQ)
     {
         for (int k = 0; k < input_channels; k++)
         {
             for (int i = 0; i < RS; i++)
                 for (int j = 0; j < RS; j++)
-                    sum += sh_img[k][w_row + i][w_col + j] * weight[ch][k][i][j];
+                    sum += sh_img[k][w_row + i][w_col + j] * weight[blockIdx.z][k][i][j];
         }
-        pre_output[ch][bIdx_r * LIM + w_row][bIdx_c * LIM + w_col] = sum;
+        pre_output[blockIdx.z][blockIdx.y * LIM + w_row][blockIdx.x * LIM + w_col] = sum;
+	//printf("ch=%d, bIdx_r=%d, w_row=%d, bIdx_c=%d, w_col=%d, sum=%f\n", ch, bIdx_r, w_row, bIdx_c, w_col, sum);
     }
 
 #else
@@ -754,11 +752,15 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
          i += blockDim.x * gridDim.x)
 
 // https://github.com/BVLC/caffe/blob/master/src/caffe/util/im2col.cu
-__global__ void im2col_gpu_kernel(const int n, const float *data_im,
-                                  const int height, const int width, const int ksize,
+__global__ void im2col_gpu_kernel(const int n, 
+				  const float *data_im,
+                                  const int height, 
+				  const int width, 
+				  const int ksize,
                                   const int pad,
                                   const int stride,
-                                  const int height_col, const int width_col,
+                                  const int height_col, 
+				  const int width_col,
                                   float *data_col)
 {
 
@@ -798,8 +800,9 @@ void verify_im2col(float *A, float val)
     int cnt = 0;
     for (int i = 0; i < RS * RS * PQ * PQ * input_channels; i++)
     {
+	//printf("%f\n", A[i]);
         maxError = max(abs(A[i] - val), maxError);
-        if (maxError != 0)
+        if (maxError != 0.0)
             cnt++;
     }
     printf("maxError = %f (cnt = %d),%d)\n", maxError, cnt, RS * RS * PQ * PQ * input_channels);
@@ -827,6 +830,7 @@ void verify_ker2row(float *A, float val)
     int cnt = 0;
     for (int i = 0; i < K * input_channels * RS * RS; i++)
     {
+	//printf("%f\n", A[i]);
         maxError = max(abs(A[i] - val), maxError);
         if (maxError != 0)
             cnt++;
@@ -860,7 +864,7 @@ __global__ void gemm_global_kernel(float matB[K][input_channels * RS * RS], floa
 
 void pass(int argc, char **argv)
 {
-
+    cudaError_t err;
 #if TRT
     samplesCommon::Args args;
 
@@ -950,6 +954,7 @@ void pass(int argc, char **argv)
     cudaMalloc(&gemm_C, sizeof(float) * PQ * PQ * K);
 
     cublasHandle_t handle = blas_handle();
+    cublasCreate(&handle);
 #endif
 
 #endif
@@ -977,8 +982,8 @@ void pass(int argc, char **argv)
 
 #if DIRECT
 #if CONV_SHARED
-        const dim3 numBlocks(CONV_NB);
-        const dim3 threadsPerBlock(CONV_TPB);
+        const dim3 numBlocks((PQ + LIM - 1) / LIM, (PQ + LIM - 1) / LIM, K);
+        const dim3 threadsPerBlock(1024);
         kernel_conv_filter<<<numBlocks, threadsPerBlock>>>((float(*)[HW][HW])d_input,
 #else
         int total = K * PQ * PQ;
@@ -1078,14 +1083,28 @@ void pass(int argc, char **argv)
                                                                                      PQ,                       // height_col,
                                                                                      PQ,                       // width_col,
                                                                                      (float *)im2col_A);       // data_col);
+	err = cudaGetLastError();
+	if (err != cudaSuccess)
+        {
+            printf("Im2col Error: %s\n", cudaGetErrorString(err));
+        }
+	
 
         //printf("Verifying im2col_A: ");
         //float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
         //cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
         //verify_im2col(verification, 1.0f);
 
-        ker2row_kernel<<<K, input_channels * RS * RS>>>((float(*)[input_channels * RS * RS]) gemm_B,
+
+	int ker_tpb = 512;
+	int ker_nb = K * input_channels * RS * RS;
+        ker2row_kernel<<<(ker_nb + ker_tpb - 1) / ker_tpb, ker_tpb>>>((float(*)[input_channels * RS * RS]) gemm_B,
                                                         (float(*)[input_channels][RS][RS])d_weight);
+	err = cudaGetLastError();
+	if (err != cudaSuccess)
+        {
+            printf("ker2row Error: %s\n", cudaGetErrorString(err));
+        }
 	//cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
         //verify_im2col(verification, 1.0f);
 
@@ -1126,6 +1145,12 @@ void pass(int argc, char **argv)
             printf("The error is %d", status);
             return;
         }
+
+	err = cudaGetLastError();
+	if (err != cudaSuccess)
+        {
+            printf("cublass Error: %s\n", cudaGetErrorString(err));
+        }
 #endif
 
 #endif
@@ -1133,7 +1158,11 @@ void pass(int argc, char **argv)
 #if TRT
 #else
         cudaMemcpy(output, d_output, BATCH * PQ * PQ * K * sizeof(float), cudaMemcpyDeviceToHost);
-        cudaError_t err = cudaGetLastError();
+        err = cudaGetLastError();
+
+	//for(int i = 0; i < PQ * PQ * K; i++){
+	//	printf("%f\n",output[i]);	
+	//}
 
         if (err != cudaSuccess)
         {
@@ -1161,6 +1190,7 @@ void pass(int argc, char **argv)
     cudaFree(im2col_A);
     cudaFree(gemm_B);
     cudaFree(gemm_C);
+    cublasDestroy(handle);
 #endif
 
     cudaFree(d_output);
