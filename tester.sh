@@ -143,8 +143,8 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
         sed -i 's/define TRT .*/define TRT 0/' $in_file
         sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
         sed -i 's/define UNROLL .*/define UNROLL 0/' $in_file
-
-        if [[ ${HW[$i]} -le 90 ]]; 
+        
+        if [[ ${K[$i]} -le 378 ]]; 
         then
             echo 'Running mbnet with unroll_cublass method'
             sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
