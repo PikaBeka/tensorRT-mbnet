@@ -1,11 +1,11 @@
 #define images 1 // number of images in batch
 #define BATCH 1
 
-#define input_channels 512
-#define HW 224
-#define K 64
+#define input_channels 6
+#define HW 150
+#define K 16
 
-#define RS 7
+#define RS 5
 #define STRIDE 1
 
 #define PQ (HW - RS + 1) // output height and width (146)
@@ -20,17 +20,17 @@
 #define DIRECT 0
 #define CONV_SHARED 0
 
-#define CUDNN 0
-#define DARKNET 0
+#define CUDNN 1
+#define DARKNET 1
 
-#define TRT 1
+#define TRT 0
 
 #define UNROLL 0
 #define GEMM_GLOBAL 0
 
 #define CONV_TPB 1024
-#define GRID ((PQ + LIM - 1) / LIM)                   // (37)
-#define CONV_NB (K*GRID * GRID)                           // 1369 // threads per block (150)
+#define GRID ((PQ + LIM - 1) / LIM) // (37)
+#define CONV_NB (K * GRID * GRID)   // 1369 // threads per block (150)
 
 #define UNROLL_TPB MIN(1024, K *RS *RS)
 #define UNROLL_NB (PQ * PQ * input_channels)

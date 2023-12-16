@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(direct_shared unroll_cublass tensorrt cudnn cudnn_opt) # folder names created, output path for created txt files
+out_path=(direct_shared unroll_cublass tensorrt cudnn cudnn_opt mbnet) # folder names created, output path for created txt files
 
 metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_warp gld_efficiency gst_efficiency shared_efficiency shared_utilization
            l2_utilization global_hit_rate tex_cache_hit_rate tex_utilization ipc inst_issued inst_executed issue_slot_utilization dram_utilization)
@@ -10,10 +10,11 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #HW=(256 400 320 256 128 32 256 64 256 64 150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8) # 30
 #K=(3 6 6 6 6 6 9 9 12 12 16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64) # 30
 
-#C=(3 96 256 384 384)
-#HW=(64 26 12 12 12)
-#K=(96 256 384 384 256)
-#RS=(11 5 3 3 3)
+# AlexNet
+C=(3 96 256 384 384)
+HW=(64 26 12 12 12)
+K=(96 256 384 384 256)
+RS=(11 5 3 3 3)
 #TILE_S=(14 8 6 5 5)
 
 #C=(3)
@@ -31,23 +32,16 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #K=(16 32 64 128 256 512 1024 256 512 255 128 256 255)
 #RS=(3 3 3 3 3 3 3 1 3 1 1 3 1)
 
-# List for C (input filters)
 #C=(3 64 64 128 128 256 256 256 256 512 512 512 512 512 512 3 64 192 192 192 256 256 256 64 64 128 128 256)
-
-# List for HW (height and width)
 #HW=(224 224 112 112 56 56 56 28 28 28 14 14 14 224 56 28 28 28 28 28 28 56 56 28 28 14 14 7)
-
-# List for K (output filters)
 #K=(64 64 128 128 256 256 256 512 512 512 512 512 512 64 192 64 96 16 128 128 32 64 128 128 256 256 512 512)
-
-# List for RS (filter size)
 #RS=(3 3 3 3 3 3 3 3 3 3 3 3 3 7 3 1 3 5 1 3 3 3 3 3 3 3 3 3)
 
-C=(512)
-HW=(224)
-K=(64)
-RS=(7)
-
+# ----- ------ List of all sizes
+# C=(3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32 64 128 128 128 256 256 256 512 1 1 1 1 1 1 1 1 1 1 3 96 256 384 384 3 16 32 64 128 512 1024 256 512 256 384 256 3 64 64 128 128 256 256 512 512 3 64 512 512 192 192 192 256 256 256 64 64 128 128 256)
+# HW=(150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8 64 56 28 14 256 128 64 56 256 400 320 256 128 32 256 64 256 64 64 26 12 12 12 416 208 104 52 26 13 13 13 13 13 13 13 224 224 112 112 56 56 28 28 56 28 28 14 224 28 28 28 28 56 56 28 28 14 14 7)
+# K=(16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64 256 256 512 256 128 64 56 28 3 6 6 6 6 6 9 9 12 12 96 256 384 384 256 16 32 64 128 256 1024 256 512 255 128 256 255 64 64 128 128 256 256 512 512 192 64 96 512 64 16 128 128 32 64 128 128 256 256 512 512)
+# RS=(5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 11 5 3 3 3 3 3 3 3 3 3 1 3 1 1 3 1 3 3 3 3 3 3 3 3 3 1 3 3 7 5 1 3 3 3 3 3 3 3 3 3)
 
 #input file to change macro define
 in_file=mbnet.h
@@ -75,7 +69,7 @@ metric=$2
 echo ${method}
 echo ${metric}
 
-if [ "${method}" != "array_naive" ] && [ "${method}" != "array_tiling" ] && [ "${method}" != "direct_shared" ] && [ "${method}" != "unroll_cublass" ] && [ "${method}" != "unroll_global" ] && [ "${method}" != "tensorrt" ] && [ "${method}" != "cudnn" ] && [ "${method}" != "cudnn_opt" ] && [ "${method}" != "method" ]; then
+if [ "${method}" != "array_naive" ] && [ "${method}" != "array_tiling" ] && [ "${method}" != "direct_shared" ] && [ "${method}" != "unroll_cublass" ] && [ "${method}" != "unroll_global" ] && [ "${method}" != "tensorrt" ] && [ "${method}" != "cudnn" ] && [ "${method}" != "cudnn_opt" ] && [ "${method}" != "mbnet_method" ]; then
     echo "ERROR: Please supply one of the methods: array_naive, array_tiling, direct_shared, unroll_cublass, tensorrt, cudnn"
     exit
 fi
@@ -139,36 +133,26 @@ if [[ "${method}" == "cudnn_opt" ]]; then
 fi
 
 for i in ${!C[@]}; do # loop to place all configuration files into use
-    if [[ "${method}" == "method" ]]; then
-	echo 'Running mbnet with ML method\n'
-        lib=$(python3 model.py ${C[$i]} ${HW[$i]} ${K[$i]} ${RS[$i]})
-	
-	sed -i 's/define ARRAY_NAIVE .*/define ARRAY_NAIVE 0/' $in_file
-	sed -i 's/define ARRAY_TILING .*/define ARRAY_TILING 0/' $in_file
-	sed -i 's/define DIRECT .*/define DIRECT 0/' $in_file
-	sed -i 's/define CONV_SHARED .*/define CONV_SHARED 0/' $in_file
-	sed -i 's/define CUDNN .*/define CUDNN 0/' $in_file
-	sed -i 's/define DARKNET .*/define DARKNET 0/' $in_file
-	sed -i 's/define TRT .*/define TRT 0/' $in_file
-	sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
-	sed -i 's/define UNROLL .*/define UNROLL 0/' $in_file
+    if [[ "${method}" == "mbnet_method" ]]; then
+        sed -i 's/define ARRAY_NAIVE .*/define ARRAY_NAIVE 0/' $in_file
+        sed -i 's/define ARRAY_TILING .*/define ARRAY_TILING 0/' $in_file
+        sed -i 's/define DIRECT .*/define DIRECT 0/' $in_file
+        sed -i 's/define CONV_SHARED .*/define CONV_SHARED 0/' $in_file
+        sed -i 's/define CUDNN .*/define CUDNN 0/' $in_file
+        sed -i 's/define DARKNET .*/define DARKNET 0/' $in_file
+        sed -i 's/define TRT .*/define TRT 0/' $in_file
+        sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
+        sed -i 's/define UNROLL .*/define UNROLL 0/' $in_file
 
-	if [[ "${lib}" == "TensorRT" ]]; then
-		echo 'Running mbnet with tenssort method'
-		sed -i 's/define TRT .*/define TRT 1/' $in_file
-	fi
-
-	if [[ "${lib}" == "CUBLASS" ]]; then
-		echo 'Running mbnet with CUBLASS method'
-		sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-		sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 1/' $in_file
-	fi
-
-	if [[ "${lib}" == "CUDNN_OPT" ]]; then
-		echo 'Running mbnet with CUDNN_OPT method'
-		sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-		sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-	fi
+        if [[ ${HW[$i]} -le 90 ]]; 
+        then
+            echo 'Running mbnet with unroll_cublass method'
+            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+        else
+            echo 'Running mbnet with cudnn optimized method'
+            sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
+            sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
+        fi
     fi
 
     sed -i 's/define input_channels .*/define input_channels '${C[$i]}'/' ${in_file} # change C
