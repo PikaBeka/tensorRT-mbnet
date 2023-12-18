@@ -1,11 +1,11 @@
-#define images 1 // number of images in batch
+#define images 10000 // number of images in batch
 #define BATCH 1
 
-#define input_channels 6
-#define HW 150
-#define K 16
+#define input_channels 384
+#define HW 12
+#define K 256
 
-#define RS 5
+#define RS 3
 #define STRIDE 1
 
 #define PQ (HW - RS + 1) // output height and width (146)
@@ -20,10 +20,10 @@
 #define DIRECT 0
 #define CONV_SHARED 0
 
-#define CUDNN 1
-#define DARKNET 1
+#define CUDNN 0
+#define DARKNET 0
 
-#define TRT 0
+#define TRT 1
 
 #define UNROLL 0
 #define GEMM_GLOBAL 0

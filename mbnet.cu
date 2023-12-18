@@ -50,7 +50,7 @@ float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
 float *bias = (float *)malloc(sizeof(float) * K);
 float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
-int debug = 1;
+int debug = 0;
 
 //double buffManager = 0;
 //double process = 0;

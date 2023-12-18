@@ -146,12 +146,11 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
         
         if [[ ${K[$i]} -le 378 ]]; 
         then
-            echo 'Running mbnet with unroll_cublass method'
-            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+            echo 'Running mbnet with tensorrrt method'
+            sed -i 's/define TRT .*/define TRT 1/' $in_file
         else
-            echo 'Running mbnet with cudnn optimized method'
-            sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-            sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
+            echo 'Running mbnet with cublass method'
+            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
         fi
     fi
 

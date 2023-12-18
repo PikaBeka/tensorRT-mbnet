@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(direct_shared unroll_cublass tenssort cudnn cudnn_opt)
+out_path=(tensorrt)
 metric=None
 
 for j in ${!out_path[@]}; do
