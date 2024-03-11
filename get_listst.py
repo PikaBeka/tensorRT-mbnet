@@ -1,11 +1,13 @@
 import pandas as pd
 
-df = pd.read_csv("dataset.csv")
+df = pd.read_csv("out.csv")
 
-C = df["C"].to_numpy()
-HW = df["HW"].to_numpy()
-K = df["K"].to_numpy()
-RS = df["RS"].to_numpy()
+print(df["C"])
+
+C = df["C"]
+HW = df["HW"]
+K = df["K"]
+RS = df["RS"]
 
 C_string = "C=("
 for c in C:

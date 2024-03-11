@@ -1,6 +1,6 @@
 import csv
 import os
-from config import nvprof_paths, metrics
+from config import nvprof_paths, metrics, C, HW, K, RS
 
 AreMetrics = False
 
@@ -74,11 +74,14 @@ if __name__ == '__main__':
 
     for i in range(0, len(nvprof_paths)):  # for each kernel method
         method = 'csv/'+nvprof_paths[i] + '_sum.csv'
+        headers = []
         with open(method, 'w', newline='') as fopen:  # create csv file
             files = os.listdir(nvprof_paths[i])
             headers = ['Configuration']  # first column to indicate configuration
 
-            for file in files:  # for every file in folders
+            for j in range(0, len(C)):  # for every file in folders
+                file = "nvprof_comp_" + str(C[j]) + "_" + str(HW[j]) +"_" + str(K[j]) + "_" + str(RS[j]) + ".txt"
+                print(file)
                 with open(nvprof_paths[i]+'/'+file, 'r') as log:
                     data = log.readlines()
                     # function returns all found headers
@@ -88,6 +91,7 @@ if __name__ == '__main__':
             writer = csv.writer(fopen)
             headers.append('Total_time')  # column for total time
             headers.append('Kernel_time')  # column for kernel time (convolution time)
+            print(headers)
             writer.writerow(headers)
         print('Created csv file ' + method)
 

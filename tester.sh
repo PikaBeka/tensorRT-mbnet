@@ -17,6 +17,24 @@ K=(96 256 384 384 256)
 RS=(11 5 3 3 3)
 #TILE_S=(14 8 6 5 5)
 
+# VGGNet-16
+#C=(3 64 64 128 128 256 256 256 512 512 512 512 512)
+#HW=(224 224 112 112 56 56 56 28 28 28 14 14 14)
+#K=(64 64 128 128 256 256 256 512 512 512 512 512 512)
+#RS=(3 3 3 3 3 3 3 3 3 3 3 3 3)
+
+# YOLOV4
+#C=(3 32 64 64 64 32 64 64 64 128 64 64 64 64 64 64 64 128 256 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 256 512 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 512 1024 512 512 512 512 512 512 512 512 512 512 512 1024 512 1024 512 512 1024 512 256 256 256 512 256 512 256 128 128 128 256 128 256 128 256 255 256 256 512 256 512 256 512 255 512 512 1024 512 1024 512 1024 )
+#HW=(608 304 304 306 308 310 310 312 157 157 159 161 163 163 165 165 167 85 85 87 89 91 91 93 93 95 95 97 97 99 99 101 101 103 103 105 105 107 55 55 57 59 61 61 63 63 65 65 67 67 69 69 71 71 73 73 75 75 77 40 40 42 44 46 46 48 48 50 50 52 52 54 56 58 58 49 51 51 53 55 57 59 59 61 61 63 65 67 69 69 71 71 73 73 38 38 40 40 42 42 44 44 23 23 25 25 27 27 29 29 )
+#K=(32 64 64 64 32 64 64 64 128 64 64 64 64 64 64 64 128 256 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 256 512 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 512 1024 512 512 512 512 512 512 512 512 512 512 512 1024 512 1024 512 512 1024 512 256 256 256 512 256 512 256 128 128 128 256 128 256 128 256 255 256 256 512 256 512 256 512 255 512 512 1024 512 1024 512 1024 255 )
+#RS=(3 3 1 1 1 3 1 1 3 1 1 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 1 1 3 1 1 3 1 1 1 1 3 1 3 1 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 )
+
+#YOLOV4-TINY
+C=(3 32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 )
+HW=(416 208 104 104 104 104 53 53 53 53 27 27 27 27 14 14 16 16 18 20 20 )
+K=(32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 255 )
+RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1 )
+
 #C=(3)
 #HW=(64)
 #K=(16)
@@ -89,68 +107,112 @@ fi
 
 echo ${is_metrics}
 
-if [[ "${method}" == "array_naive" ]]; then
+for i in ${!C[@]}; do # loop to place all configuration files into use
+
+    sed -i 's/define ARRAY_NAIVE .*/define ARRAY_NAIVE 0/' $in_file
+    sed -i 's/define ARRAY_TILING .*/define ARRAY_TILING 0/' $in_file
+    sed -i 's/define DIRECT .*/define DIRECT 0/' $in_file
+    sed -i 's/define CONV_SHARED .*/define CONV_SHARED 0/' $in_file
+    sed -i 's/define CUDNN .*/define CUDNN 0/' $in_file
+    sed -i 's/define DARKNET .*/define DARKNET 0/' $in_file
+    sed -i 's/define TRT .*/define TRT 0/' $in_file
+    sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
+    sed -i 's/define UNROLL .*/define UNROLL 0/' $in_file
+
+    if [[ "${method}" == "array_naive" ]]; then
 	echo 'Running mbnet with array_naive method\n'
-    sed -i 's/define ARRAY_NAIVE .*/define ARRAY_NAIVE 1/' ${in_file}
-fi
+        sed -i 's/define ARRAY_NAIVE .*/define ARRAY_NAIVE 1/' ${in_file}
+    fi
 
-if [[ "${method}" == "array_tiling" ]]; then
+    if [[ "${method}" == "array_tiling" ]]; then
 	echo 'Running mbnet with array_tiling method\n'
-    sed -i 's/define ARRAY_TILING .*/define ARRAY_TILING 1/' $in_file
-fi
+        sed -i 's/define ARRAY_TILING .*/define ARRAY_TILING 1/' $in_file
+    fi
 
-if [[ "${method}" == "direct_shared" ]]; then
+    if [[ "${method}" == "direct_shared" ]]; then
 	echo 'Running mbnet with direct_shared method\n'
-    sed -i 's/define DIRECT .*/define DIRECT 1/' $in_file
-    sed -i 's/define CONV_SHARED .*/define CONV_SHARED 1/' $in_file
-fi
+        sed -i 's/define DIRECT .*/define DIRECT 1/' $in_file
+        sed -i 's/define CONV_SHARED .*/define CONV_SHARED 1/' $in_file
+    fi
 
-if [[ "${method}" == "unroll_cublass" ]]; then
+    if [[ "${method}" == "unroll_cublass" ]]; then
 	echo 'Running mbnet with unroll_cublass method\n'
-    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-fi
+        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+    fi
 
-if [[ "${method}" == "unroll_global" ]]; then
+    if [[ "${method}" == "unroll_global" ]]; then
 	echo 'Running mbnet with unroll_global method\n'
-    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
 	sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 1/' $in_file
-fi
+    fi
 
-if [[ "${method}" == "tensorrt" ]]; then
+    if [[ "${method}" == "tensorrt" ]]; then
 	sed -i 's/define TRT .*/define TRT 1/' $in_file
 	echo 'Running mbnet with tenssort method\n'
-fi
+    fi
 
-if [[ "${method}" == "cudnn" ]]; then
+    if [[ "${method}" == "cudnn" ]]; then
 	echo 'Running mbnet with cudnn method\n'
-    sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-fi
+        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
+    fi
 
-if [[ "${method}" == "cudnn_opt" ]]; then
+    if [[ "${method}" == "cudnn_opt" ]]; then
 	echo 'Running mbnet with cudnn optimized method\n'
-    sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
+        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
 	sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-fi
+    fi
 
-for i in ${!C[@]}; do # loop to place all configuration files into use
     if [[ "${method}" == "mbnet_method" ]]; then
-        sed -i 's/define ARRAY_NAIVE .*/define ARRAY_NAIVE 0/' $in_file
-        sed -i 's/define ARRAY_TILING .*/define ARRAY_TILING 0/' $in_file
-        sed -i 's/define DIRECT .*/define DIRECT 0/' $in_file
-        sed -i 's/define CONV_SHARED .*/define CONV_SHARED 0/' $in_file
-        sed -i 's/define CUDNN .*/define CUDNN 0/' $in_file
-        sed -i 's/define DARKNET .*/define DARKNET 0/' $in_file
-        sed -i 's/define TRT .*/define TRT 0/' $in_file
-        sed -i 's/define GEMM_GLOBAL .*/define GEMM_GLOBAL 0/' $in_file
-        sed -i 's/define UNROLL .*/define UNROLL 0/' $in_file
         
-        if [[ ${K[$i]} -le 378 ]]; 
+        if [[ ${HW[$i]} -lt 137 ]]; 
         then
-            echo 'Running mbnet with tensorrrt method'
-            sed -i 's/define TRT .*/define TRT 1/' $in_file
+            if [[ ${HW[$i]} -lt 20 ]]; 
+            then
+            	if [[ ${RS[$i]} -lt 2 ]]; 
+            	then
+            		sed -i 's/define TRT .*/define TRT 1/' $in_file
+			echo 'Running mbnet with tenssort method\n'
+            	else
+            		if [[ ${RS[$i]} -lt 4 ]]; 
+            		then
+            			echo 'Running mbnet with unroll_cublass method\n'
+    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+            		else
+            			echo 'Running mbnet with unroll_cublass method\n'
+    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+            		fi
+            	fi
+            else
+            	if [[ ${K[$i]} -lt 251 ]]; 
+            	then
+            		if [[ ${K[$i]} -lt 77 ]]; 
+            		then
+            			sed -i 's/define TRT .*/define TRT 1/' $in_file
+				echo 'Running mbnet with tenssort method\n'
+            		else
+            			sed -i 's/define TRT .*/define TRT 1/' $in_file
+				echo 'Running mbnet with tenssort method\n'
+            		fi
+            	else
+            		if [[ ${RS[$i]} -lt 5 ]]; 
+            		then
+            			echo 'Running mbnet with unroll_cublass method\n'
+    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+            		else
+            			echo 'Running mbnet with unroll_cublass method\n'
+    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+            		fi
+            	fi	
+            fi
         else
-            echo 'Running mbnet with cublass method'
-            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+            if [[ ${RS[$i]} -lt 5 ]]; 
+            then
+            	sed -i 's/define TRT .*/define TRT 1/' $in_file
+		echo 'Running mbnet with tenssort method\n'
+            else
+            	sed -i 's/define TRT .*/define TRT 1/' $in_file
+		echo 'Running mbnet with tenssort method\n'	
+            fi
         fi
     fi
 
@@ -165,13 +227,13 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     if [[ "$is_metrics" = true ]]
     then
     #echo 'metrics run'
-        /usr/local/cuda/bin/nvprof --aggregate-mode on --log-file metrics/${metric}/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --metrics ${metric} ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
+        /usr/local/cuda/bin/nvprof --aggregate-mode on --log-file metrics/${metric}/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}_${RS[$i]}.txt --metrics ${metric} ./mbnet #sm_efficiency,achieved_occupancy,warp_execution_efficiency,inst_per_warp,gld_efficiency,gst_efficiency,shared_efficiency,shared_utilization,l2_utilization,global_hit_rate,tex_cache_hit_rate,	tex_utilization,ipc,inst_issued,inst_executed,issue_slot_utilization,dram_utilization ./mbnet # stroe nvprof into the txt file
     else
         if [[ "$is_trace" = true ]]
         then
-            /usr/local/cuda/bin/nvprof --log-file trace/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt --print-gpu-trace ./mbnet
+            /usr/local/cuda/bin/nvprof --log-file trace/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}_${RS[$i]}.txt --print-gpu-trace ./mbnet
         else
-            /usr/local/cuda/bin/nvprof --log-file ${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}.txt ./mbnet # stroe nvprof into the txt file 
+            /usr/local/cuda/bin/nvprof --log-file ${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}_${RS[$i]}.txt ./mbnet # stroe nvprof into the txt file 
         fi
     fi
 done

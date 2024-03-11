@@ -6,14 +6,19 @@ import pandas as pd
 
 from create_csv import takeName
 from config import nvprof_paths, metrics
+from config import C as C
+from config import HW as HW
+from config import RS as RS
+from config import K as K
 
 # parsr class
 class Parse:
-    def __init__(self, log_file, C, HW, K, o_file):
+    def __init__(self, log_file, C, HW, K, RS, o_file):
         self.log_file = log_file
         self.C = C
         self.HW = HW
         self.K = K
+        self.RS = RS
         self.sum = o_file
 
     # function to work with time
@@ -72,7 +77,7 @@ class Parse:
         with open(self.sum, 'a') as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=headers)
             record = {
-                'Configuration': '(' + str(self.C) + '_' + str(self.HW) + '_' + str(self.K) + ')'}  # add first configuration value
+                'Configuration': '(' + str(self.C) + '_' + str(self.HW) + '_' + str(self.K) + '_' + str(self.RS) + ')'}  # add first configuration value
             with open(self.log_file, 'r') as log:
                 data = log.readlines()
                 toStart = 0
@@ -170,26 +175,14 @@ if __name__ == '__main__':
     #HW = [416, 208, 104, 52, 26, 13, 13, 13, 13, 13, 13, 13, 13]
     #K = [16, 32, 64, 128, 256, 512, 1024, 256, 512, 255, 128, 256, 255]
 
-    # List for C (input filters)
-    C = [3, 64, 64, 128, 128, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512, 3, 64, 192, 192, 192, 256, 256, 256, 64, 64, 128, 128, 256]
-
-    # List for HW (height and width)
-    HW = [224, 224, 112, 112, 56, 56, 56, 28, 28, 28, 14, 14, 14, 224, 56, 28, 28, 28, 28, 28, 28, 56, 56, 28, 28, 14, 14, 7]
-
-    # List for K (output filters)
-    K = [64, 64, 128, 128, 256, 256, 256, 512, 512, 512, 512, 512, 512, 64, 192, 64, 96, 16, 128, 128, 32, 64, 128, 128, 256, 256, 512, 512]
-
-    # List for RS (filter size)
-    RS = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 7, 3, 1, 3, 5, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3]
-
 
     for j in range(0, len(nvprof_paths)):
         for i in range(0, len(C)):
             log_file = nvprof_paths[j] + '/nvprof_comp_' + \
                 str(C[i]) + '_' + str(HW[i]) + \
-                '_' + str(K[i]) + '.txt'
+                '_' + str(K[i]) + '_' + str(RS[i]) + '.txt'
             parser = Parse(log_file, int(C[i]), int(
-                HW[i]), int(K[i]), 'csv/'+nvprof_paths[j]+'_sum.csv')
+                HW[i]), int(K[i]), int(RS[i]), 'csv/'+nvprof_paths[j]+'_sum.csv')
             parser.parse_file()
         print(nvprof_paths[j] + " parsing finished")
 
