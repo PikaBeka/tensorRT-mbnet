@@ -1364,11 +1364,11 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS;
         int n = K;
 
-        dim3 gridDim((m + TILE_SIZE - 1) / TILE_SIZE, (n + TILE_SIZE - 1) / TILE_SIZE);
-        // 32 * 32 = 1024 thread per block
-        dim3 blockDim(TILE_SIZE * TILE_SIZE);
+        const int BLOCKSIZE = 32; // Make sure it matches the template parameter
+        dim3 blockDim(BLOCKSIZE, BLOCKSIZE);
+        dim3 gridDim((m + BLOCKSIZE - 1) / BLOCKSIZE, (n + BLOCKSIZE - 1) / BLOCKSIZE);
 
-        gemm_shared_kernel<TILE_SIZE><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
+        gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
 
         // if (status != cudaSuccess)
         // {
