@@ -981,6 +981,7 @@ void verify_ker2row(float *A, float val)
 template <const uint BLOCKSIZE>
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
+    printf("%d\n", BLOCKSIZE);
     const uint cRow = blockIdx.x;
     const uint cCol = blockIdx.y;
 
@@ -1030,8 +1031,10 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
         // execute the dotproduct on the currently cached block
         for (int dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx)
         {
-            tmp += As[threadRow * BLOCKSIZE + dotIdx] *
-                   Bs[dotIdx * BLOCKSIZE + threadCol];
+            if (threadRow * BLOCKSIZE + dotIdx < BLOCKSIZE * BLOCKSIZE &&
+                dotIdx * BLOCKSIZE + threadCol < BLOCLSIZE * BLOCKSIZE)
+                tmp += As[threadRow * BLOCKSIZE + dotIdx] *
+                       Bs[dotIdx * BLOCKSIZE + threadCol];
         }
         // need to sync again at the end, to avoid faster threads
         // fetching the next block into the cache before slower threads are done
