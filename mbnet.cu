@@ -1372,7 +1372,7 @@ void pass(int argc, char **argv)
         dim3 blockDim(BLOCKSIZE, BLOCKSIZE);
         dim3 gridDim((m + BLOCKSIZE - 1) / BLOCKSIZE, (n + BLOCKSIZE - 1) / BLOCKSIZE);
 
-        gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
+        gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, d_weight, d_output, m, n, k);
 
         // if (status != cudaSuccess)
         // {
