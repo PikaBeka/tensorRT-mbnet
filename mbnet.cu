@@ -50,7 +50,7 @@ float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
 float *bias = (float *)malloc(sizeof(float) * K);
 float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
-int debug = 1;
+int debug = 0;
 
 // double buffManager = 0;
 // double process = 0;
@@ -594,8 +594,8 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    // input[i * HW * HW + j * HW + k] = (float)(rand() % 2) - 1;
-                    input[i * HW * HW + j * HW + k] = 1.0f;
+                    input[i * HW * HW + j * HW + k] = (float)(rand() % 2) - 1;
+                    // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
         }
@@ -618,8 +618,8 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 2) - 1;
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 2) - 1;
+                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
