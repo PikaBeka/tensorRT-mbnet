@@ -1310,9 +1310,9 @@ void pass(int argc, char **argv)
         //     c,
         //     n);
 
-        int m = K;
+        int m = PQ * PQ;
         int k = input_channels * RS * RS;
-        int n = PQ * PQ;
+        int n = K;
 
         dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32, 1);
         // 32 * 32 = 1024 thread per block
