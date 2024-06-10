@@ -1317,7 +1317,7 @@ void pass(int argc, char **argv)
 
         dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32);
         // 32 * 32 = 1024 thread per block
-        dim3 blockDim(32, 32);
+        dim3 blockDim(32 * 32);
 
         gemm_shared_kernel<32><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
 
