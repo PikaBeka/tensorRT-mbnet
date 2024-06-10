@@ -982,7 +982,7 @@ template <const uint BLOCKSIZE>
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
     const int x = blockIdx.x * BLOCKSIZE + (threadIdx.x / BLOCKSIZE);
-    const int y = blockIdx.y * BLOCKSIZE + (threadIdx.y % BLOCKSIZE);
+    const int y = blockIdx.y * BLOCKSIZE + (threadIdx.x % BLOCKSIZE);
 
     if (x < m && y < n)
     {
