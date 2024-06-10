@@ -50,7 +50,7 @@ float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
 float *bias = (float *)malloc(sizeof(float) * K);
 float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
-int debug = 0;
+int debug = 1;
 
 // double buffManager = 0;
 // double process = 0;
@@ -978,10 +978,11 @@ void verify_ker2row(float *A, float val)
     printf("maxError = %f (cnt = %d),%d)\n", maxError, cnt, K * input_channels * RS * RS);
 }
 
+template <const uint BLOCKSIZE>
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
-    const int x = blockIdx.x * blockDim.x + threadIdx.x;
-    const int y = blockIdx.y * blockDim.y + threadIdx.y;
+    const int x = blockIdx.x * BLOCKSIZE + (threadIdx.x / BLOCKSIZE);
+    const int y = blockIdx.y * BLOCKSIZE + (threadIdx.y % BLOCKSIZE);
 
     if (x < m && y < n)
     {
@@ -1314,11 +1315,11 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS;
         int n = K;
 
-        dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32, 1);
+        dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32);
         // 32 * 32 = 1024 thread per block
-        dim3 blockDim(32, 32, 1);
+        dim3 blockDim(32, 32);
 
-        gemm_shared_kernel<<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
+        gemm_shared_kernel<32><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
 
         // if (status != cudaSuccess)
         // {

@@ -1,4 +1,4 @@
-#define images 10000 // number of images in batch
+#define images 1 // number of images in batch
 #define BATCH 1
 
 #define input_channels 192
