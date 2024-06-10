@@ -1310,15 +1310,15 @@ void pass(int argc, char **argv)
         //     c,
         //     n);
 
-        int m = PQ * PQ;
+        int m = K;
         int k = input_channels * RS * RS;
-        int n = K;
+        int n = PQ * PQ;
 
         dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32, 1);
         // 32 * 32 = 1024 thread per block
         dim3 blockDim(32, 32, 1);
 
-        gemm_shared_kernel<<<gridDim, blockDim>>>(gemm_B, im2col_A, d_output, m, k, n);
+        gemm_shared_kernel<<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, k, n);
 
         // if (status != cudaSuccess)
         // {
