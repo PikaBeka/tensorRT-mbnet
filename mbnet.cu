@@ -594,7 +594,7 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[i * HW * HW + j * HW + k] = (float)(rand() % 201) - 100;
+                    input[i * HW * HW + j * HW + k] = (float)(rand() % 2) - 1;
                     // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
@@ -618,7 +618,7 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 201) - 100;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 2) - 1;
                     // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
@@ -1233,7 +1233,7 @@ void pass(int argc, char **argv)
 #if UNROLL
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
-        im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(RS * RS * input_channels, // num_kernels, = channels * height_col * width_col;
                                                                                      (float *)d_input,         // data_im,
                                                                                      HW,                       // height,
                                                                                      HW,                       // width,
