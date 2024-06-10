@@ -1307,9 +1307,9 @@ void pass(int argc, char **argv)
         gemm_global_kernel<<<(total + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>((float(*)[input_channels * RS * RS]) gemm_B, (float(*)[PQ * PQ]) im2col_A,
                                                                                                  (float(*)[PQ * PQ]) d_output);
 #else
-        int m = K;                        // l.n / l.groups
-        int k = input_channels * RS * RS; // l.size*l.size
-        int n = PQ * PQ;                  // l.out_w*l.out_h
+        // int m = K;                        // l.n / l.groups
+        // int k = input_channels * RS * RS; // l.size*l.size
+        // int n = PQ * PQ;                  // l.out_w*l.out_h
 
         // float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
         // float *b = im2col_A; // state.workspace
@@ -1333,8 +1333,12 @@ void pass(int argc, char **argv)
         //     c,
         //     n);
 
+        int m = PQ * PQ;
+        int k = input_channels * RS * RS;
+        int n = K;
+
         dim3 dimBlock(TILE_SIZE, TILE_SIZE);
-        dim3 dimGrid((N + TILE_SIZE - 1) / TILE_SIZE, (M + TILE_SIZE - 1) / TILE_SIZE);
+        dim3 dimGrid((n + TILE_SIZE - 1) / TILE_SIZE, (m + TILE_SIZE - 1) / TILE_SIZE);
 
         gemm_shared_kernel<<<dimGrid, dimBlock>>>(im2col_A, gemm_B, gemm_C, m, k, n);
 
