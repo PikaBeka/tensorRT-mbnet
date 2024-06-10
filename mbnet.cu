@@ -978,7 +978,7 @@ void verify_ker2row(float *A, float val)
     printf("maxError = %f (cnt = %d),%d)\n", maxError, cnt, K * input_channels * RS * RS);
 }
 
-__global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
+__global__ void gemm_shared_kernel(float *A, float *B, float *C, int M, int N, int k)
 {
     const uint x = blockIdx.x * blockDim.x + threadIdx.x;
     const uint y = blockIdx.y * blockDim.y + threadIdx.y;
