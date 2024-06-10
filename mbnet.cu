@@ -981,8 +981,8 @@ void verify_ker2row(float *A, float val)
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
     // allocate shared memory for tiles
-    __shared__ float As[TILE_SIZE][TILE_SIZE];
-    __shared__ float Bs[TILE_SIZE][TILE_SIZE];
+    __shared__ float tileA[TILE_SIZE][TILE_SIZE];
+    __shared__ float tileB[TILE_SIZE][TILE_SIZE];
 
     int row = blockIdx.y * TILE_SIZE + threadIdx.y;
     int col = blockIdx.x * TILE_SIZE + threadIdx.x;
@@ -1311,9 +1311,9 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS; // l.size*l.size
         int n = PQ * PQ;                  // l.out_w*l.out_h
 
-        float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
-        float *b = im2col_A; // state.workspace
-        float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
+        // float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
+        // float *b = im2col_A; // state.workspace
+        // float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
 
         // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
         // const float alpha = 1, beta = 0;
@@ -1336,13 +1336,13 @@ void pass(int argc, char **argv)
         dim3 dimBlock(TILE_SIZE, TILE_SIZE);
         dim3 dimGrid((N + TILE_SIZE - 1) / TILE_SIZE, (M + TILE_SIZE - 1) / TILE_SIZE);
 
-        gemm_shared_kernel<<<dimGrid, dimBlock>>>(gemm_B, im2col_A, gemm_C, m, k, n);
+        gemm_shared_kernel<<<dimGrid, dimBlock>>>(im2col_A, gemm_B, gemm_C, m, k, n);
 
-        if (status != cudaSuccess)
-        {
-            printf("The error is %d", status);
-            return;
-        }
+        // if (status != cudaSuccess)
+        // {
+        //     printf("The error is %d", status);
+        //     return;
+        // }
 
         err = cudaGetLastError();
         if (err != cudaSuccess)
