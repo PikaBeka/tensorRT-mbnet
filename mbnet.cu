@@ -994,7 +994,10 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
     {
         // Load elements into shared memory
         if (row < m && t * TILE_SIZE + threadIdx.x < k)
+        {
             tileA[threadIdx.y][threadIdx.x] = A[row * k + t * TILE_SIZE + threadIdx.x];
+            printf("%f\n", A[row * k + t * TILE_SIZE + threadIdx.x]);
+        }
         else
             tileA[threadIdx.y][threadIdx.x] = 0;
 
@@ -1037,7 +1040,7 @@ gemm_global_kernel(float matB[K][input_channels * RS * RS], float matA[input_cha
         matC[x][y] = tempC;
     }
 }
-#endif GEMM_GLOBAL
+#endif
 #endif
 
 /*-------------------------------------------------------------------------------------------Inference start-------------------------------------------------------------------------------------------*/
@@ -1127,7 +1130,7 @@ void pass(int argc, char **argv)
 #endif
 
 #if UNROLL
-    float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
+    // float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
     float *im2col_A, *gemm_B, *gemm_C;
 
     cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
