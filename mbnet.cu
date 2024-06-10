@@ -594,7 +594,9 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[i * HW * HW + j * HW + k] = 2.0f * (static_cast<float>(rand()) / RAND_MAX) - 1.0f;
+                    float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
+                    tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
+                    input[i * HW * HW + j * HW + k] = tmp;
                     // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
@@ -618,7 +620,9 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 2.0f * (static_cast<float>(rand()) / RAND_MAX) - 1.0f;
+                    float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
+                    tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = tmp;
                     // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
@@ -648,7 +652,7 @@ void verification(float *input, float *weight, float *output)
                             }
                         }
                     }
-                    if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 1e-4)
+                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 1e-4)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
