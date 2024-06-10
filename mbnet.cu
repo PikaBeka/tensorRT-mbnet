@@ -45,18 +45,18 @@ using samplesCommon::SampleUniquePtr;
 
 const std::string gSampleName = "TensorRT.sample_mnist_api";
 
-float *input = (float *)malloc(sizeof(float) * input_channels * HW * HW); 
-float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels); 
-float *bias = (float *)malloc(sizeof(float) * K); 
+float *input = (float *)malloc(sizeof(float) * input_channels * HW * HW);
+float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
+float *bias = (float *)malloc(sizeof(float) * K);
 float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
 int debug = 1;
 
-//double buffManager = 0;
-//double process = 0;
-//double ItD = 0;
-//double OtH = 0;
-//double exec = 0;
+// double buffManager = 0;
+// double process = 0;
+// double ItD = 0;
+// double OtH = 0;
+// double exec = 0;
 
 double im2col_time = 0;
 
@@ -78,16 +78,17 @@ public:
     //! Writes all the possible choices to the selection buffer and returns the length of it.
     //! If BuilderFlag::kSTRICT_TYPES is not set, just returning 0 forces default tactic selection.
     //!
-    int32_t selectAlgorithms(const nvinfer1::IAlgorithmContext& context, const nvinfer1::IAlgorithm* const* choices,
-        int32_t nbChoices, int32_t* selection) noexcept override
+    int32_t selectAlgorithms(const nvinfer1::IAlgorithmContext &context, const nvinfer1::IAlgorithm *const *choices,
+                             int32_t nbChoices, int32_t *selection) noexcept override
     {
         // TensorRT always provides more than zero number of algorithms in selectAlgorithms.
         ASSERT(nbChoices > 0);
 
         std::cout << nbChoices << "\n";
 
-        for (int i = 0; i < nbChoices; ++i) {
-           std::cout << "Algorithm " << i << ": Implementation = " << choices[i]->getAlgorithmVariant().getImplementation() << std::endl;
+        for (int i = 0; i < nbChoices; ++i)
+        {
+            std::cout << "Algorithm " << i << ": Implementation = " << choices[i]->getAlgorithmVariant().getImplementation() << std::endl;
         }
 
         // std::iota(selection, selection + nbChoices, 0);
@@ -99,8 +100,8 @@ public:
     //!
     //! \details Writes the TensorRT algorithm choices into a file.
     //!
-    void reportAlgorithms(const nvinfer1::IAlgorithmContext* const* algoContexts,
-        const nvinfer1::IAlgorithm* const* algoChoices, int32_t nbAlgorithms) noexcept override
+    void reportAlgorithms(const nvinfer1::IAlgorithmContext *const *algoContexts,
+                          const nvinfer1::IAlgorithm *const *algoChoices, int32_t nbAlgorithms) noexcept override
     {
         std::ofstream algorithmFile(mCacheFileName);
         if (!algorithmFile.good())
@@ -135,7 +136,7 @@ public:
         algorithmFile.close();
     }
 
-    AlgorithmCacheWriter(const std::string& cacheFileName)
+    AlgorithmCacheWriter(const std::string &cacheFileName)
         : mCacheFileName(cacheFileName)
     {
     }
@@ -404,7 +405,7 @@ bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, f
             for (int k = 0; k < HW; k++)
             {
                 // temp = (float)(rand() % 100);
-                temp =  input[i * HW * HW + j * HW + k];
+                temp = input[i * HW * HW + j * HW + k];
                 hostDataBuffer[i * HW * HW + j * HW + k] = temp;
             }
         }
@@ -516,7 +517,7 @@ std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::
                 for (int k = 0; k < RS; k++)
                 {
                     weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 100);
-                    //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -593,8 +594,8 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[i * HW * HW + j * HW + k] = (float)(rand() % 201)-100;
-                    //input[i * HW * HW + j * HW + k] = 1.0f;
+                    input[i * HW * HW + j * HW + k] = (float)(rand() % 201) - 100;
+                    // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
         }
@@ -617,8 +618,8 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 201)-100;
-                    //weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 201) - 100;
+                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -650,7 +651,7 @@ void verification(float *input, float *weight, float *output)
                     if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 1)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
-			printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
+                        printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
                         exit(-1);
                     }
                 }
@@ -768,7 +769,7 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
     if (tidx < TILE_S * TILE_S)
     {
         for (int img_z = 0; img_z < input_channels; img_z++)
-            sh_img[img_z][img_row][img_col] = input[img_z][blockIdx.y  * LIM + img_row][blockIdx.x * LIM + img_col];
+            sh_img[img_z][img_row][img_col] = input[img_z][blockIdx.y * LIM + img_row][blockIdx.x * LIM + img_col];
     }
 
     __syncthreads();
@@ -787,7 +788,7 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
                     sum += sh_img[k][w_row + i][w_col + j] * weight[blockIdx.z][k][i][j];
         }
         pre_output[blockIdx.z][blockIdx.y * LIM + w_row][blockIdx.x * LIM + w_col] = sum;
-	//printf("ch=%d, bIdx_r=%d, w_row=%d, bIdx_c=%d, w_col=%d, sum=%f\n", ch, bIdx_r, w_row, bIdx_c, w_col, sum);
+        // printf("ch=%d, bIdx_r=%d, w_row=%d, bIdx_c=%d, w_col=%d, sum=%f\n", ch, bIdx_r, w_row, bIdx_c, w_col, sum);
     }
 
 #else
@@ -815,54 +816,72 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
 
 #if UNROLL
 /*-------------------------------------------------Unrolling -----------------------------------------------------------------------*/
-inline bool is_a_ge_zero_and_a_lt_b(int a, int b) {
-  return static_cast<unsigned>(a) < static_cast<unsigned>(b);
+inline bool is_a_ge_zero_and_a_lt_b(int a, int b)
+{
+    return static_cast<unsigned>(a) < static_cast<unsigned>(b);
 }
 
 void im2col_cpu(
-    const float* data_im, 
+    const float *data_im,
     const int channels,
-    const int height, 
-    const int width, 
-    const int kernel_h, 
+    const int height,
+    const int width,
+    const int kernel_h,
     const int kernel_w,
-    const int pad_h, 
+    const int pad_h,
     const int pad_w,
-    const int stride_h, 
+    const int stride_h,
     const int stride_w,
-    const int dilation_h, 
+    const int dilation_h,
     const int dilation_w,
-    float* data_col) {
-  const int output_h = (height + 2 * pad_h -
-    (dilation_h * (kernel_h - 1) + 1)) / stride_h + 1;
-  const int output_w = (width + 2 * pad_w -
-    (dilation_w * (kernel_w - 1) + 1)) / stride_w + 1;
-  const int channel_size = height * width;
-  for (int channel = channels; channel--; data_im += channel_size) {
-    for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++) {
-      for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++) {
-        int input_row = -pad_h + kernel_row * dilation_h;
-        for (int output_rows = output_h; output_rows; output_rows--) {
-          if (!is_a_ge_zero_and_a_lt_b(input_row, height)) {
-            for (int output_cols = output_w; output_cols; output_cols--) {
-              *(data_col++) = 0;
+    float *data_col)
+{
+    const int output_h = (height + 2 * pad_h -
+                          (dilation_h * (kernel_h - 1) + 1)) /
+                             stride_h +
+                         1;
+    const int output_w = (width + 2 * pad_w -
+                          (dilation_w * (kernel_w - 1) + 1)) /
+                             stride_w +
+                         1;
+    const int channel_size = height * width;
+    for (int channel = channels; channel--; data_im += channel_size)
+    {
+        for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++)
+        {
+            for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++)
+            {
+                int input_row = -pad_h + kernel_row * dilation_h;
+                for (int output_rows = output_h; output_rows; output_rows--)
+                {
+                    if (!is_a_ge_zero_and_a_lt_b(input_row, height))
+                    {
+                        for (int output_cols = output_w; output_cols; output_cols--)
+                        {
+                            *(data_col++) = 0;
+                        }
+                    }
+                    else
+                    {
+                        int input_col = -pad_w + kernel_col * dilation_w;
+                        for (int output_col = output_w; output_col; output_col--)
+                        {
+                            if (is_a_ge_zero_and_a_lt_b(input_col, width))
+                            {
+                                *(data_col++) = data_im[input_row * width + input_col];
+                            }
+                            else
+                            {
+                                *(data_col++) = 0;
+                            }
+                            input_col += stride_w;
+                        }
+                    }
+                    input_row += stride_h;
+                }
             }
-          } else {
-            int input_col = -pad_w + kernel_col * dilation_w;
-            for (int output_col = output_w; output_col; output_col--) {
-              if (is_a_ge_zero_and_a_lt_b(input_col, width)) {
-                *(data_col++) = data_im[input_row * width + input_col];
-              } else {
-                *(data_col++) = 0;
-              }
-              input_col += stride_w;
-            }
-          }
-          input_row += stride_h;
         }
-      }
     }
-  }
 }
 
 //*/
@@ -873,15 +892,15 @@ void im2col_cpu(
          i += blockDim.x * gridDim.x)
 
 // https://github.com/BVLC/caffe/blob/master/src/caffe/util/im2col.cu
-__global__ void im2col_gpu_kernel(const int n, 
-				  const float *data_im,
-                                  const int height, 
-				  const int width, 
-				  const int ksize,
+__global__ void im2col_gpu_kernel(const int n,
+                                  const float *data_im,
+                                  const int height,
+                                  const int width,
+                                  const int ksize,
                                   const int pad,
                                   const int stride,
-                                  const int height_col, 
-				  const int width_col,
+                                  const int height_col,
+                                  const int width_col,
                                   float *data_col)
 {
 
@@ -921,7 +940,7 @@ void verify_im2col(float *A, float val)
     int cnt = 0;
     for (int i = 0; i < RS * RS * PQ * PQ * input_channels; i++)
     {
-	//printf("%f\n", A[i]);
+        // printf("%f\n", A[i]);
         maxError = max(abs(A[i] - val), maxError);
         if (maxError != 0.0)
             cnt++;
@@ -951,7 +970,7 @@ void verify_ker2row(float *A, float val)
     int cnt = 0;
     for (int i = 0; i < K * input_channels * RS * RS; i++)
     {
-	//printf("%f\n", A[i]);
+        // printf("%f\n", A[i]);
         maxError = max(abs(A[i] - val), maxError);
         if (maxError != 0)
             cnt++;
@@ -959,8 +978,48 @@ void verify_ker2row(float *A, float val)
     printf("maxError = %f (cnt = %d),%d)\n", maxError, cnt, K * input_channels * RS * RS);
 }
 
+__global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
+{
+    // allocate shared memory for tiles
+    __shared__ float As[TILE_SIZE][TILE_SIZE];
+    __shared__ float Bs[TILE_SIZE][TILE_SIZE];
+
+    int row = blockIdx.y * TILE_SIZE + threadIdx.y;
+    int col = blockIdx.x * TILE_SIZE + threadIdx.x;
+
+    float value = 0;
+
+    // Loop over tiles
+    for (int t = 0; t < (k + TILE_SIZE - 1) / TILE_SIZE; ++t)
+    {
+        // Load elements into shared memory
+        if (row < m && t * TILE_SIZE + threadIdx.x < k)
+            tileA[threadIdx.y][threadIdx.x] = A[row * k + t * TILE_SIZE + threadIdx.x];
+        else
+            tileA[threadIdx.y][threadIdx.x] = 0;
+
+        if (col < n && t * TILE_SIZE + threadIdx.y < k)
+            tileB[threadIdx.y][threadIdx.x] = B[(t * TILE_SIZE + threadIdx.y) * n + col];
+        else
+            tileB[threadIdx.y][threadIdx.x] = 0;
+
+        __syncthreads();
+
+        // Multiply tiles
+        for (int k = 0; k < TILE_SIZE; ++k)
+            value += tileA[threadIdx.y][k] * tileB[k][threadIdx.x];
+
+        __syncthreads();
+    }
+
+    // Store result
+    if (row < m && col < n)
+        C[row * n + col] = value;
+}
+
 #if GEMM_GLOBAL
-__global__ void gemm_global_kernel(float matB[K][input_channels * RS * RS], float matA[input_channels * RS * RS][PQ * PQ], float matC[K][PQ * PQ])
+__global__ void
+gemm_global_kernel(float matB[K][input_channels * RS * RS], float matA[input_channels * RS * RS][PQ * PQ], float matC[K][PQ * PQ])
 {
 
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -995,7 +1054,7 @@ void pass(int argc, char **argv)
 
     SampleMNISTAPI sample(initializeSampleParams(args));
 
-    //sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
+    // sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
 
     sample.build();
 #else
@@ -1083,8 +1142,8 @@ void pass(int argc, char **argv)
 
     for (int batch = 0; batch < images; batch++)
     {
-	fillInputWithValues(input);
-	// printf("Hello\n");
+        fillInputWithValues(input);
+        // printf("Hello\n");
 #if TRT
 #else
         cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
@@ -1117,7 +1176,7 @@ void pass(int argc, char **argv)
 #endif
 
 #if CUDNN
-	cudnnConvolutionFwdAlgo_t convolution_algorithm;
+        cudnnConvolutionFwdAlgo_t convolution_algorithm;
 #if DARKNET
         size_t free_memory, total_memory;
         int requested_algo_count = 10, returned_algo_count = 0;
@@ -1189,7 +1248,7 @@ void pass(int argc, char **argv)
 #if TRT
 
         // trt_call(argc, argv);
-	// sample.build();
+        // sample.build();
         sample.infer();
 #endif
 
@@ -1206,43 +1265,41 @@ void pass(int argc, char **argv)
                                                                                      PQ,                       // height_col,
                                                                                      PQ,                       // width_col,
                                                                                      (float *)im2col_A);       // data_col);
-	
-        //start = clock();
-        //im2col_cpu((float *)input, 
-        //           input_channels, 
-        //           HW, HW, RS, RS, 
-        //           0, 0, 
-        //           STRIDE, STRIDE, 
-        //           0, 0, 
-        //           (float *)im2col_A_cpu);
-        //end = clock();
-        //im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
-        //cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+
+        // start = clock();
+        // im2col_cpu((float *)input,
+        //            input_channels,
+        //            HW, HW, RS, RS,
+        //            0, 0,
+        //            STRIDE, STRIDE,
+        //            0, 0,
+        //            (float *)im2col_A_cpu);
+        // end = clock();
+        // im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
+        // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
 
         err = cudaGetLastError();
-	if (err != cudaSuccess)
+        if (err != cudaSuccess)
         {
             printf("Im2col Error: %s\n", cudaGetErrorString(err));
         }
-	
 
-        //printf("Verifying im2col_A: ");
-        //float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
-        //cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
-        //verify_im2col(verification, 1.0f);
+        // printf("Verifying im2col_A: ");
+        // float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
+        // cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
+        // verify_im2col(verification, 1.0f);
 
-
-	int ker_tpb = 512;
-	int ker_nb = K * input_channels * RS * RS;
+        int ker_tpb = 512;
+        int ker_nb = K * input_channels * RS * RS;
         ker2row_kernel<<<(ker_nb + ker_tpb - 1) / ker_tpb, ker_tpb>>>((float(*)[input_channels * RS * RS]) gemm_B,
-                                                        (float(*)[input_channels][RS][RS])d_weight);
-	err = cudaGetLastError();
-	if (err != cudaSuccess)
+                                                                      (float(*)[input_channels][RS][RS])d_weight);
+        err = cudaGetLastError();
+        if (err != cudaSuccess)
         {
             printf("ker2row Error: %s\n", cudaGetErrorString(err));
         }
-	//cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
-        //verify_im2col(verification, 1.0f);
+        // cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
+        // verify_im2col(verification, 1.0f);
 
 #if GEMM_GLOBAL
         int total = K * PQ * PQ;
@@ -1259,22 +1316,27 @@ void pass(int argc, char **argv)
         float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
 
         // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
-        const float alpha = 1, beta = 0;
-        cudaError_t status = (cudaError_t)cublasSgemm(
-            handle,
-            CUBLAS_OP_N,
-            CUBLAS_OP_N,
-            n,
-            m,
-            k,
-            &alpha,
-            b,
-            n,
-            a,
-            k,
-            &beta,
-            c,
-            n);
+        // const float alpha = 1, beta = 0;
+        // cudaError_t status = (cudaError_t)cublasSgemm(
+        //     handle,
+        //     CUBLAS_OP_N,
+        //     CUBLAS_OP_N,
+        //     n,
+        //     m,
+        //     k,
+        //     &alpha,
+        //     b,
+        //     n,
+        //     a,
+        //     k,
+        //     &beta,
+        //     c,
+        //     n);
+
+        dim3 dimBlock(TILE_SIZE, TILE_SIZE);
+        dim3 dimGrid((N + TILE_SIZE - 1) / TILE_SIZE, (M + TILE_SIZE - 1) / TILE_SIZE);
+
+        gemm_shared_kernel<<<dimGrid, dimBlock>>>(gemm_B, im2col_A, gemm_C, m, k, n);
 
         if (status != cudaSuccess)
         {
@@ -1282,8 +1344,8 @@ void pass(int argc, char **argv)
             return;
         }
 
-	err = cudaGetLastError();
-	if (err != cudaSuccess)
+        err = cudaGetLastError();
+        if (err != cudaSuccess)
         {
             printf("cublass Error: %s\n", cudaGetErrorString(err));
         }
@@ -1296,9 +1358,9 @@ void pass(int argc, char **argv)
         cudaMemcpy(output, d_output, BATCH * PQ * PQ * K * sizeof(float), cudaMemcpyDeviceToHost);
         err = cudaGetLastError();
 
-	//for(int i = 0; i < PQ * PQ * K; i++){
-	//	printf("%f\n",output[i]);	
-	//}
+        // for(int i = 0; i < PQ * PQ * K; i++){
+        //	printf("%f\n",output[i]);
+        // }
 
         if (err != cudaSuccess)
         {
@@ -1338,12 +1400,12 @@ void pass(int argc, char **argv)
 int main(int argc, char **argv)
 {
     pass(argc, argv);
-    //printf("Im2col time takes %f seconds", im2col_time);
-    //printf("Creating buffer Manager %f seconds\n",buffManager);
-    //printf("Processing input %f seconds\n",process);
-    //printf("Copying Input to Device %f seconds\n",ItD);
-    //printf("Copying Output to Host %f seconds\n",OtH);
-    //printf("Executing %f seconds\n",exec);
+    // printf("Im2col time takes %f seconds", im2col_time);
+    // printf("Creating buffer Manager %f seconds\n",buffManager);
+    // printf("Processing input %f seconds\n",process);
+    // printf("Copying Input to Device %f seconds\n",ItD);
+    // printf("Copying Output to Host %f seconds\n",OtH);
+    // printf("Executing %f seconds\n",exec);
 #if TRT
 #else
     free(output);
