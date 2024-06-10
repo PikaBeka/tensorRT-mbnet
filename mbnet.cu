@@ -594,9 +594,9 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
-                    tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
-                    input[i * HW * HW + j * HW + k] = tmp;
+                    // float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
+                    // tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
+                    input[i * HW * HW + j * HW + k] = rand() % 5;
                     // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
@@ -620,9 +620,9 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
-                    tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = tmp;
+                    // float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
+                    // tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = rand() % 5;
                     // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
