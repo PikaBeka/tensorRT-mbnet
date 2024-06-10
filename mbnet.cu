@@ -980,8 +980,8 @@ void verify_ker2row(float *A, float val)
 
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
-    const uint x = blockIdx.x * blockDim.x + threadIdx.x;
-    const uint y = blockIdx.y * blockDim.y + threadIdx.y;
+    const int x = blockIdx.x * blockDim.x + threadIdx.x;
+    const int y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x < m && y < n)
     {
@@ -1314,10 +1314,11 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS;
         int n = K;
 
-        dim3 dimBlock(TILE_SIZE, TILE_SIZE);
-        dim3 dimGrid((m + TILE_SIZE - 1) / TILE_SIZE, (n + TILE_SIZE - 1) / TILE_SIZE);
+        dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32), 1);
+        // 32 * 32 = 1024 thread per block
+        dim3 blockDim(32, 32, 1);
 
-        gemm_shared_kernel<<<dimGrid, dimBlock>>>(im2col_A, gemm_B, d_output, m, k, n);
+        gemm_shared_kernel<<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, k, n);
 
         // if (status != cudaSuccess)
         // {
@@ -1328,7 +1329,7 @@ void pass(int argc, char **argv)
         err = cudaGetLastError();
         if (err != cudaSuccess)
         {
-            printf("cublass Error: %s\n", cudaGetErrorString(err));
+            printf("GEMM Error: %s\n", cudaGetErrorString(err));
         }
 #endif
 
