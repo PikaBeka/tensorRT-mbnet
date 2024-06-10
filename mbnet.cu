@@ -1314,7 +1314,7 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS;
         int n = K;
 
-        dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32), 1);
+        dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32, 1);
         // 32 * 32 = 1024 thread per block
         dim3 blockDim(32, 32, 1);
 
