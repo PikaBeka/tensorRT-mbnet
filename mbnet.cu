@@ -1261,10 +1261,10 @@ void pass(int argc, char **argv)
             printf("Im2col Error: %s\n", cudaGetErrorString(err));
         }
 
-        printf("Verifying im2col_A: ");
-        float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
-        cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
-        verify_im2col(verification, 1.0f);
+        // printf("Verifying im2col_A: ");
+        // float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
+        // cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
+        // verify_im2col(verification, 1.0f);
 
         int ker_tpb = 512;
         int ker_nb = K * input_channels * RS * RS;
@@ -1275,8 +1275,8 @@ void pass(int argc, char **argv)
         {
             printf("ker2row Error: %s\n", cudaGetErrorString(err));
         }
-        cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
-        verify_im2col(verification, 1.0f);
+        // cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
+        // verify_im2col(verification, 1.0f);
 
 #if GEMM_GLOBAL
         int total = K * PQ * PQ;
