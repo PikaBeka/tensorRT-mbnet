@@ -1342,8 +1342,8 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS;
         int n = K;
 
-        dim3 dimBlock(TILE_SIZE, TILE_SIZE);
-        dim3 dimGrid((n + TILE_SIZE) / TILE_SIZE, (m + TILE_SIZE) / TILE_SIZE);
+        dim3 dimBlock(TILE_SIZE, TILE_SIZE, 1);
+        dim3 dimGrid((m + TILE_SIZE) / TILE_SIZE, (n + TILE_SIZE) / TILE_SIZE);
 
         gemm_shared_kernel<<<dimGrid, dimBlock>>>(im2col_A, gemm_B, d_output, m, k, n);
 
