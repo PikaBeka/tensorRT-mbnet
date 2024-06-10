@@ -981,69 +981,67 @@ void verify_ker2row(float *A, float val)
 template <const uint BLOCKSIZE>
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
-    printf("%d\n", BLOCKSIZE);
-    const uint cRow = blockIdx.x;
-    const uint cCol = blockIdx.y;
+    const uint cRow = blockIdx.x * BLOCKSIZE; // Block row
+    const uint cCol = blockIdx.y * BLOCKSIZE; // Block column
 
-    // allocate buffer for current block in fast shared mem
-    // shared mem is shared between all threads in a block
-    __shared__ float As[BLOCKSIZE * BLOCKSIZE];
-    __shared__ float Bs[BLOCKSIZE * BLOCKSIZE];
+    // Allocate shared memory for A and B tiles
+    __shared__ float As[BLOCKSIZE][BLOCKSIZE];
+    __shared__ float Bs[BLOCKSIZE][BLOCKSIZE];
 
-    // the inner row & col that we're accessing in this thread
-    const uint threadCol = threadIdx.x % BLOCKSIZE;
-    const uint threadRow = threadIdx.x / BLOCKSIZE;
+    // Thread row and column within the block
+    const uint threadRow = threadIdx.y;
+    const uint threadCol = threadIdx.x;
 
-    // advance pointers to the starting positions
-    A += cRow * BLOCKSIZE * k;                    // row=cRow, col=0
-    B += cCol * BLOCKSIZE;                        // row=0, col=cCol
-    C += cRow * BLOCKSIZE * n + cCol * BLOCKSIZE; // row=cRow, col=cCol
+    // Initialize the accumulator
+    float tmp = 0.0f;
 
-    float tmp = 0.0;
-    for (int bkIdx = 0; bkIdx < k; bkIdx += BLOCKSIZE)
+    // Loop over all tiles
+    for (int bkIdx = 0; bkIdx < (k + BLOCKSIZE - 1) / BLOCKSIZE; ++bkIdx)
     {
-        // Have each thread load one of the elements in A & B
-        // Make the threadCol (=threadIdx.x) the consecutive index
-        // to allow global memory access coalescing
-        if (threadRow * k + threadCol < m * k)
+        // Global row and column indices for loading into shared memory
+        int A_row = cRow + threadRow;
+        int A_col = bkIdx * BLOCKSIZE + threadCol;
+        int B_row = bkIdx * BLOCKSIZE + threadRow;
+        int B_col = cCol + threadCol;
+
+        // Load data into shared memory, ensuring we stay within bounds
+        if (A_row < m && A_col < k)
         {
-            As[threadRow * BLOCKSIZE + threadCol] = A[threadRow * k + threadCol];
+            As[threadRow][threadCol] = A[A_row * k + A_col];
         }
         else
         {
-            As[threadRow * BLOCKSIZE + threadCol] = 0.0;
+            As[threadRow][threadCol] = 0.0f;
         }
 
-        if (threadRow * n + threadCol < k * n)
+        if (B_row < k && B_col < n)
         {
-            Bs[threadRow * BLOCKSIZE + threadCol] = B[threadRow * n + threadCol];
+            Bs[threadRow][threadCol] = B[B_row * n + B_col];
         }
         else
         {
-            Bs[threadRow * BLOCKSIZE + threadCol] = 0.0;
+            Bs[threadRow][threadCol] = 0.0f;
         }
 
-        // block threads in this block until cache is fully populated
-        __syncthreads();
-        A += BLOCKSIZE;
-        B += BLOCKSIZE * n;
+        __syncthreads(); // Wait for all threads to load the data
 
-        // execute the dotproduct on the currently cached block
-        for (int dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx)
+        // Compute the product for this tile
+        for (int i = 0; i < BLOCKSIZE; ++i)
         {
-            if (threadRow * BLOCKSIZE + dotIdx < BLOCKSIZE * BLOCKSIZE &&
-                dotIdx * BLOCKSIZE + threadCol < BLOCKSIZE * BLOCKSIZE)
-                tmp += As[threadRow * BLOCKSIZE + dotIdx] *
-                       Bs[dotIdx * BLOCKSIZE + threadCol];
+            tmp += As[threadRow][i] * Bs[i][threadCol];
         }
-        // need to sync again at the end, to avoid faster threads
-        // fetching the next block into the cache before slower threads are done
-        __syncthreads();
+
+        __syncthreads(); // Wait for all threads to complete the computation
     }
 
-    if (threadRow * n + threadCol < m * n)
+    // Global row and column indices for storing the result
+    int C_row = cRow + threadRow;
+    int C_col = cCol + threadCol;
+
+    // Store the result
+    if (C_row < m && C_col < n)
     {
-        C[threadRow * n + threadCol] = tmp;
+        C[C_row * n + C_col] = tmp;
     }
 }
 
@@ -1366,11 +1364,11 @@ void pass(int argc, char **argv)
         int k = input_channels * RS * RS;
         int n = K;
 
-        dim3 gridDim((m + 32 - 1) / 32, (n + 32 - 1) / 32);
+        dim3 gridDim((m + TILE_SIZE - 1) / TILE_SIZE, (n + TILE_SIZE - 1) / TILE_SIZE);
         // 32 * 32 = 1024 thread per block
-        dim3 blockDim(32 * 32);
+        dim3 blockDim(TILE_SIZE * TILE_SIZE);
 
-        gemm_shared_kernel<32><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
+        gemm_shared_kernel<TILE_SIZE><<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
 
         // if (status != cudaSuccess)
         // {
