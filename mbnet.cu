@@ -584,7 +584,7 @@ void printHelpInfo()
 
 void fillInputWithValues(float *input)
 {
-    srand(time(0));
+    srand(static_cast<unsigned>(time(0)));
 
     for (int b = 0; b < BATCH; b++)
     {
@@ -594,7 +594,7 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[i * HW * HW + j * HW + k] = 2.0f * rand() / RAND_MAX - 1.0f;
+                    input[i * HW * HW + j * HW + k] = 2.0f * (static_cast<float>(rand()) / RAND_MAX) - 1.0f;
                     // input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
@@ -608,7 +608,7 @@ void fillInputWithValues(float *input)
 /*Function to fill input and weight matrix with random values*/
 void fillWeightWithValues(float *weight)
 {
-    srand(time(0));
+    srand(static_cast<unsigned>(time(0)));
 
     for (int i = 0; i < K; i++)
     {
@@ -618,7 +618,7 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 2.0f * rand() / RAND_MAX - 1.0f;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 2.0f * (static_cast<float>(rand()) / RAND_MAX) - 1.0f;
                     // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
@@ -648,7 +648,7 @@ void verification(float *input, float *weight, float *output)
                             }
                         }
                     }
-                    if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 1)
+                    if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 1e-4)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
@@ -1376,6 +1376,7 @@ void pass(int argc, char **argv)
         //     return;
         // }
 
+        cudaDeviceSynchronize();
         err = cudaGetLastError();
         if (err != cudaSuccess)
         {
