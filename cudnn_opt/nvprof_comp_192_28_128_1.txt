@@ -1,0 +1,23 @@
+==25509== NVPROF is profiling process 25509, command: ./mbnet
+==25509== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
+==25509== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
+==25509== Profiling application: ./mbnet
+==25509== Profiling result:
+   Start  Duration            Grid Size      Block Size     Regs*    SSMem*    DSMem*      Size  Throughput  SrcMemType  DstMemType           Device   Context    Stream  Name
+313.02ms  51.201us                    -               -         -         -         -  96.000KB  1.7881GB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+4.22899s  12.928us                    -               -         -         -         -      384B  28.327MB/s      Device           -  NVIDIA Tegra X2         1        22  [CUDA memset]
+4.22900s  2.2720us                    -               -         -         -         -      384B  161.18MB/s      Device           -  NVIDIA Tegra X2         1        23  [CUDA memset]
+4.22901s  2.2400us                    -               -         -         -         -      384B  163.49MB/s      Device           -  NVIDIA Tegra X2         1        24  [CUDA memset]
+4.22902s  2.2400us                    -               -         -         -         -      384B  163.49MB/s      Device           -  NVIDIA Tegra X2         1        25  [CUDA memset]
+4.22932s  1.7920us                    -               -         -         -         -      112B  59.605MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+4.22937s  1.8240us                    -               -         -         -         -      112B  58.559MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+4.26287s  219.40us                    -               -         -         -         -  588.00KB  2.5559GB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+6.87764s  46.049us            (192 1 1)         (1 1 1)        16        0B        0B         -           -           -           -  NVIDIA Tegra X2         1         7  void cudnn::cnn::kern_precompute_indices<bool=0>(int*, int, int, int, int, int, int) [424]
+6.87770s  1.5712ms             (25 4 1)         (8 8 1)        64  4.5000KB        0B         -           -           -           -  NVIDIA Tegra X2         1         7  void precomputed_convolve_sgemm<float, int=1024, int=5, int=5, int=4, int=3, int=3, int=1, bool=0>(int, int, int, float const *, int, float*, float const *, kernel_conv_params, __int64, int, float, float, int, float const *, float const *, int*) [426]
+6.87942s  149.41us                    -               -         -         -         -  392.00KB  2.5021GB/s      Device    Pageable  NVIDIA Tegra X2         1         7  [CUDA memcpy DtoH]
+
+Regs: Number of registers used per CUDA thread. This number includes registers used internally by the CUDA driver and/or tools and can be more than what the compiler shows.
+SSMem: Static shared memory allocated per CUDA block.
+DSMem: Dynamic shared memory allocated per CUDA block.
+SrcMemType: The type of source memory accessed by memory operation/copy
+DstMemType: The type of destination memory accessed by memory operation/copy

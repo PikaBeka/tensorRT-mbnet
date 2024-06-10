@@ -45,12 +45,12 @@ using samplesCommon::SampleUniquePtr;
 
 const std::string gSampleName = "TensorRT.sample_mnist_api";
 
-float *input = (float *)malloc(sizeof(float) * input_channels * HW * HW);
-float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
-float *bias = (float *)malloc(sizeof(float) * K);
+float *input = (float *)malloc(sizeof(float) * input_channels * HW * HW); 
+float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels); 
+float *bias = (float *)malloc(sizeof(float) * K); 
 float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
-int debug = 0;
+int debug = 1;
 
 //double buffManager = 0;
 //double process = 0;
@@ -58,9 +58,92 @@ int debug = 0;
 //double OtH = 0;
 //double exec = 0;
 
-//clock_t start, end;
+double im2col_time = 0;
+
+clock_t start, end;
 
 #if TRT
+std::string const gCacheFileName = "AlgorithmCache.txt";
+
+//!
+//! \brief Writes the default algorithm choices made by TensorRT into a file.
+//!
+class AlgorithmCacheWriter : public IAlgorithmSelector
+{
+public:
+    //!
+    //! \brief Return value in [0, nbChoices] for a valid algorithm.
+    //!
+    //! \details Lets TRT use its default tactic selection method.
+    //! Writes all the possible choices to the selection buffer and returns the length of it.
+    //! If BuilderFlag::kSTRICT_TYPES is not set, just returning 0 forces default tactic selection.
+    //!
+    int32_t selectAlgorithms(const nvinfer1::IAlgorithmContext& context, const nvinfer1::IAlgorithm* const* choices,
+        int32_t nbChoices, int32_t* selection) noexcept override
+    {
+        // TensorRT always provides more than zero number of algorithms in selectAlgorithms.
+        ASSERT(nbChoices > 0);
+
+        std::cout << nbChoices << "\n";
+
+        for (int i = 0; i < nbChoices; ++i) {
+           std::cout << "Algorithm " << i << ": Implementation = " << choices[i]->getAlgorithmVariant().getImplementation() << std::endl;
+        }
+
+        // std::iota(selection, selection + nbChoices, 0);
+        return 0;
+    }
+
+    //!
+    //! \brief called by TensorRT to report choices it made.
+    //!
+    //! \details Writes the TensorRT algorithm choices into a file.
+    //!
+    void reportAlgorithms(const nvinfer1::IAlgorithmContext* const* algoContexts,
+        const nvinfer1::IAlgorithm* const* algoChoices, int32_t nbAlgorithms) noexcept override
+    {
+        std::ofstream algorithmFile(mCacheFileName);
+        if (!algorithmFile.good())
+        {
+            sample::gLogError << "Cannot open algorithm cache file: " << mCacheFileName << " to write." << std::endl;
+            abort();
+        }
+
+        std::cout << nbAlgorithms << "\n";
+
+        for (int32_t i = 0; i < nbAlgorithms; i++)
+        {
+            std::cout << algoContexts[i]->getName() << "\n";
+            std::cout << algoChoices[i]->getAlgorithmVariant().getImplementation() << "\n";
+            std::cout << algoChoices[i]->getAlgorithmVariant().getTactic() << "\n";
+
+            // Write number of inputs and outputs.
+            const int32_t nbInputs = algoContexts[i]->getNbInputs();
+            algorithmFile << nbInputs << "\n";
+            const int32_t nbOutputs = algoContexts[i]->getNbOutputs();
+            algorithmFile << nbOutputs << "\n";
+
+            // Write input and output formats.
+            for (int32_t j = 0; j < nbInputs + nbOutputs; j++)
+            {
+                algorithmFile << static_cast<int32_t>(algoChoices[i]->getAlgorithmIOInfoByIndex(j)->getTensorFormat())
+                              << "\n";
+                algorithmFile << static_cast<int32_t>(algoChoices[i]->getAlgorithmIOInfoByIndex(j)->getDataType())
+                              << "\n";
+            }
+        }
+        algorithmFile.close();
+    }
+
+    AlgorithmCacheWriter(const std::string& cacheFileName)
+        : mCacheFileName(cacheFileName)
+    {
+    }
+
+private:
+    std::string mCacheFileName;
+};
+
 //------------------------------------------------------------------------------------------TensorRT--------------------------------------------------------------------------------------------------------
 //!
 //! \brief The SampleMNISTAPIParams structure groups the additional parameters required by
@@ -160,11 +243,17 @@ bool SampleMNISTAPI::build()
         return false;
     }
 
+    AlgorithmCacheWriter selector(gCacheFileName);
+
     auto config = SampleUniquePtr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
     if (!config)
     {
         return false;
     }
+
+    config->setFlag(nvinfer1::BuilderFlag::kDISABLE_TIMING_CACHE);
+
+    config->setAlgorithmSelector(&selector);
 
     auto constructed = constructNetwork(builder, network, config);
     if (!constructed)
@@ -212,7 +301,7 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
     network->markOutput(*conv1->getOutput(0));
 
     // Build engine
-    config->setMaxWorkspaceSize(16_MiB);
+    // config->setMaxWorkspaceSize(32_MiB);
     if (mParams.fp16)
     {
         config->setFlag(BuilderFlag::kFP16);
@@ -263,8 +352,6 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
 //!
 bool SampleMNISTAPI::infer()
 {
-    // Create RAII buffer manager object
-    //start = clock();
     samplesCommon::BufferManager buffers(mEngine);
 
     auto context = SampleUniquePtr<nvinfer1::IExecutionContext>(mEngine->createExecutionContext());
@@ -272,41 +359,23 @@ bool SampleMNISTAPI::infer()
     {
         return false;
     }
-    //end = clock();
-    //buffManager += ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    // Read the input data into the managed buffers
-    //start = clock();
     ASSERT(mParams.inputTensorNames.size() == 1);
     if (!processInput(buffers, input))
     {
         return false;
     }
-    //end = clock();
-    //process += ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    // Memcpy from host input buffers to device input buffers
-    //start = clock();
     buffers.copyInputToDevice();
-    //end = clock();
-    //ItD += ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    //start = clock();
     bool status = context->executeV2(buffers.getDeviceBindings().data());
     if (!status)
     {
         return false;
     }
-    //end = clock();
-    //exec += ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    // Memcpy from device output buffers to host output buffers
-    //start = clock();
     buffers.copyOutputToHost();
-    //end = clock();
-    //OtH += ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    // Verify results
     if (debug && !verifyOutput(buffers, input, weight))
     {
         printf("Verification failed\n");
@@ -323,6 +392,8 @@ bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, f
 {
     srand(time(0));
 
+    // printf("Input processed for trt");
+
     float *hostDataBuffer = static_cast<float *>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
     float temp = 1.0f;
 
@@ -332,8 +403,8 @@ bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, f
         {
             for (int k = 0; k < HW; k++)
             {
-                temp = (float)(rand() % 100);
-                input[i * HW * HW + j * HW + k] = temp;
+                // temp = (float)(rand() % 100);
+                temp =  input[i * HW * HW + j * HW + k];
                 hostDataBuffer[i * HW * HW + j * HW + k] = temp;
             }
         }
@@ -744,6 +815,56 @@ __global__ void kernel_conv_filter(float input[input_channels][HW][HW],
 
 #if UNROLL
 /*-------------------------------------------------Unrolling -----------------------------------------------------------------------*/
+inline bool is_a_ge_zero_and_a_lt_b(int a, int b) {
+  return static_cast<unsigned>(a) < static_cast<unsigned>(b);
+}
+
+void im2col_cpu(
+    const float* data_im, 
+    const int channels,
+    const int height, 
+    const int width, 
+    const int kernel_h, 
+    const int kernel_w,
+    const int pad_h, 
+    const int pad_w,
+    const int stride_h, 
+    const int stride_w,
+    const int dilation_h, 
+    const int dilation_w,
+    float* data_col) {
+  const int output_h = (height + 2 * pad_h -
+    (dilation_h * (kernel_h - 1) + 1)) / stride_h + 1;
+  const int output_w = (width + 2 * pad_w -
+    (dilation_w * (kernel_w - 1) + 1)) / stride_w + 1;
+  const int channel_size = height * width;
+  for (int channel = channels; channel--; data_im += channel_size) {
+    for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++) {
+      for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++) {
+        int input_row = -pad_h + kernel_row * dilation_h;
+        for (int output_rows = output_h; output_rows; output_rows--) {
+          if (!is_a_ge_zero_and_a_lt_b(input_row, height)) {
+            for (int output_cols = output_w; output_cols; output_cols--) {
+              *(data_col++) = 0;
+            }
+          } else {
+            int input_col = -pad_w + kernel_col * dilation_w;
+            for (int output_col = output_w; output_col; output_col--) {
+              if (is_a_ge_zero_and_a_lt_b(input_col, width)) {
+                *(data_col++) = data_im[input_row * width + input_col];
+              } else {
+                *(data_col++) = 0;
+              }
+              input_col += stride_w;
+            }
+          }
+          input_row += stride_h;
+        }
+      }
+    }
+  }
+}
+
 //*/
 // CUDA: grid stride looping
 #define CUDA_KERNEL_LOOP(i, n)                          \
@@ -947,6 +1068,7 @@ void pass(int argc, char **argv)
 #endif
 
 #if UNROLL
+    float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
     float *im2col_A, *gemm_B, *gemm_C;
 
     cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
@@ -962,10 +1084,10 @@ void pass(int argc, char **argv)
     for (int batch = 0; batch < images; batch++)
     {
 	fillInputWithValues(input);
+	// printf("Hello\n");
 #if TRT
 #else
         cudaMemcpy(d_input, input, BATCH * input_channels * HW * HW * sizeof(float), cudaMemcpyHostToDevice);
-        
 #endif
 
 #if ARRAY_NAIVE
@@ -1026,7 +1148,7 @@ void pass(int argc, char **argv)
             {
                 convolution_algorithm = conv_fwd_results[i].algo;
                 min_time = conv_fwd_results[i].time;
-                // printf(" - cuDNN FWD algo: %d, time = %f ms \n", convolution_algorithm, min_time);
+                printf("%d %d %d %d - cuDNN FWD algo: %d, time = %f ms \n", input_channels, HW, K, RS, convolution_algorithm, min_time);
             }
         }
 #else
@@ -1067,6 +1189,7 @@ void pass(int argc, char **argv)
 #if TRT
 
         // trt_call(argc, argv);
+	// sample.build();
         sample.infer();
 #endif
 
@@ -1083,7 +1206,20 @@ void pass(int argc, char **argv)
                                                                                      PQ,                       // height_col,
                                                                                      PQ,                       // width_col,
                                                                                      (float *)im2col_A);       // data_col);
-	err = cudaGetLastError();
+	
+        //start = clock();
+        //im2col_cpu((float *)input, 
+        //           input_channels, 
+        //           HW, HW, RS, RS, 
+        //           0, 0, 
+        //           STRIDE, STRIDE, 
+        //           0, 0, 
+        //           (float *)im2col_A_cpu);
+        //end = clock();
+        //im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
+        //cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+
+        err = cudaGetLastError();
 	if (err != cudaSuccess)
         {
             printf("Im2col Error: %s\n", cudaGetErrorString(err));
@@ -1202,6 +1338,7 @@ void pass(int argc, char **argv)
 int main(int argc, char **argv)
 {
     pass(argc, argv);
+    //printf("Im2col time takes %f seconds", im2col_time);
     //printf("Creating buffer Manager %f seconds\n",buffManager);
     //printf("Processing input %f seconds\n",process);
     //printf("Copying Input to Device %f seconds\n",ItD);

@@ -1,0 +1,23 @@
+==26749== NVPROF is profiling process 26749, command: ./mbnet
+==26749== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
+==26749== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
+==26749== Profiling application: ./mbnet
+==26749== Profiling result:
+   Start  Duration            Grid Size      Block Size     Regs*    SSMem*    DSMem*      Size  Throughput  SrcMemType  DstMemType           Device   Context    Stream  Name
+319.76ms  2.0735ms                    -               -         -         -         -  4.5000MB  2.1194GB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+3.80349s  12.864us                    -               -         -         -         -      384B  28.468MB/s      Device           -  NVIDIA Tegra X2         1        22  [CUDA memset]
+3.80351s  2.2400us                    -               -         -         -         -      384B  163.49MB/s      Device           -  NVIDIA Tegra X2         1        23  [CUDA memset]
+3.80351s  2.2080us                    -               -         -         -         -      384B  165.86MB/s      Device           -  NVIDIA Tegra X2         1        24  [CUDA memset]
+3.80352s  2.2720us                    -               -         -         -         -      384B  161.18MB/s      Device           -  NVIDIA Tegra X2         1        25  [CUDA memset]
+3.80378s  1.7920us                    -               -         -         -         -      112B  59.605MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+3.80386s  1.7280us                    -               -         -         -         -      112B  61.812MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+3.82946s  56.321us                    -               -         -         -         -  49.000KB  849.62MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
+6.66386s  2.8852ms            (16 64 1)        (32 4 1)        55  8.5000KB        0B         -           -           -           -  NVIDIA Tegra X2         1         7  void cudnn::winograd::generateWinogradTilesKernel<int=1, float, float>(cudnn::winograd::GenerateWinogradTilesParams<float, float>) [424]
+6.66676s  3.1835ms             (16 1 1)       (256 1 1)       128  32.000KB        0B         -           -           -           -  NVIDIA Tegra X2         1         7  maxwell_scudnn_winograd_128x128_ldg1_ldg4_mobile_relu_tile148t_nt_v0 [426]
+6.67257s  35.681us                    -               -         -         -         -  50.000KB  1.3364GB/s      Device    Pageable  NVIDIA Tegra X2         1         7  [CUDA memcpy DtoH]
+
+Regs: Number of registers used per CUDA thread. This number includes registers used internally by the CUDA driver and/or tools and can be more than what the compiler shows.
+SSMem: Static shared memory allocated per CUDA block.
+DSMem: Dynamic shared memory allocated per CUDA block.
+SrcMemType: The type of source memory accessed by memory operation/copy
+DstMemType: The type of destination memory accessed by memory operation/copy

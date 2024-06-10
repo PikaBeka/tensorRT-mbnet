@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(direct_shared unroll_cublass tensorrt cudnn cudnn_opt mbnet) # folder names created, output path for created txt files
+out_path=(unroll_cublass tensorrt cudnn cudnn_opt mbnet) # folder names created, output path for created txt files
 
 metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_warp gld_efficiency gst_efficiency shared_efficiency shared_utilization
            l2_utilization global_hit_rate tex_cache_hit_rate tex_utilization ipc inst_issued inst_executed issue_slot_utilization dram_utilization)
@@ -11,10 +11,10 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #K=(3 6 6 6 6 6 9 9 12 12 16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64) # 30
 
 # AlexNet
-C=(3 96 256 384 384)
-HW=(64 26 12 12 12)
-K=(96 256 384 384 256)
-RS=(11 5 3 3 3)
+#C=(3 96 256 384 384)
+#HW=(64 26 12 12 12)
+#K=(96 256 384 384 256)
+#RS=(11 5 3 3 3)
 #TILE_S=(14 8 6 5 5)
 
 # VGGNet-16
@@ -30,10 +30,10 @@ RS=(11 5 3 3 3)
 #RS=(3 3 1 1 1 3 1 1 3 1 1 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 1 1 3 1 1 3 1 1 1 1 3 1 3 1 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 )
 
 #YOLOV4-TINY
-C=(3 32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 )
-HW=(416 208 104 104 104 104 53 53 53 53 27 27 27 27 14 14 16 16 18 20 20 )
-K=(32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 255 )
-RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1 )
+#C=(3 32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 )
+#HW=(416 208 104 104 104 104 53 53 53 53 27 27 27 27 14 14 16 16 18 20 20 )
+#K=(32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 255 )
+#RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1 )
 
 #C=(3)
 #HW=(64)
@@ -56,10 +56,18 @@ RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1 )
 #RS=(3 3 3 3 3 3 3 3 3 3 3 3 3 7 3 1 3 5 1 3 3 3 3 3 3 3 3 3)
 
 # ----- ------ List of all sizes
-# C=(3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32 64 128 128 128 256 256 256 512 1 1 1 1 1 1 1 1 1 1 3 96 256 384 384 3 16 32 64 128 512 1024 256 512 256 384 256 3 64 64 128 128 256 256 512 512 3 64 512 512 192 192 192 256 256 256 64 64 128 128 256)
-# HW=(150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8 64 56 28 14 256 128 64 56 256 400 320 256 128 32 256 64 256 64 64 26 12 12 12 416 208 104 52 26 13 13 13 13 13 13 13 224 224 112 112 56 56 28 28 56 28 28 14 224 28 28 28 28 56 56 28 28 14 14 7)
-# K=(16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64 256 256 512 256 128 64 56 28 3 6 6 6 6 6 9 9 12 12 96 256 384 384 256 16 32 64 128 256 1024 256 512 255 128 256 255 64 64 128 128 256 256 512 512 192 64 96 512 64 16 128 128 32 64 128 128 256 256 512 512)
-# RS=(5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 11 5 3 3 3 3 3 3 3 3 3 1 3 1 1 3 1 3 3 3 3 3 3 3 3 3 1 3 3 7 5 1 3 3 3 3 3 3 3 3 3)
+#C=(3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32 64 128 128 128 256 256 256 512 1 1 1 1 1 1 1 1 1 1 3 96 256 384 384 3 16 32 64 128 512 1024 256 512 256 384 256 3 64 64 128 128 256 256 512 512 3 64 512 512 192 192 192 256 256 256 64 64 128 128 256)
+
+#HW=(150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8 64 56 28 14 256 128 64 56 256 400 320 256 128 32 256 64 256 64 64 26 12 12 12 416 208 104 52 26 13 13 13 13 13 13 13 224 224 112 112 56 56 28 28 56 28 28 14 224 28 28 28 28 56 56 28 28 14 14 7)
+#
+#K=(16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64 256 256 512 256 128 64 56 28 3 6 6 6 6 6 9 9 12 12 96 256 384 384 256 16 32 64 128 256 1024 256 512 255 128 256 255 64 64 128 128 256 256 512 512 192 64 96 512 64 16 128 128 32 64 128 128 256 256 512 512)
+
+#RS=(5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 11 5 3 3 3 3 3 3 3 3 3 1 3 1 1 3 1 3 3 3 3 3 3 3 3 3 1 3 3 7 5 1 3 3 3 3 3 3 3 3 3)
+
+C=(192)
+HW=(28)
+K=(128)
+RS=(1)
 
 #input file to change macro define
 in_file=mbnet.h
@@ -222,7 +230,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     sed -i 's/define RS .*/define RS '${RS[$i]}'/' ${in_file} # change RS
     #sed -i 's/define TILE_S .*/define TILE_S '${TILE_S[$i]}'/' ${in_file} # change TILE_S
 
-    /usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w
+    /usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm
 		
     if [[ "$is_metrics" = true ]]
     then

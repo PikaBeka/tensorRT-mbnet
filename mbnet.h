@@ -1,9 +1,9 @@
 #define images 10000 // number of images in batch
 #define BATCH 1
 
-#define input_channels 256
-#define HW 20
-#define K 255
+#define input_channels 192
+#define HW 28
+#define K 128
 
 #define RS 1
 #define STRIDE 1
@@ -32,5 +32,5 @@
 #define GRID ((PQ + LIM - 1) / LIM) // (37)
 #define CONV_NB (K * GRID * GRID)   // 1369 // threads per block (150)
 
-#define UNROLL_TPB MIN(1024, K *RS *RS)
+#define UNROLL_TPB 1024
 #define UNROLL_NB (PQ * PQ * input_channels)
