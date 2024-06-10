@@ -980,51 +980,23 @@ void verify_ker2row(float *A, float val)
 
 __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, int k)
 {
-    // allocate shared memory for tiles
-    __shared__ float tileA[TILE_SIZE][TILE_SIZE];
-    __shared__ float tileB[TILE_SIZE][TILE_SIZE];
+    const uint x = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    int row = blockIdx.y * TILE_SIZE + threadIdx.y;
-    int col = blockIdx.x * TILE_SIZE + threadIdx.x;
-
-    float value = 0;
-
-    // Loop over tiles
-    for (int t = 0; t < k / TILE_SIZE; ++t)
+    if (x < M && y < N)
     {
-        // Load elements into shared memory
-        if (row < m && t * TILE_SIZE + threadIdx.x < k)
+        float tmp = 0.0;
+        for (int i = 0; i < K; ++i)
         {
-            tileA[threadIdx.y][threadIdx.x] = A[row * k + t * TILE_SIZE + threadIdx.x];
-            // printf("%f\n", tileA[threadIdx.y][threadIdx.x]);
+            tmp += A[x * K + i] * B[i * N + y];
         }
-        else
-            tileA[threadIdx.y][threadIdx.x] = 0;
-
-        if (col < n && t * TILE_SIZE + threadIdx.y < k)
-            tileB[threadIdx.y][threadIdx.x] = B[(t * TILE_SIZE + threadIdx.y) * n + col];
-        else
-            tileB[threadIdx.y][threadIdx.x] = 0;
-
-        __syncthreads();
-
-        // Multiply tiles
-        for (int k = 0; k < TILE_SIZE; ++k)
-            value += tileA[threadIdx.y][k] * tileB[k][threadIdx.x];
-
-        __syncthreads();
+        // C = α*(A@B)+β*C
+        C[x * N + y] = tmp;
     }
-
-    // Store result
-    if (row < m && col < n)
-        C[row * n + col] = value;
-
-    // printf("%f\n", value);
 }
 
 #if GEMM_GLOBAL
-__global__ void
-gemm_global_kernel(float matB[K][input_channels * RS * RS], float matA[input_channels * RS * RS][PQ * PQ], float matC[K][PQ * PQ])
+__global__ void gemm_global_kernel(float matB[K][input_channels * RS * RS], float matA[input_channels * RS * RS][PQ * PQ], float matC[K][PQ * PQ])
 {
 
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
