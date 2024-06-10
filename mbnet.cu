@@ -1004,8 +1004,23 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
         // Have each thread load one of the elements in A & B
         // Make the threadCol (=threadIdx.x) the consecutive index
         // to allow global memory access coalescing
-        As[threadRow * BLOCKSIZE + threadCol] = A[threadRow * k + threadCol];
-        Bs[threadRow * BLOCKSIZE + threadCol] = B[threadRow * n + threadCol];
+        if (threadRow * k + threadCol < m * k)
+        {
+            As[threadRow * BLOCKSIZE + threadCol] = A[threadRow * k + threadCol];
+        }
+        else
+        {
+            As[threadRow * BLOCKSIZE + threadCol] = 0.0;
+        }
+
+        if (threadRow * n + threadCol < k * n)
+        {
+            Bs[threadRow * BLOCKSIZE + threadCol] = B[threadRow * n + threadCol];
+        }
+        else
+        {
+            Bs[threadRow * BLOCKSIZE + threadCol] = 0.0;
+        }
 
         // block threads in this block until cache is fully populated
         __syncthreads();
@@ -1023,7 +1038,10 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
         __syncthreads();
     }
 
-    C[threadRow * n + threadCol] = tmp;
+    if (threadRow * n + threadCol < m * n)
+    {
+        C[threadRow * n + threadCol] = tmp;
+    }
 }
 
 #if GEMM_GLOBAL
