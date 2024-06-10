@@ -594,8 +594,8 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    input[i * HW * HW + j * HW + k] = (float)(rand() % 2) - 1;
-                    // input[i * HW * HW + j * HW + k] = 1.0f;
+                    // input[i * HW * HW + j * HW + k] = (float)(rand() % 2) - 1;
+                    input[i * HW * HW + j * HW + k] = 1.0f;
                 }
             }
         }
@@ -618,8 +618,8 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 2) - 1;
-                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
+                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = (float)(rand() % 2) - 1;
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0f;
                 }
             }
         }
@@ -1262,10 +1262,10 @@ void pass(int argc, char **argv)
             printf("Im2col Error: %s\n", cudaGetErrorString(err));
         }
 
-        // printf("Verifying im2col_A: ");
-        // float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
-        // cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
-        // verify_im2col(verification, 1.0f);
+        printf("Verifying im2col_A: ");
+        float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
+        cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
+        verify_im2col(verification, 1.0f);
 
         int ker_tpb = 512;
         int ker_nb = K * input_channels * RS * RS;
