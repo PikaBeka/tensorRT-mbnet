@@ -990,7 +990,7 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
     float value = 0;
 
     // Loop over tiles
-    for (int t = 0; t < (k + TILE_SIZE - 1) / TILE_SIZE; ++t)
+    for (int t = 0; t < k / TILE_SIZE; ++t)
     {
         // Load elements into shared memory
         if (row < m && t * TILE_SIZE + threadIdx.x < k)

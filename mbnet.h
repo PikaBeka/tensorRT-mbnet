@@ -10,7 +10,7 @@
 
 #define PQ (HW - RS + 1) // output height and width (146)
 
-#define TILE_SIZE 16
+#define TILE_SIZE 32
 #define TILE_S 8
 #define LIM (TILE_S - RS + 1) // 4
 
