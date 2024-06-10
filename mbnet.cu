@@ -1105,7 +1105,7 @@ void pass(int argc, char **argv)
 #endif
 
 #if UNROLL
-    // float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
+    float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
     float *im2col_A, *gemm_B, *gemm_C;
 
     cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
@@ -1233,28 +1233,29 @@ void pass(int argc, char **argv)
 #if UNROLL
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
-        im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-                                                                                     (float *)d_input,         // data_im,
-                                                                                     HW,                       // height,
-                                                                                     HW,                       // width,
-                                                                                     RS,                       // ksize,
-                                                                                     0,                        // pad,
-                                                                                     STRIDE,                   // stride,
-                                                                                     PQ,                       // height_col,
-                                                                                     PQ,                       // width_col,
-                                                                                     (float *)im2col_A);       // data_col);
+        // im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        //                                                                              (float *)d_input,         // data_im,
+        //                                                                              HW,                       // height,
+        //                                                                              HW,                       // width,
+        //                                                                              RS,                       // ksize,
+        //                                                                              0,                        // pad,
+        //                                                                              STRIDE,                   // stride,
+        //                                                                              PQ,                       // height_col,
+        //                                                                              PQ,                       // width_col,
+        //                                                                              (float *)im2col_A);       // data_col);
 
         // start = clock();
-        // im2col_cpu((float *)input,
-        //            input_channels,
-        //            HW, HW, RS, RS,
-        //            0, 0,
-        //            STRIDE, STRIDE,
-        //            0, 0,
-        //            (float *)im2col_A_cpu);
+        im2col_cpu(
+            (float *)input,
+            input_channels,
+            HW, HW, RS, RS,
+            0, 0,
+            STRIDE, STRIDE,
+            0, 0,
+            (float *)im2col_A_cpu);
         // end = clock();
         // im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
-        // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
 
         err = cudaGetLastError();
         if (err != cudaSuccess)
