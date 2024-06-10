@@ -652,7 +652,7 @@ void verification(float *input, float *weight, float *output)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
-                        // exit(-1);
+                        exit(-1);
                     }
                 }
             }
@@ -1345,7 +1345,7 @@ void pass(int argc, char **argv)
         dim3 dimBlock(TILE_SIZE, TILE_SIZE);
         dim3 dimGrid((n + TILE_SIZE - 1) / TILE_SIZE, (m + TILE_SIZE - 1) / TILE_SIZE);
 
-        gemm_shared_kernel<<<dimGrid, dimBlock>>>(im2col_A, gemm_B, gemm_C, m, k, n);
+        gemm_shared_kernel<<<dimGrid, dimBlock>>>(im2col_A, gemm_B, d_output, m, k, n);
 
         // if (status != cudaSuccess)
         // {
