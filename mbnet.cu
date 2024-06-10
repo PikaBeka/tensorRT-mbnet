@@ -1318,7 +1318,7 @@ void pass(int argc, char **argv)
         // 32 * 32 = 1024 thread per block
         dim3 blockDim(32, 32, 1);
 
-        gemm_shared_kernel<<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, k, n);
+        gemm_shared_kernel<<<gridDim, blockDim>>>(im2col_A, gemm_B, d_output, m, n, k);
 
         // if (status != cudaSuccess)
         // {
