@@ -996,7 +996,7 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
         if (row < m && t * TILE_SIZE + threadIdx.x < k)
         {
             tileA[threadIdx.y][threadIdx.x] = A[row * k + t * TILE_SIZE + threadIdx.x];
-            printf("%f\n", A[row * k + t * TILE_SIZE + threadIdx.x]);
+            printf("%f\n", tileA[threadIdx.y][threadIdx.x]);
         }
         else
             tileA[threadIdx.y][threadIdx.x] = 0;
