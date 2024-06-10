@@ -1032,7 +1032,7 @@ __global__ void gemm_shared_kernel(float *A, float *B, float *C, int m, int n, i
         for (int dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx)
         {
             if (threadRow * BLOCKSIZE + dotIdx < BLOCKSIZE * BLOCKSIZE &&
-                dotIdx * BLOCKSIZE + threadCol < BLOCLSIZE * BLOCKSIZE)
+                dotIdx * BLOCKSIZE + threadCol < BLOCKSIZE * BLOCKSIZE)
                 tmp += As[threadRow * BLOCKSIZE + dotIdx] *
                        Bs[dotIdx * BLOCKSIZE + threadCol];
         }
