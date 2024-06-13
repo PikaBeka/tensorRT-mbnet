@@ -1398,7 +1398,7 @@ void pass(int argc, char **argv)
         float *b = im2col_A; // state.workspace
         float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
 
-        gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
+        // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
         const float alpha = 1, beta = 0;
         cudaError_t status = (cudaError_t)cublasSgemm(
             handle,
