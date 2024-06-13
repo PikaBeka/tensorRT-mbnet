@@ -950,6 +950,22 @@ __global__ void im2col_gpu_kernel_optimized(const int n,
 {
     extern __shared__ float shared_data[];
 
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    // Calculate indices for shared memory loading
+    int thread_id = threadIdx.x;
+    int num_threads = blockDim.x;
+    int channel_in = blockIdx.y;
+    int col_offset = height * width;
+
+    // Load data into shared memory
+    for (int i = thread_id; i < height * width; i += num_threads)
+    {
+        shared_data[i] = data_im[channel_in * col_offset + i];
+    }
+
+    __syncthreads(); // Synchronize to ensure all data is loaded into shared memory
+
     CUDA_KERNEL_LOOP(index, n)
     {
         const int w_out = index % width_col;
@@ -971,7 +987,7 @@ __global__ void im2col_gpu_kernel_optimized(const int n,
             {
                 const int h = h_in + i;
                 const int w = w_in + j;
-                *data_col_ptr = (h >= 0 && w >= 0 && h < height && w < width) ? data_im_ptr[i * width + j] : 0;
+                *data_col_ptr = (h >= 0 && w >= 0 && h < height && w < width) ? shared_data[h * width + w] : 0;
                 data_col_ptr += height_col * width_col;
             }
         }
