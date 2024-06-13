@@ -1354,16 +1354,17 @@ void pass(int argc, char **argv)
         //  PQ,                       // width_col,
         //  (float *)im2col_A);       // data_col);
 
-        im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-                                                                                               (float *)d_input,         // data_im,
-                                                                                               HW,                       // height,
-                                                                                               HW,                       // width,
-                                                                                               RS,                       // ksize,
-                                                                                               0,                        // pad,
-                                                                                               STRIDE,                   // stride,
-                                                                                               PQ,                       // height_col,
-                                                                                               PQ,                       // width_col,
-                                                                                               (float *)im2col_A);       // data_col);
+        const size_t shared_memory_size = HW * HW * sizeof(float);
+        im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, shared_memory_size>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+                                                                                                                   (float *)d_input,         // data_im,
+                                                                                                                   HW,                       // height,
+                                                                                                                   HW,                       // width,
+                                                                                                                   RS,                       // ksize,
+                                                                                                                   0,                        // pad,
+                                                                                                                   STRIDE,                   // stride,
+                                                                                                                   PQ,                       // height_col,
+                                                                                                                   PQ,                       // width_col,
+                                                                                                                   (float *)im2col_A);       // data_col);
 
         // start = clock();
         // im2col_cpu((float *)input,
