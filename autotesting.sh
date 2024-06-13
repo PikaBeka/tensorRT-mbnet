@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(unroll_global)
+out_path=(unroll_cublass)
 metric=None
 
 for j in ${!out_path[@]}; do

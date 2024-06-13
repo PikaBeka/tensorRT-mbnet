@@ -1390,47 +1390,47 @@ void pass(int argc, char **argv)
         gemm_global_kernel<<<(total + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>((float(*)[input_channels * RS * RS]) gemm_B, (float(*)[PQ * PQ]) im2col_A,
                                                                                                  (float(*)[PQ * PQ]) d_output);
 #else
-        // int m = K;                        // l.n / l.groups
-        // int k = input_channels * RS * RS; // l.size*l.size
-        // int n = PQ * PQ;                  // l.out_w*l.out_h
+        int m = K;                        // l.n / l.groups
+        int k = input_channels * RS * RS; // l.size*l.size
+        int n = PQ * PQ;                  // l.out_w*l.out_h
 
-        // float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
-        // float *b = im2col_A; // state.workspace
-        // float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
+        float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
+        float *b = im2col_A; // state.workspace
+        float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
 
-        // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
-        // const float alpha = 1, beta = 0;
-        // cudaError_t status = (cudaError_t)cublasSgemm(
-        //     handle,
-        //     CUBLAS_OP_N,
-        //     CUBLAS_OP_N,
-        //     n,
-        //     m,
-        //     k,
-        //     &alpha,
-        //     b,
-        //     n,
-        //     a,
-        //     k,
-        //     &beta,
-        //     c,
-        //     n);
+        gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
+        const float alpha = 1, beta = 0;
+        cudaError_t status = (cudaError_t)cublasSgemm(
+            handle,
+            CUBLAS_OP_N,
+            CUBLAS_OP_N,
+            n,
+            m,
+            k,
+            &alpha,
+            b,
+            n,
+            a,
+            k,
+            &beta,
+            c,
+            n);
 
-        int m = PQ * PQ;
-        int k = input_channels * RS * RS;
-        int n = K;
+        // int m = PQ * PQ;
+        // int k = input_channels * RS * RS;
+        // int n = K;
 
-        const int BLOCKSIZE = 32; // Make sure it matches the template parameter
-        dim3 blockDim(BLOCKSIZE, BLOCKSIZE);
-        dim3 gridDim((m + BLOCKSIZE - 1) / BLOCKSIZE, (n + BLOCKSIZE - 1) / BLOCKSIZE);
+        // const int BLOCKSIZE = 32; // Make sure it matches the template parameter
+        // dim3 blockDim(BLOCKSIZE, BLOCKSIZE);
+        // dim3 gridDim((m + BLOCKSIZE - 1) / BLOCKSIZE, (n + BLOCKSIZE - 1) / BLOCKSIZE);
 
-        gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, d_weight, d_output, m, n, k);
+        // gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, d_weight, d_output, m, n, k);
 
-        // if (status != cudaSuccess)
-        // {
-        //     printf("The error is %d", status);
-        //     return;
-        // }
+        if (status != cudaSuccess)
+        {
+            printf("The error is %d", status);
+            return;
+        }
 
         cudaDeviceSynchronize();
         err = cudaGetLastError();
