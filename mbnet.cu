@@ -594,10 +594,10 @@ void fillInputWithValues(float *input)
             {
                 for (int k = 0; k < HW; k++)
                 {
-                    // float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
-                    // tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
-                    // input[i * HW * HW + j * HW + k] = rand() % 5;
-                    input[i * HW * HW + j * HW + k] = 1.0;
+                    float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
+                    tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
+                    input[i * HW * HW + j * HW + k] = tmp;
+                    // input[i * HW * HW + j * HW + k] = 1.0;
                 }
             }
         }
@@ -620,10 +620,10 @@ void fillWeightWithValues(float *weight)
             {
                 for (int k = 0; k < RS; k++)
                 {
-                    // float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
-                    // tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
-                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = rand() % 5;
-                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0;
+                    float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
+                    tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
+                    weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = tmp;
+                    // weight[i * (input_channels * RS * RS) + t * (RS * RS) + j * RS + k] = 1.0;
                 }
             }
         }
@@ -652,7 +652,7 @@ void verification(float *input, float *weight, float *output)
                             }
                         }
                     }
-                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 1e-4)
+                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 1e-3)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);

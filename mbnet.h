@@ -27,7 +27,7 @@
 #define TRT 0
 
 #define UNROLL 1
-#define GEMM_GLOBAL 0
+#define GEMM_GLOBAL 1
 
 #define CONV_TPB 1024
 #define GRID ((PQ + LIM - 1) / LIM) // (37)
