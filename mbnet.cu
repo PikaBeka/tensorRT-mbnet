@@ -596,8 +596,8 @@ void fillInputWithValues(float *input)
                 {
                     // float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
                     // tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
-                    //input[i * HW * HW + j * HW + k] = rand() % 5;
-                     input[i * HW * HW + j * HW + k] = 1.0;
+                    // input[i * HW * HW + j * HW + k] = rand() % 5;
+                    input[i * HW * HW + j * HW + k] = 1.0;
                 }
             }
         }
@@ -930,6 +930,47 @@ __global__ void im2col_gpu_kernel(const int n,
                 int h = h_in + i;
                 int w = w_in + j;
 
+                *data_col_ptr = (h >= 0 && w >= 0 && h < height && w < width) ? data_im_ptr[i * width + j] : 0;
+                data_col_ptr += height_col * width_col;
+            }
+        }
+    }
+}
+
+__global__ void im2col_gpu_kernel_optimized(const int n,
+                                            const float *data_im,
+                                            const int height,
+                                            const int width,
+                                            const int ksize,
+                                            const int pad,
+                                            const int stride,
+                                            const int height_col,
+                                            const int width_col,
+                                            float *data_col)
+{
+    extern __shared__ float shared_data[];
+
+    CUDA_KERNEL_LOOP(index, n)
+    {
+        const int w_out = index % width_col;
+        const int h_index = index / width_col;
+        const int h_out = h_index % height_col;
+        const int channel_in = h_index / height_col;
+        const int channel_out = channel_in * ksize * ksize;
+        const int h_in = h_out * stride - pad;
+        const int w_in = w_out * stride - pad;
+
+        float *data_col_ptr = data_col + (channel_out * height_col + h_out) * width_col + w_out;
+        const float *data_im_ptr = data_im + (channel_in * height + h_in) * width + w_in;
+
+#pragma unroll
+        for (int i = 0; i < ksize; ++i)
+        {
+#pragma unroll
+            for (int j = 0; j < ksize; ++j)
+            {
+                const int h = h_in + i;
+                const int w = w_in + j;
                 *data_col_ptr = (h >= 0 && w >= 0 && h < height && w < width) ? data_im_ptr[i * width + j] : 0;
                 data_col_ptr += height_col * width_col;
             }
@@ -1286,7 +1327,7 @@ void pass(int argc, char **argv)
 #if UNROLL
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
-        im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        // im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
                                                                                      (float *)d_input,         // data_im,
                                                                                      HW,                       // height,
                                                                                      HW,                       // width,
@@ -1297,95 +1338,106 @@ void pass(int argc, char **argv)
                                                                                      PQ,                       // width_col,
                                                                                      (float *)im2col_A);       // data_col);
 
-        // start = clock();
-        // im2col_cpu((float *)input,
-        //            input_channels,
-        //            HW, HW, RS, RS,
-        //            0, 0,
-        //            STRIDE, STRIDE,
-        //            0, 0,
-        //            (float *)im2col_A_cpu);
-        // end = clock();
-        // im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
-        // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+                                                                                     im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+                                                                                                                                                                            (float *)d_input,         // data_im,
+                                                                                                                                                                            HW,                       // height,
+                                                                                                                                                                            HW,                       // width,
+                                                                                                                                                                            RS,                       // ksize,
+                                                                                                                                                                            0,                        // pad,
+                                                                                                                                                                            STRIDE,                   // stride,
+                                                                                                                                                                            PQ,                       // height_col,
+                                                                                                                                                                            PQ,                       // width_col,
+                                                                                                                                                                            (float *)im2col_A);       // data_col);
 
-        err = cudaGetLastError();
-        if (err != cudaSuccess)
-        {
-            printf("Im2col Error: %s\n", cudaGetErrorString(err));
-        }
+                                                                                     // start = clock();
+                                                                                     // im2col_cpu((float *)input,
+                                                                                     //            input_channels,
+                                                                                     //            HW, HW, RS, RS,
+                                                                                     //            0, 0,
+                                                                                     //            STRIDE, STRIDE,
+                                                                                     //            0, 0,
+                                                                                     //            (float *)im2col_A_cpu);
+                                                                                     // end = clock();
+                                                                                     // im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
+                                                                                     // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
 
-        // printf("Verifying im2col_A: ");
-        // float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
-        // cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
-        // verify_im2col(verification, 1.0f);
+                                                                                     err = cudaGetLastError();
+                                                                                     if (err != cudaSuccess)
+                                                                                     {
+                                                                                         printf("Im2col Error: %s\n", cudaGetErrorString(err));
+                                                                                     }
 
-        int ker_tpb = 512;
-        int ker_nb = K * input_channels * RS * RS;
-        ker2row_kernel<<<(ker_nb + ker_tpb - 1) / ker_tpb, ker_tpb>>>((float(*)[input_channels * RS * RS]) gemm_B,
-                                                                      (float(*)[input_channels][RS][RS])d_weight);
-        err = cudaGetLastError();
-        if (err != cudaSuccess)
-        {
-            printf("ker2row Error: %s\n", cudaGetErrorString(err));
-        }
-        // cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
-        // verify_im2col(verification, 1.0f);
+                                                                                     // printf("Verifying im2col_A: ");
+                                                                                     // float *verification = (float *)malloc(sizeof(float) * RS * RS * PQ * PQ * input_channels);
+                                                                                     // cudaMemcpy(verification, im2col_A, sizeof(float) * RS * RS * PQ * PQ * input_channels, cudaMemcpyDeviceToHost);
+                                                                                     // verify_im2col(verification, 1.0f);
+
+                                                                                     int ker_tpb = 512;
+                                                                                     int ker_nb = K * input_channels * RS * RS;
+                                                                                     ker2row_kernel<<<(ker_nb + ker_tpb - 1) / ker_tpb, ker_tpb>>>((float(*)[input_channels * RS * RS]) gemm_B,
+                                                                                                                                                   (float(*)[input_channels][RS][RS])d_weight);
+                                                                                     err = cudaGetLastError();
+                                                                                     if (err != cudaSuccess)
+                                                                                     {
+                                                                                         printf("ker2row Error: %s\n", cudaGetErrorString(err));
+                                                                                     }
+                                                                                     // cudaMemcpy(verification, gemm_B, sizeof(float) * K * input_channels * RS * RS, cudaMemcpyDeviceToHost);
+                                                                                     // verify_im2col(verification, 1.0f);
 
 #if GEMM_GLOBAL
-        int total = K * PQ * PQ;
-        int threadsPerBlock = min(1024, PQ * PQ);
-        gemm_global_kernel<<<(total + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>((float(*)[input_channels * RS * RS]) gemm_B, (float(*)[PQ * PQ]) im2col_A,
-                                                                                                 (float(*)[PQ * PQ]) d_output);
+                                                                                     int total = K * PQ * PQ;
+                                                                                     int threadsPerBlock = min(1024, PQ * PQ);
+                                                                                     gemm_global_kernel<<<(total + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>((float(*)[input_channels * RS * RS]) gemm_B, (float(*)[PQ * PQ]) im2col_A,
+                                                                                                                                                                              (float(*)[PQ * PQ]) d_output);
 #else
-        // int m = K;                        // l.n / l.groups
-        // int k = input_channels * RS * RS; // l.size*l.size
-        // int n = PQ * PQ;                  // l.out_w*l.out_h
+                                                                                     // int m = K;                        // l.n / l.groups
+                                                                                     // int k = input_channels * RS * RS; // l.size*l.size
+                                                                                     // int n = PQ * PQ;                  // l.out_w*l.out_h
 
-        // float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
-        // float *b = im2col_A; // state.workspace
-        // float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
+                                                                                     // float *a = gemm_B;   // l.weights_gpu + j*l.nweights / l.groups;
+                                                                                     // float *b = im2col_A; // state.workspace
+                                                                                     // float *c = d_output; // l.output_gpu + (i*l.groups + j)*n*m;
 
-        // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
-        // const float alpha = 1, beta = 0;
-        // cudaError_t status = (cudaError_t)cublasSgemm(
-        //     handle,
-        //     CUBLAS_OP_N,
-        //     CUBLAS_OP_N,
-        //     n,
-        //     m,
-        //     k,
-        //     &alpha,
-        //     b,
-        //     n,
-        //     a,
-        //     k,
-        //     &beta,
-        //     c,
-        //     n);
+                                                                                     // gemm_ongpu(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
+                                                                                     // const float alpha = 1, beta = 0;
+                                                                                     // cudaError_t status = (cudaError_t)cublasSgemm(
+                                                                                     //     handle,
+                                                                                     //     CUBLAS_OP_N,
+                                                                                     //     CUBLAS_OP_N,
+                                                                                     //     n,
+                                                                                     //     m,
+                                                                                     //     k,
+                                                                                     //     &alpha,
+                                                                                     //     b,
+                                                                                     //     n,
+                                                                                     //     a,
+                                                                                     //     k,
+                                                                                     //     &beta,
+                                                                                     //     c,
+                                                                                     //     n);
 
-        int m = PQ * PQ;
-        int k = input_channels * RS * RS;
-        int n = K;
+                                                                                     int m = PQ * PQ;
+                                                                                     int k = input_channels * RS * RS;
+                                                                                     int n = K;
 
-        const int BLOCKSIZE = 32; // Make sure it matches the template parameter
-        dim3 blockDim(BLOCKSIZE, BLOCKSIZE);
-        dim3 gridDim((m + BLOCKSIZE - 1) / BLOCKSIZE, (n + BLOCKSIZE - 1) / BLOCKSIZE);
+                                                                                     const int BLOCKSIZE = 32; // Make sure it matches the template parameter
+                                                                                     dim3 blockDim(BLOCKSIZE, BLOCKSIZE);
+                                                                                     dim3 gridDim((m + BLOCKSIZE - 1) / BLOCKSIZE, (n + BLOCKSIZE - 1) / BLOCKSIZE);
 
-        gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, d_weight, d_output, m, n, k);
+                                                                                     gemm_shared_kernel<BLOCKSIZE><<<gridDim, blockDim>>>(im2col_A, d_weight, d_output, m, n, k);
 
-        // if (status != cudaSuccess)
-        // {
-        //     printf("The error is %d", status);
-        //     return;
-        // }
+                                                                                     // if (status != cudaSuccess)
+                                                                                     // {
+                                                                                     //     printf("The error is %d", status);
+                                                                                     //     return;
+                                                                                     // }
 
-        cudaDeviceSynchronize();
-        err = cudaGetLastError();
-        if (err != cudaSuccess)
-        {
-            printf("GEMM Error: %s\n", cudaGetErrorString(err));
-        }
+                                                                                     cudaDeviceSynchronize();
+                                                                                     err = cudaGetLastError();
+                                                                                     if (err != cudaSuccess)
+                                                                                     {
+                                                                                         printf("GEMM Error: %s\n", cudaGetErrorString(err));
+                                                                                     }
 #endif
 
 #endif
