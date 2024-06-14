@@ -948,45 +948,27 @@ __global__ void im2col_gpu_kernel_optimized(const int n,
                                             const int width_col,
                                             float *data_col)
 {
-    extern __shared__ float shared_data[];
+    int globalThreadId = blockIdx.x * blockDim.x + threadIdx.x;
 
-    int channel_in = blockIdx.x % input_channels;
-    int img_row = threadIdx.x / HW;
-    int img_col = threadIdx.y % HW;
-    if (channel_in >= input_channels) return;
+    // Calculate the shared memory ID
+    int sharedMemoryId = threadIdx.x;
 
-    // Load data into shared memory
-    if (threadIdx.x < HW * HW){
-         shared_data[threadIdx.x] = data_im[channel_in * height * width + img_row * height + img_col];
-    }
-    
+    // Allocate shared memory
+    __shared__ float sharedMemory[HW * HW];
 
-    __syncthreads(); // Synchronize to ensure all data is loaded into shared memory
-
-    CUDA_KERNEL_LOOP(index, n)
+    // Transfer data from global memory to shared memory
+    if (globalThreadId < HW * HW * input_channels)
     {
-        const int w_out = index % width_col;
-        const int h_index = index / width_col;
-        const int h_out = h_index % height_col;
-        const int channel_in = h_index / height_col;
-        const int channel_out = channel_in * ksize * ksize;
-        const int h_in = h_out * stride - pad;
-        const int w_in = w_out * stride - pad;
+        sharedMemory[sharedMemoryId] = data_im[globalThreadId];
+    }
 
-        float *data_col_ptr = data_col + (channel_out * height_col + h_out) * width_col + w_out;
+    // Wait for all threads to finish transferring data
+    __syncthreads();
 
-#pragma unroll
-        for (int i = 0; i < ksize; ++i)
-        {
-#pragma unroll
-            for (int j = 0; j < ksize; ++j)
-            {
-                const int h = h_in + i;
-                const int w = w_in + j;
-                *data_col_ptr = (h >= 0 && w >= 0 && h < height && w < width) ? shared_data[h * width + w] : 0;
-                data_col_ptr += height_col * width_col;
-            }
-        }
+    // Transfer result from shared memory to global memory
+    if (globalThreadId < HW * HW * input_channels)
+    {
+        data_col[globalThreadId] = sharedMemory[sharedMemoryId];
     }
 }
 
