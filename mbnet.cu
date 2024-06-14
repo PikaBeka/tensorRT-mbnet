@@ -950,19 +950,16 @@ __global__ void im2col_gpu_kernel_optimized(const int n,
 {
     extern __shared__ float shared_data[];
 
-    int index = blockIdx.x * blockDim.x + threadIdx.x;
-
-    // Calculate indices for shared memory loading
-    int thread_id = threadIdx.x;
-    int num_threads = blockDim.x;
-    int channel_in = blockIdx.y;
-    int col_offset = height * width;
+    int channel_in = blockIdx.x % input_channels;
+    int img_row = threadIdx.x / HW;
+    int img_col = threadIdx.y % HW;
+    if (channel_in >= input_channels) return;
 
     // Load data into shared memory
-    for (int i = thread_id; i < height * width; i += num_threads)
-    {
-        shared_data[i] = data_im[channel_in * col_offset + i];
+    if (threadIdx.x < HW * HW){
+         shared_data[threadIdx.x] = data_im[channel_in * height * width + img_row * height + img_col];
     }
+    
 
     __syncthreads(); // Synchronize to ensure all data is loaded into shared memory
 
@@ -977,7 +974,6 @@ __global__ void im2col_gpu_kernel_optimized(const int n,
         const int w_in = w_out * stride - pad;
 
         float *data_col_ptr = data_col + (channel_out * height_col + h_out) * width_col + w_out;
-        const float *data_im_ptr = data_im + (channel_in * height + h_in) * width + w_in;
 
 #pragma unroll
         for (int i = 0; i < ksize; ++i)
