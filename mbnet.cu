@@ -1321,27 +1321,27 @@ void pass(int argc, char **argv)
 #if UNROLL
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
-        //im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-        // (float *)d_input,         // data_im,
-        //  HW,                       // height,
-        //  HW,                       // width,
-        //  RS,                       // ksize,
-        //  0,                        // pad,
-        //  STRIDE,                   // stride,
-        //  PQ,                       // height_col,
-        //  PQ,                       // width_col,
-        //  (float *)im2col_A);       // data_col);
+        // im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        //  (float *)d_input,         // data_im,
+        //   HW,                       // height,
+        //   HW,                       // width,
+        //   RS,                       // ksize,
+        //   0,                        // pad,
+        //   STRIDE,                   // stride,
+        //   PQ,                       // height_col,
+        //   PQ,                       // width_col,
+        //   (float *)im2col_A);       // data_col);
 
         im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-                                                                                                                   (float *)d_input,         // data_im,
-                                                                                                                 HW,                       // height,
-                                                                                                                   HW,                       // width,
-                                                                                                                   RS,                       // ksize,
-                                                                                                                   0,                        // pad,
-                                                                                                                  STRIDE,                   // stride,
-                                                                                                                  PQ,                       // height_col,
-                                                                                                                   PQ,                       // width_col,
-                                                                                                                  (float *)im2col_A);       // data_col);
+                                                                                               (float *)d_input,         // data_im,
+                                                                                               HW,                       // height,
+                                                                                               HW,                       // width,
+                                                                                               RS,                       // ksize,
+                                                                                               0,                        // pad,
+                                                                                               STRIDE,                   // stride,
+                                                                                               PQ,                       // height_col,
+                                                                                               PQ,                       // width_col,
+                                                                                               (float *)im2col_A);       // data_col);
 
         // start = clock();
         // im2col_cpu((float *)input,
