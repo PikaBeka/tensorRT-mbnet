@@ -13,7 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -825,6 +825,88 @@ inline bool is_a_ge_zero_and_a_lt_b(int a, int b)
     return static_cast<unsigned>(a) < static_cast<unsigned>(b);
 }
 
+typedef struct
+{
+    const float *data_im;
+    int channels;
+    int height;
+    int width;
+    int kernel_h;
+    int kernel_w;
+    int pad_h;
+    int pad_w;
+    int stride_h;
+    int stride_w;
+    int dilation_h;
+    int dilation_w;
+    float *data_col;
+    int start_channel;
+    int end_channel;
+} im2col_thread_data;
+
+void *im2col_thread_func(void *arg)
+{
+    im2col_thread_data *data = (im2col_thread_data *)arg;
+    const float *data_im = data->data_im;
+    float *data_col = data->data_col;
+    int channels = data->channels;
+    int height = data->height;
+    int width = data->width;
+    int kernel_h = data->kernel_h;
+    int kernel_w = data->kernel_w;
+    int pad_h = data->pad_h;
+    int pad_w = data->pad_w;
+    int stride_h = data->stride_h;
+    int stride_w = data->stride_w;
+    int dilation_h = data->dilation_h;
+    int dilation_w = data->dilation_w;
+    int output_h = (height + 2 * pad_h - (dilation_h * (kernel_h - 1) + 1)) / stride_h + 1;
+    int output_w = (width + 2 * pad_w - (dilation_w * (kernel_w - 1) + 1)) / stride_w + 1;
+    int channel_size = height * width;
+
+    for (int channel = data->start_channel; channel < data->end_channel; channel++)
+    {
+        const float *data_im_start = data_im + channel * channel_size;
+        float *data_col_start = data_col + channel * output_h * output_w * kernel_h * kernel_w;
+        for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++)
+        {
+            for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++)
+            {
+                int input_row = -pad_h + kernel_row * dilation_h;
+                for (int output_rows = output_h; output_rows; output_rows--)
+                {
+                    if (input_row < 0 || input_row >= height)
+                    {
+                        for (int output_cols = output_w; output_cols; output_cols--)
+                        {
+                            *(data_col_start++) = 0;
+                        }
+                    }
+                    else
+                    {
+                        int input_col = -pad_w + kernel_col * dilation_w;
+                        for (int output_col = output_w; output_col; output_col--)
+                        {
+                            if (input_col >= 0 && input_col < width)
+                            {
+                                *(data_col_start++) = data_im_start[input_row * width + input_col];
+                            }
+                            else
+                            {
+                                *(data_col_start++) = 0;
+                            }
+                            input_col += stride_w;
+                        }
+                    }
+                    input_row += stride_h;
+                }
+            }
+        }
+    }
+
+    return NULL;
+}
+
 void im2col_cpu(
     const float *data_im,
     const int channels,
@@ -840,57 +922,39 @@ void im2col_cpu(
     const int dilation_w,
     float *data_col)
 {
-    const int output_h = (height + 2 * pad_h -
-                          (dilation_h * (kernel_h - 1) + 1)) /
-                             stride_h +
-                         1;
-    const int output_w = (width + 2 * pad_w -
-                          (dilation_w * (kernel_w - 1) + 1)) /
-                             stride_w +
-                         1;
-    const int channel_size = height * width;
-    #pragma unroll
-    for (int channel = channels; channel--; data_im += channel_size)
+    int num_threads = 4; // Adjust the number of threads based on your CPU cores
+    pthread_t threads[num_threads];
+    im2col_thread_data thread_data[num_threads];
+    int channels_per_thread = channels / num_threads;
+    int extra_channels = channels % num_threads;
+
+    for (int i = 0; i < num_threads; i++)
     {
-    #pragma unroll
-        for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++)
+        thread_data[i].data_im = data_im;
+        thread_data[i].channels = channels;
+        thread_data[i].height = height;
+        thread_data[i].width = width;
+        thread_data[i].kernel_h = kernel_h;
+        thread_data[i].kernel_w = kernel_w;
+        thread_data[i].pad_h = pad_h;
+        thread_data[i].pad_w = pad_w;
+        thread_data[i].stride_h = stride_h;
+        thread_data[i].stride_w = stride_w;
+        thread_data[i].dilation_h = dilation_h;
+        thread_data[i].dilation_w = dilation_w;
+        thread_data[i].data_col = data_col;
+        thread_data[i].start_channel = i * channels_per_thread;
+        thread_data[i].end_channel = (i + 1) * channels_per_thread;
+        if (i == num_threads - 1)
         {
-        #pragma unroll
-            for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++)
-            {
-                int input_row = -pad_h + kernel_row * dilation_h;
-                
-                #pragma unroll
-                for (int output_rows = output_h; output_rows; output_rows--)
-                {
-                    if (!is_a_ge_zero_and_a_lt_b(input_row, height))
-                    {
-                        for (int output_cols = output_w; output_cols; output_cols--)
-                        {
-                            *(data_col++) = 0;
-                        }
-                    }
-                    else
-                    {
-                        int input_col = -pad_w + kernel_col * dilation_w;
-                        #pragma unroll
-                        for (int output_col = output_w; output_col; output_col--)
-                        {
-                            if (is_a_ge_zero_and_a_lt_b(input_col, width))
-                            {
-                                *(data_col++) = data_im[input_row * width + input_col];
-                            }
-                            else
-                            {
-                                *(data_col++) = 0;
-                            }
-                            input_col += stride_w;
-                        }
-                    }
-                    input_row += stride_h;
-                }
-            }
+            thread_data[i].end_channel += extra_channels;
         }
+        pthread_create(&threads[i], NULL, im2col_thread_func, &thread_data[i]);
+    }
+
+    for (int i = 0; i < num_threads; i++)
+    {
+        pthread_join(threads[i], NULL);
     }
 }
 
@@ -1339,27 +1403,27 @@ void pass(int argc, char **argv)
         //   (float *)im2col_A);       // data_col);
 
         im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-                                                                                               (float *)d_input,         // data_im,
-                                                                                               HW,                       // height,
-                                                                                               HW,                       // width,
-                                                                                               RS,                       // ksize,
-                                                                                               0,                        // pad,
-                                                                                               STRIDE,                   // stride,
-                                                                                               PQ,                       // height_col,
-                                                                                               PQ,                       // width_col,
-                                                                                               (float *)im2col_A);       // data_col);
+                                                                                                                        (float *)d_input,         // data_im,
+                                                                                                                        HW,                       // height,
+                                                                                                                        HW,                       // width,
+                                                                                                                        RS,                       // ksize,
+                                                                                                                        0,                        // pad,
+                                                                                                                        STRIDE,                   // stride,
+                                                                                                                        PQ,                       // height_col,
+                                                                                                                        PQ,                       // width_col,
+                                                                                                                        (float *)im2col_A);       // data_col);
 
-        //start = clock();
-        //im2col_cpu((float *)input,
-        //            input_channels,
-        //            HW, HW, RS, RS,
-        //            0, 0,
-        //            STRIDE, STRIDE,
-        //            0, 0,
-        //           (float *)im2col_A_cpu);
-        // end = clock();
-        // im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
-        // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+        // start = clock();
+        // im2col_cpu((float *)input,
+        //             input_channels,
+        //             HW, HW, RS, RS,
+        //             0, 0,
+        //             STRIDE, STRIDE,
+        //             0, 0,
+        //            (float *)im2col_A_cpu);
+        //  end = clock();
+        //  im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
+        //  cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
 
         err = cudaGetLastError();
         if (err != cudaSuccess)
