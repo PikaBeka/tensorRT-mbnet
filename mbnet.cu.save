@@ -849,18 +849,13 @@ void im2col_cpu(
                              stride_w +
                          1;
     const int channel_size = height * width;
-    #pragma unroll
     for (int channel = channels; channel--; data_im += channel_size)
     {
-    #pragma unroll
         for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++)
         {
-        #pragma unroll
             for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++)
             {
                 int input_row = -pad_h + kernel_row * dilation_h;
-                
-                #pragma unroll
                 for (int output_rows = output_h; output_rows; output_rows--)
                 {
                     if (!is_a_ge_zero_and_a_lt_b(input_row, height))
@@ -873,7 +868,6 @@ void im2col_cpu(
                     else
                     {
                         int input_col = -pad_w + kernel_col * dilation_w;
-                        #pragma unroll
                         for (int output_col = output_w; output_col; output_col--)
                         {
                             if (is_a_ge_zero_and_a_lt_b(input_col, width))
@@ -1199,7 +1193,7 @@ void pass(int argc, char **argv)
 #endif
 
 #if UNROLL
-    float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
+    // float *im2col_A_cpu = (float *)malloc(sizeof(float) * RS * RS * input_channels * PQ * PQ);
     float *im2col_A, *gemm_B, *gemm_C;
 
     cudaMalloc(&im2col_A, sizeof(float) * RS * RS * input_channels * PQ * PQ);
@@ -1338,25 +1332,25 @@ void pass(int argc, char **argv)
         //   PQ,                       // width_col,
         //   (float *)im2col_A);       // data_col);
 
-        im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-                                                                                               (float *)d_input,         // data_im,
-                                                                                               HW,                       // height,
-                                                                                               HW,                       // width,
-                                                                                               RS,                       // ksize,
-                                                                                               0,                        // pad,
-                                                                                               STRIDE,                   // stride,
-                                                                                               PQ,                       // height_col,
-                                                                                               PQ,                       // width_col,
-                                                                                               (float *)im2col_A);       // data_col);
+        //im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        //                                                                                       (float *)d_input,         // data_im,
+        //                                                                                       HW,                       // height,
+        //                                                                                       HW,                       // width,
+        //                                                                                       RS,                       // ksize,
+        //                                                                                       0,                        // pad,
+        //                                                                                       STRIDE,                   // stride,
+        //                                                                                       PQ,                       // height_col,
+        //                                                                                       PQ,                       // width_col,
+        //                                                                                       (float *)im2col_A);       // data_col);
 
-        //start = clock();
-        //im2col_cpu((float *)input,
+        start = clock();
+        //m2col_cpu((float *)input,
         //            input_channels,
         //            HW, HW, RS, RS,
         //            0, 0,
         //            STRIDE, STRIDE,
         //            0, 0,
-        //           (float *)im2col_A_cpu);
+        //            (float *)im2col_A_cpu);
         // end = clock();
         // im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
         // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
