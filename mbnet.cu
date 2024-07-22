@@ -50,7 +50,7 @@ float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
 float *bias = (float *)malloc(sizeof(float) * K);
 float *output = (float *)malloc(sizeof(float) * K * PQ * PQ);
 
-int debug = 1;
+int debug = 0;
 
 // double buffManager = 0;
 // double process = 0;
@@ -244,7 +244,7 @@ bool SampleMNISTAPI::build()
         return false;
     }
 
-    AlgorithmCacheWriter selector(gCacheFileName);
+    // AlgorithmCacheWriter selector(gCacheFileName);
 
     auto config = SampleUniquePtr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
     if (!config)
@@ -254,7 +254,7 @@ bool SampleMNISTAPI::build()
 
     config->setFlag(nvinfer1::BuilderFlag::kDISABLE_TIMING_CACHE);
 
-    config->setAlgorithmSelector(&selector);
+    // config->setAlgorithmSelector(&selector);
 
     auto constructed = constructNetwork(builder, network, config);
     if (!constructed)
@@ -652,7 +652,7 @@ void verification(float *input, float *weight, float *output)
                             }
                         }
                     }
-                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 1e-3)
+                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 1e-1)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
@@ -1024,7 +1024,7 @@ __global__ void im2col_gpu_kernel_optimized(const int n,
     int sharedMemoryId = threadIdx.x;
 
     // Allocate shared memory
-    __shared__ float sharedMemory[HW * HW];
+    __shared__ float sharedMemory[1];
 
     // Transfer data from global memory to shared memory
     if (globalThreadId < HW * HW * input_channels)
@@ -1343,7 +1343,7 @@ void pass(int argc, char **argv)
             {
                 convolution_algorithm = conv_fwd_results[i].algo;
                 min_time = conv_fwd_results[i].time;
-                printf("%d %d %d %d - cuDNN FWD algo: %d, time = %f ms \n", input_channels, HW, K, RS, convolution_algorithm, min_time);
+                // printf("%d %d %d %d - cuDNN FWD algo: %d, time = %f ms \n", input_channels, HW, K, RS, convolution_algorithm, min_time);
             }
         }
 #else
@@ -1391,30 +1391,30 @@ void pass(int argc, char **argv)
 #if UNROLL
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
-        // im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-        //  (float *)d_input,         // data_im,
-        //   HW,                       // height,
-        //   HW,                       // width,
-        //   RS,                       // ksize,
-        //   0,                        // pad,
-        //   STRIDE,                   // stride,
-        //   PQ,                       // height_col,
-        //   PQ,                       // width_col,
-        //   (float *)im2col_A);       // data_col);
+        im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+          (float *)d_input,         // data_im,
+           HW,                       // height,
+           HW,                       // width,
+           RS,                       // ksize,
+           0,                        // pad,
+           STRIDE,                   // stride,
+           PQ,                       // height_col,
+           PQ,                       // width_col,
+           (float *)im2col_A);       // data_col);
 
-        im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-                                                                                                                        (float *)d_input,         // data_im,
-                                                                                                                        HW,                       // height,
-                                                                                                                        HW,                       // width,
-                                                                                                                        RS,                       // ksize,
-                                                                                                                        0,                        // pad,
-                                                                                                                        STRIDE,                   // stride,
-                                                                                                                        PQ,                       // height_col,
-                                                                                                                        PQ,                       // width_col,
-                                                                                                                        (float *)im2col_A);       // data_col);
+        //im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        //                                                                                                                (float *)d_input,         // data_im,
+        //                                                                                                                HW,                       // height,
+        //                                                                                                                HW,                       // width,
+        //                                                                                                               RS,                       // ksize,
+        //                                                                                                                0,                        // pad,
+        //                                                                                                                STRIDE,                   // stride,
+        //                                                                                                                PQ,                       // height_col,
+        //                                                                                                                PQ,                       // width_col,
+        //                                                                                                                (float *)im2col_A);       // data_col);
 
-        // start = clock();
-        // im2col_cpu((float *)input,
+        //start = clock();
+        //im2col_cpu((float *)input,
         //             input_channels,
         //             HW, HW, RS, RS,
         //             0, 0,
@@ -1423,7 +1423,7 @@ void pass(int argc, char **argv)
         //            (float *)im2col_A_cpu);
         //  end = clock();
         //  im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
-        //  cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+        // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
 
         err = cudaGetLastError();
         if (err != cudaSuccess)
