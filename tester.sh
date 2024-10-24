@@ -30,10 +30,10 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #RS=(3 3 1 1 1 3 1 1 3 1 1 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 1 1 3 1 1 3 1 1 1 1 3 1 3 1 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 )
 
 #YOLOV4-TINY
-#C=(3 32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 )
-#HW=(416 208 104 104 104 104 53 53 53 53 27 27 27 27 14 14 16 16 18 20 20 )
-#K=(32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 255 )
-#RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1 )
+C=(3 32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256)
+HW=(416 208 104 104 104 104 53 53 53 53 27 27 27 27 14 14 16 16 18 20 20)
+K=(32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 255)
+RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1)
 
 #C=(3)
 #HW=(64)
@@ -64,10 +64,15 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 
 #RS=(5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 11 5 3 3 3 3 3 3 3 3 3 1 3 1 1 3 1 3 3 3 3 3 3 3 3 3 1 3 3 7 5 1 3 3 3 3 3 3 3 3 3)
 
-C=(6 6 6 6 6 256 1 192 128 64 256 512 1 1 16 1)
-HW=(16 16 8 8 128 56 32 28 56 64 56 28 320 256 208 256)
-K=(16 32 32 16 16 64 6 16 256 256 256 512 6 6 32 9)
-RS=(5 5 5 5 5 3 5 5 5 5 3 3 5 5 3 5)
+#C=(6 6 6 6 6 256 1 192 128 64 256 512 1 1 16 1)
+#HW=(16 16 8 8 128 56 32 28 56 64 56 28 320 256 208 256)
+#K=(16 32 32 16 16 64 6 16 256 256 256 512 6 6 32 9)
+#RS=(5 5 5 5 5 3 5 5 5 5 3 3 5 5 3 5)
+
+#C=(1)
+#HW=(320)
+#K=(6)
+#RS=(5)
 
 #input file to change macro define
 in_file=mbnet.h
@@ -171,17 +176,16 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     fi
 
     if [[ "${method}" == "mbnet_method" ]]; then
-
-        if [[ ${HW[$i]} -lt 137 ]]; 
+	if [[ ${HW[$i]} -lt 18 ]];
         then
-            if [[ ${HW[$i]} -lt 20 ]]; 
+            if [[ ${RS[$i]} -lt 4 ]];
             then
-            	if [[ ${RS[$i]} -lt 2 ]]; 
+            	if [[ ${RS[$i]} -lt 2 ]];
             	then
-            		sed -i 's/define TRT .*/define TRT 1/' $in_file
-			echo 'Running mbnet with tenssort method\n'
+            		echo 'Running mbnet with unroll_cublass method\n'
+    			sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             	else
-            		if [[ ${RS[$i]} -lt 4 ]]; 
+            		if [[ ${C[$i]} -lt 499 ]];
             		then
             			echo 'Running mbnet with unroll_cublass method\n'
     				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
@@ -191,35 +195,29 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
             		fi
             	fi
             else
-            	if [[ ${K[$i]} -lt 251 ]]; 
-            	then
-            		if [[ ${K[$i]} -lt 77 ]]; 
-            		then
-            			sed -i 's/define TRT .*/define TRT 1/' $in_file
-				echo 'Running mbnet with tenssort method\n'
-            		else
-            			sed -i 's/define TRT .*/define TRT 1/' $in_file
-				echo 'Running mbnet with tenssort method\n'
-            		fi
-            	else
-            		if [[ ${RS[$i]} -lt 5 ]]; 
-            		then
-            			echo 'Running mbnet with unroll_cublass method\n'
-    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-            		else
-            			echo 'Running mbnet with unroll_cublass method\n'
-    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-            		fi
-            	fi	
+            	echo 'Running mbnet with unroll_cublass method\n'
+    		sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             fi
-        else
-            if [[ ${RS[$i]} -lt 5 ]]; 
+      else
+            if [[ ${K[$i]} -lt 392 ]];
             then
-            	sed -i 's/define TRT .*/define TRT 1/' $in_file
-		echo 'Running mbnet with tenssort method\n'
+            	if [[ ${C[$i]} -lt 405 ]];
+	     	then
+       			if [[ ${K[$i]} -lt 203 ]];
+	  		then
+     				echo 'Running mbnet with tensorrt method\n'
+    				sed -i 's/define TRT .*/define TRT 1/' $in_file
+     			else
+				echo 'Running mbnet with unroll_cublass method\n'
+    				sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+			fi
+       		else
+	 		echo 'Running mbnet with unroll_cublass method\n'
+    			sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+	 	fi
             else
-            	sed -i 's/define TRT .*/define TRT 1/' $in_file
-		echo 'Running mbnet with tenssort method\n'	
+            	echo 'Running mbnet with unroll_cublass method\n'
+    		sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             fi
         fi
     fi
