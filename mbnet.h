@@ -5,7 +5,7 @@
 #define HW 7
 #define K 512
 
-#define RS 3
+#define RS 1
 #define STRIDE 1
 
 #define PQ (HW - RS + 1) // output height and width (146)
