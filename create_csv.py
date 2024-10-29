@@ -81,7 +81,9 @@ if __name__ == '__main__':
 
             for j in range(0, len(C)):  # for every file in folders
                 file = "nvprof_comp_" + str(C[j]) + "_" + str(HW[j]) +"_" + str(K[j]) + "_" + str(RS[j]) + ".txt"
-                print(file)
+               # print(file)
+		if !os.path.exists(nvprof_paths[i] + '/' + file):
+		    continue
                 with open(nvprof_paths[i]+'/'+file, 'r') as log:
                     data = log.readlines()
                     # function returns all found headers
