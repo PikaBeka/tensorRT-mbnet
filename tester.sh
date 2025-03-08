@@ -3,7 +3,7 @@
 out_path=(unroll_cublass tensorrt cudnn cudnn_opt mbnet) # folder names created, output path for created txt files
 
 metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_warp gld_efficiency gst_efficiency shared_efficiency shared_utilization
-           l2_utilization global_hit_rate tex_cache_hit_rate tex_utilization ipc inst_issued inst_executed issue_slot_utilization dram_utilization)
+           l2_utilization global_hit_rate tex_cache_hit_rate tex_utilization ipc inst_issued inst_executed issue_slot_utilization dram_utilization stall_constant_memory_dependency stall_exec_dependency stall_inst_fetch stall_memory_dependency stall_memory_throttle stall_not_selected stall_other stall_pipe_busy stall_sync stall_texture)
 
 # configuratin files in the format (C, HW, K)
 #C=(1 1 1 1 1 1 1 1 1 1 3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32) # 30
@@ -30,10 +30,10 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #RS=(3 3 1 1 1 3 1 1 3 1 1 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 1 3 1 1 1 3 1 3 1 3 1 3 1 1 1 3 1 1 3 1 1 1 1 3 1 3 1 1 1 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 3 1 )
 
 # ResNet
-C=(128 256 128 256 512 256)
-HW=(28 14 14 14 7 7)
-K=(256 256 256 512 512 512)
-RS=(3 3 1 3 3 1)
+C=(6)
+HW=(16)
+K=(16)
+RS=(5)
 
 #YOLOV4-TINY
 #C=(3 32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256)
