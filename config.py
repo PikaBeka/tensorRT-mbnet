@@ -1,14 +1,20 @@
 nvprof_paths = [
 #'direct_shared',
-                'unroll_cublass', 
-'tensorrt', 
-'cudnn', 
-'cudnn_opt', 
+#                'unroll_cublass', 
+#'tensorrt', 
+#'cudnn', 
+#'cudnn_opt', 
  "mbnet_method"
 ]  # folder paths
 
 metrics = ['sm_efficiency', 'achieved_occupancy', 'warp_execution_efficiency', 'inst_per_warp', 'gld_efficiency', 'gst_efficiency', 'shared_efficiency', 'shared_utilization',
            'l2_utilization', 'global_hit_rate', 'tex_cache_hit_rate', 'tex_utilization', 'ipc', 'inst_issued', 'inst_executed', 'issue_slot_utilization', 'dram_utilization']
+
+# AlexNet
+C=[3, 96, 256, 384, 384]
+HW=[64, 26, 12, 12, 12]
+K=[96, 256, 384, 384, 256]
+RS=[11, 5, 3, 3, 3]
 
 # VGGNet - 16
 #C=[3, 64, 64, 128, 128, 256, 256, 256, 512, 512, 512, 512, 512]
@@ -23,12 +29,12 @@ metrics = ['sm_efficiency', 'achieved_occupancy', 'warp_execution_efficiency', '
 #RS = [3, 3, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 3, 1, 3, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 1, 3, 1, 3, 1, 1, 1, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1]
 
 ## ResNet
-C = [3, 64, 64, 128, 64, 128, 256, 128, 256, 512, 256]
+#C = [3, 64, 64, 128, 64, 128, 256, 128, 256, 512, 256]
 ##   3  64  64  128  64  256  128  256  512  256
 ##   3  64  64  128  64  128  256  128  256  512  256
-HW = [224, 56, 56, 28, 28, 28, 14, 14, 14, 7, 7]
-K = [64, 64, 128, 128, 128, 256, 256, 256, 512, 512, 512]
-RS = [7, 3, 3, 3, 1, 3, 3, 1, 3, 3, 1]
+#HW = [224, 56, 56, 28, 28, 28, 14, 14, 14, 7, 7]
+#K = [64, 64, 128, 128, 128, 256, 256, 256, 512, 512, 512]
+#RS = [7, 3, 3, 3, 1, 3, 3, 1, 3, 3, 1]
 
 ## YOLOv4-tiny
 #C=[3, 32, 64, 64, 32, 32, 64, 128, 64, 64, 128, 256, 128, 128, 256, 512, 256, 512, 255, 128, 256]

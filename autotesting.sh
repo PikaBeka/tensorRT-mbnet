@@ -9,7 +9,7 @@ metrics=(
 # metric=(stall_sync stall_other stall_not_selected stall_memory_throttle stall_memory_dependency stall_inst_fetch stall_exec_dependency stall_constant_memory_dependency)
 
 for j in ${!out_path[@]}; do
-	for i in ${!metric[@]}; do
+	for i in ${!metrics[@]}; do
 		./tester.sh ${out_path[$j]} ${metrics[$i]}
 		sleep 10
 	done
