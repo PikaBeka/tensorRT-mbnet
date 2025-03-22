@@ -185,7 +185,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                     echo 'Running mbnet with tensorrt method\n'
                     sed -i 's/define TRT .*/define TRT 1/' $in_file
                 else
-                    if [[ ${C[$i]} -le 449 ]]; then
+                    if [[ ${C[$i]} -le 448 ]]; then
                         if [[ ${RS[$i]} -le 4 ]]; then
                             if [[ ${C[$i]} -le 224 ]]; then
                                 echo 'Running mbnet with unroll_cublass method\n'
