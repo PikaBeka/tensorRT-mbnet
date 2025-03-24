@@ -1,23 +1,43 @@
-==21750== NVPROF is profiling process 21750, command: ./mbnet
-==21750== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
-==21750== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
-==21750== Profiling application: ./mbnet
-==21750== Profiling result:
-   Start  Duration            Grid Size      Block Size     Regs*    SSMem*    DSMem*      Size  Throughput  SrcMemType  DstMemType           Device   Context    Stream  Name
-308.25ms  1.3039ms                    -               -         -         -         -  3.3750MB  2.5277GB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-4.05810s  12.832us                    -               -         -         -         -      384B  28.539MB/s      Device           -  NVIDIA Tegra X2         1        22  [CUDA memset]
-4.05812s  2.2080us                    -               -         -         -         -      384B  165.86MB/s      Device           -  NVIDIA Tegra X2         1        23  [CUDA memset]
-4.05813s  2.1760us                    -               -         -         -         -      384B  168.30MB/s      Device           -  NVIDIA Tegra X2         1        24  [CUDA memset]
-4.05813s  2.1760us                    -               -         -         -         -      384B  168.30MB/s      Device           -  NVIDIA Tegra X2         1        25  [CUDA memset]
-4.05844s  1.7600us                    -               -         -         -         -      112B  60.688MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-4.06156s  1.8240us                    -               -         -         -         -      112B  58.559MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-4.11431s  85.250us                    -               -         -         -         -  216.00KB  2.4163GB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-6.79945s  2.1712ms             (8 96 1)        (32 4 1)        55  8.5000KB        0B         -           -           -           -  NVIDIA Tegra X2         1         7  void cudnn::winograd::generateWinogradTilesKernel<int=1, float, float>(cudnn::winograd::GenerateWinogradTilesParams<float, float>) [424]
-6.80163s  4.6254ms              (8 2 1)       (256 1 1)       128  32.000KB        0B         -           -           -           -  NVIDIA Tegra X2         1         7  maxwell_scudnn_winograd_128x128_ldg1_ldg4_mobile_relu_tile148t_nt_v0 [426]
-6.80847s  53.953us                    -               -         -         -         -  100.00KB  1.7676GB/s      Device    Pageable  NVIDIA Tegra X2         1         7  [CUDA memcpy DtoH]
-
-Regs: Number of registers used per CUDA thread. This number includes registers used internally by the CUDA driver and/or tools and can be more than what the compiler shows.
-SSMem: Static shared memory allocated per CUDA block.
-DSMem: Dynamic shared memory allocated per CUDA block.
-SrcMemType: The type of source memory accessed by memory operation/copy
-DstMemType: The type of destination memory accessed by memory operation/copy
+==19878== NVPROF is profiling process 19878, command: ./mbnet
+==19878== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
+==19878== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
+==19878== Profiling application: ./mbnet
+==19878== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   66.63%  46.2286s     10000  4.6229ms  4.6013ms  8.5970ms  maxwell_scudnn_winograd_128x128_ldg1_ldg4_mobile_relu_tile148t_nt_v0
+                   31.35%  21.7524s     10000  2.1752ms  2.1685ms  4.7313ms  void cudnn::winograd::generateWinogradTilesKernel<int=1, float, float>(cudnn::winograd::GenerateWinogradTilesParams<float, float>)
+                    1.24%  859.01ms     10003  85.875us  1.8240us  3.3175ms  [CUDA memcpy HtoD]
+                    0.78%  544.10ms     10000  54.409us  53.888us  61.121us  [CUDA memcpy DtoH]
+                    0.00%  14.240us         4  3.5600us  2.0480us  7.7760us  [CUDA memset]
+      API calls:   70.72%  90.2049s     10016  9.0061ms  1.7600us  18.719ms  cudaFree
+                   12.20%  15.5658s     20003  778.17us  62.177us  7.9449ms  cudaMemcpy
+                    9.62%  12.2688s     10011  1.2255ms  15.200us  314.77ms  cudaMalloc
+                    3.17%  4.03785s     20000  201.89us  41.504us  2.44294s  cudaLaunchKernel
+                    2.53%  3.22406s         8  403.01ms  3.2640us  3.22403s  cudaStreamCreateWithFlags
+                    1.42%  1.81010s       159  11.384ms  8.8960us  215.46ms  cuModuleUnload
+                    0.31%  395.66ms     10000  39.566us  33.888us  185.28us  cudaMemGetInfo
+                    0.03%  37.275ms     30000  1.2420us     544ns  698.69us  cudaGetLastError
+                    0.00%  1.5845ms         1  1.5845ms  1.5845ms  1.5845ms  cudaHostAlloc
+                    0.00%  1.5674ms         4  391.86us  3.3920us  1.5526ms  cudaStreamCreateWithPriority
+                    0.00%  687.94us         1  687.94us  687.94us  687.94us  cudaFreeHost
+                    0.00%  415.55us       285  1.4580us     416ns  64.800us  cuDeviceGetAttribute
+                    0.00%  99.745us         4  24.936us  14.241us  53.600us  cudaMemsetAsync
+                    0.00%  89.569us        12  7.4640us  5.8880us  20.032us  cudaStreamDestroy
+                    0.00%  64.545us         3  21.515us  18.752us  23.137us  cuDeviceTotalMem
+                    0.00%  63.937us        28  2.2830us  1.9200us  5.1520us  cudaEventCreateWithFlags
+                    0.00%  62.816us        28  2.2430us  1.6960us  4.8960us  cudaEventDestroy
+                    0.00%  46.336us        40  1.1580us     928ns  3.5840us  cudaDeviceGetAttribute
+                    0.00%  35.936us         4  8.9840us  4.9280us  16.224us  cudaDeviceSynchronize
+                    0.00%  32.992us         1  32.992us  32.992us  32.992us  cudaGetDeviceProperties
+                    0.00%  12.384us         2  6.1920us  5.7920us  6.5920us  cuInit
+                    0.00%  12.064us         5  2.4120us  1.2800us  5.2160us  cuDeviceGetCount
+                    0.00%  7.8400us         1  7.8400us  7.8400us  7.8400us  cudaGetDeviceCount
+                    0.00%  7.8080us         3  2.6020us  2.1120us  2.9760us  cudaGetDevice
+                    0.00%  7.4560us         3  2.4850us  1.6640us  3.5840us  cuDeviceGetName
+                    0.00%  6.6880us         2  3.3440us  2.3680us  4.3200us  cuDriverGetVersion
+                    0.00%  6.2080us         4  1.5520us  1.1840us  2.5600us  cuDeviceGet
+                    0.00%  5.8880us         1  5.8880us  5.8880us  5.8880us  cudaHostGetDevicePointer
+                    0.00%  3.8720us         2  1.9360us  1.8560us  2.0160us  cuDevicePrimaryCtxRelease
+                    0.00%  3.4880us         3  1.1620us     992ns  1.4720us  cuDeviceGetUuid
+                    0.00%  2.4640us         1  2.4640us  2.4640us  2.4640us  cudaDeviceGetStreamPriorityRange
+                    0.00%     672ns         1     672ns     672ns     672ns  cudaDriverGetVersion
