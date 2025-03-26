@@ -1,9 +1,9 @@
 #define images 10000 // number of images in batch
 #define BATCH 1
 
-#define input_channels 384
-#define HW 12
-#define K 256
+#define input_channels 512
+#define HW 14
+#define K 512
 
 #define RS 3
 #define STRIDE 1
