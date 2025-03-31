@@ -176,61 +176,48 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     fi
 
     if [[ "${method}" == "mbnet_method" ]]; then
-        if [[ ${C[$i]} -lt 5 ]]; then
-            echo 'Running mbnet with unroll_cublass method\n'
-            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-        else
-            if [[ ${HW[$i]} -le 67 ]]; then
-                if [[ ${HW[$i]} -lt 13 ]]; then
-                    echo 'Running mbnet with tensorrt method\n'
-                    sed -i 's/define TRT .*/define TRT 1/' $in_file
+        if [[ ${HW[$i]} -lt 18 ]];
+            then
+                if [[ ${RS[$i]} -lt 4 ]];
+                    then
+                    if [[ ${RS[$i]} -lt 2 ]];
+             	        then
+             		        echo 'Running mbnet with unroll_cublass method\n'
+     			            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+             	        else
+             		    if [[ ${C[$i]} -lt 499 ]];
+             		    then
+             			    echo 'Running mbnet with unroll_cublass method\n'
+     				        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+             		    else
+             			    echo 'Running mbnet with unroll_cublass method\n'
+     				        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+             		    fi
+             	    fi
                 else
-                    if [[ ${C[$i]} -le 448 ]]; then
-                        if [[ ${RS[$i]} -le 4 ]]; then
-                            if [[ ${C[$i]} -le 224 ]]; then
-                                echo 'Running mbnet with unroll_cublass method\n'
-                                sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                            else
-                                if [[ ${K[$i]} -lt 226 ]]; then
-                                    echo 'Running mbnet with unroll_cublass method\n'
-                                    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                else
-                                    if [[ ${HW[$i]} -lt 21 ]]; then
-                                        echo 'Running mbnet with unroll_cublass method\n'
-                                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    fi
-                                fi
-                            fi
-                        else
-                            if [[ ${HW[$i]} -le 27 ]]; then
-                                echo 'Running mbnet with tensorrt method\n'
-                                sed -i 's/define TRT .*/define TRT 1/' $in_file
-                            else
-                                if [[ ${C[$i]} -le 48 ]]; then
-                                    echo 'Running mbnet with unroll_cublass method\n'
-                                    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                else
-                                    if [[ ${HW[$i]} -le 46 ]]; then
-                                        echo 'Running mbnet with unroll_cublass method\n'
-                                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    fi
-                                fi
-                            fi
-                        fi
-                    else
-                        echo 'Running mbnet with tensorrt method\n'
-                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                    fi
+             	    echo 'Running mbnet with unroll_cublass method\n'
+     		        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                 fi
+        else
+            if [[ ${K[$i]} -lt 392 ]];
+            then
+                if [[ ${C[$i]} -lt 405 ]];
+ 	     	    then
+        		    if [[ ${K[$i]} -lt 203 ]];
+ 	  		        then
+      				    echo 'Running mbnet with tensorrt method\n'
+     				    sed -i 's/define TRT .*/define TRT 1/' $in_file
+      			    else
+ 				        echo 'Running mbnet with unroll_cublass method\n'
+     				    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+ 			        fi
+        		else
+ 	 		        echo 'Running mbnet with unroll_cublass method\n'
+     			    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+ 	 	        fi
             else
-                echo 'Running mbnet with unroll_cublass method\n'
-                sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+             	echo 'Running mbnet with unroll_cublass method\n'
+     		    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             fi
         fi
     fi
