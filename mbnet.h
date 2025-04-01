@@ -1,11 +1,11 @@
 #define images 10000 // number of images in batch
 #define BATCH 1
 
-#define input_channels 256
-#define HW 20
-#define K 255
+#define input_channels 384
+#define HW 12
+#define K 256
 
-#define RS 1
+#define RS 3
 #define STRIDE 1
 
 #define PQ (HW - RS + 1) // output height and width (146)
