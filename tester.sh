@@ -339,7 +339,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                                         sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
                                     fi
                                 else
-                                    if [[ ${C[$i]} -lt 10 ]];
+                                    if [[ ${C[$i]} -lt 9 ]];
                                     then
                                         echo 'Running mbnet with cudnn optimized method\n'
                                         sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
