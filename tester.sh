@@ -228,16 +228,16 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
         # fi
         if [[ ${HW[$i]} -lt 20 ]];
         then
-            if [[${HW[$i]} -lt 12]];
+            if [[ ${HW[$i]} -lt 12 ]];
             then
                 echo 'Running mbnet with unroll_cublass method\n'
                 sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             else
-                if [[${HW[$i]} -lt 13]];
+                if [[ ${HW[$i]} -lt 13 ]];
                 then
-                    if [[${K[$i]} -lt 255]];
+                    if [[ ${K[$i]} -lt 255 ]];
                     then
-                        if [[${K[$i]} -lt 191]];
+                        if [[ ${K[$i]} -lt 191 ]];
                         then
                             echo 'Running mbnet with tensorrt method\n'
                             sed -i 's/define TRT .*/define TRT 1/' $in_file
@@ -250,16 +250,16 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                         sed -i 's/define TRT .*/define TRT 1/' $in_file
                     fi
                 else
-                    if [[${C[$i]} -lt 191]];
+                    if [[ ${C[$i]} -lt 191 ]];
                     then
-                        if [[${K[$i]} -lt 161]];
+                        if [[ ${K[$i]} -lt 161 ]];
                         then
                             echo 'Running mbnet with unroll_cublass method\n'
                             sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                         else
-                            if [[${K[$i]} -lt 385]];
+                            if [[ ${K[$i]} -lt 385 ]];
                             then
-                                if [[${RS[$i]} -lt 3]];
+                                if [[ ${RS[$i]} -lt 3 ]];
                                 then
                                     echo 'Running mbnet with unroll_cublass method\n'
                                     sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
