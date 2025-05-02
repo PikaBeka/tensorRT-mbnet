@@ -1,1 +1,75 @@
-======== Error: Application returned non-zero code 255
+==PROF== Connected to process 10298 (/home/beknur/Documents/tensorRT-mbnet/mbnet)
+==PROF== Profiling "im2col_gpu_kernel" - 0: 0%....50%....100% - 7 passes
+==PROF== Profiling "ker2row_kernel" - 1: 0%....50%....100% - 7 passes
+==PROF== Profiling "gemmSN_NN_kernel" - 2: 0%....50%....100% - 7 passes
+==PROF== Profiling "im2col_gpu_kernel" - 3: 0%....50%....100% - 7 passes
+==PROF== Profiling "ker2row_kernel" - 4: 0%....50%....100% - 7 passes
+==PROF== Profiling "gemmSN_NN_kernel" - 5: 0%....50%....100% - 7 passes
+==PROF== Profiling "im2col_gpu_kernel" - 6: 0%....50%....100% - 7 passes
+==PROF== Profiling "ker2row_kernel" - 7: 0%....50%....100% - 7 passes
+==PROF== Profiling "gemmSN_NN_kernel" - 8: 0%....50%....100% - 7 passes
+==PROF== Profiling "im2col_gpu_kernel" - 9: 0%....50%....100% - 7 passes
+==PROF== Profiling "ker2row_kernel" - 10: 0%....50%....100% - 7 passes
+==PROF== Profiling "gemmSN_NN_kernel" - 11: 0%....50%....100% - 7 passes
+==PROF== Profiling "im2col_gpu_kernel" - 12: 0%....50%....100% - 7 passes
+==PROF== Profiling "ker2row_kernel" - 13: 0%....50%....100% - 7 passes
+==PROF== Profiling "gemmSN_NN_kernel" - 14: 0%....50%....100% - 7 passes
+==PROF== Disconnected from process 10298
+[10298] mbnet@127.0.0.1
+  im2col_gpu_kernel(int, const float *, int, int, int, int, int, int, int, float *) (11, 1, 1)x(1024, 1, 1), Device 0, CC 8.6, Invocations 5
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.92     6.98     6.94
+    SM Frequency                    Mhz   893.72   896.73   894.87
+    Elapsed Cycles                cycle 8,619.00 8,755.00 8,682.00
+    Memory Throughput                 %    18.36    18.73    18.54
+    DRAM Throughput                   %    17.27    18.31    17.86
+    Duration                         us     9.63     9.79     9.70
+    L1/TEX Cache Throughput           %    48.23    49.07    48.76
+    L2 Cache Throughput               %    18.36    18.73    18.54
+    SM Active Cycles              cycle 2,344.07 2,384.47 2,358.69
+    Compute (SM) Throughput           %    16.99    17.18    17.08
+    ----------------------- ----------- -------- -------- --------
+
+  ker2row_kernel(float (*)[75], float (*)[3][5][5]) (3, 1, 1)x(512, 1, 1), Device 0, CC 8.6, Invocations 5
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.84     6.88     6.86
+    SM Frequency                    Mhz   882.54   887.91   884.72
+    Elapsed Cycles                cycle 3,905.00 3,986.00 3,938.00
+    Memory Throughput                 %     2.61     2.72     2.67
+    DRAM Throughput                   %     0.55     0.71     0.59
+    Duration                         us     4.42     4.51     4.45
+    L1/TEX Cache Throughput           %    34.47    38.36    35.86
+    L2 Cache Throughput               %     2.61     2.72     2.67
+    SM Active Cycles              cycle   193.93   205.97   199.70
+    Compute (SM) Throughput           %     0.47     0.48     0.47
+    ----------------------- ----------- -------- -------- --------
+
+  void gemmSN_NN_kernel<float, 256, 4, 2, 8, 4, 4, 0, cublasGemvTensorStridedBatched<const float>, cublasGemvTensorStridedBatched<const float>, cublasGemvTensorStridedBatched<float>>(cublasGemmSmallNParams<T9, T10, T11, T1>) (57, 4, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 5
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.97      6.96
+    SM Frequency                    Mhz    898.10    898.86    898.34
+    Elapsed Cycles                cycle 16,444.00 16,758.00 16,608.60
+    Memory Throughput                 %     44.53     45.46     45.03
+    DRAM Throughput                   %     18.11     18.62     18.36
+    Duration                         us     18.30     18.66     18.48
+    L1/TEX Cache Throughput           %     52.98     53.76     53.32
+    L2 Cache Throughput               %     38.35     38.88     38.58
+    SM Active Cycles              cycle 13,839.60 14,033.30 13,948.57
+    Compute (SM) Throughput           %     43.37     44.28     43.84
+    ----------------------- ----------- --------- --------- ---------
+
+  Note: The shown averages are calculated as the arithmetic mean of the metric values after the evaluation of the    
+  metrics for each individual kernel launch.                                                                         
+  If aggregating across varying launch configurations (like shared memory, cache config settings), the arithmetic    
+  mean can be misleading and looking at the individual results is recommended instead.                               
+  This output mode is backwards compatible to the per-kernel summary output of nvprof                                
+

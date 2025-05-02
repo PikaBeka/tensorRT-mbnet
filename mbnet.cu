@@ -1,13 +1,14 @@
-#include "trt_dependencies/argsParser.h"
-#include "trt_dependencies/buffers.h"
-#include "trt_dependencies/common.h"
-#include "trt_dependencies/logger.h"
 #include "mbnet.h"
 
+#include "trt_dependencies/common/argsParser.h"
+#include "trt_dependencies/common/buffers.h"
+#include "trt_dependencies/common/common.h"
+#include "trt_dependencies/common/logger.h"
+#include "trt_dependencies/common/parserOnnxConfig.h"
+
 // #include "NvCaffeParser.h"
-#include "trt_dependencies/NvInfer.h"
+#include "NvInfer.h"
 #include <cuda_runtime_api.h>
-#include "trt_dependencies/slenet_params.h"
 
 #include <cstdlib>
 #include <fstream>
@@ -41,9 +42,10 @@
         }                                                          \
     }
 
+using namespace nvinfer1;
 using samplesCommon::SampleUniquePtr;
 
-const std::string gSampleName = "TensorRT.sample_mnist_api";
+const std::string gSampleName = "TensorRT.sample_onnx_mnist";
 
 float *input = (float *)malloc(sizeof(float) * input_channels * HW * HW);
 float *weight = (float *)malloc(sizeof(float) * RS * RS * K * input_channels);
@@ -63,111 +65,13 @@ double im2col_time = 0;
 clock_t start, end;
 
 #if TRT
-std::string const gCacheFileName = "AlgorithmCache.txt";
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --TensorRT-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-//!
-//! \brief Writes the default algorithm choices made by TensorRT into a file.
-//!
-class AlgorithmCacheWriter : public IAlgorithmSelector
+class SampleOnnxMNIST
 {
 public:
-    //!
-    //! \brief Return value in [0, nbChoices] for a valid algorithm.
-    //!
-    //! \details Lets TRT use its default tactic selection method.
-    //! Writes all the possible choices to the selection buffer and returns the length of it.
-    //! If BuilderFlag::kSTRICT_TYPES is not set, just returning 0 forces default tactic selection.
-    //!
-    int32_t selectAlgorithms(const nvinfer1::IAlgorithmContext &context, const nvinfer1::IAlgorithm *const *choices,
-                             int32_t nbChoices, int32_t *selection) noexcept override
-    {
-        // TensorRT always provides more than zero number of algorithms in selectAlgorithms.
-        ASSERT(nbChoices > 0);
-
-        std::cout << nbChoices << "\n";
-
-        for (int i = 0; i < nbChoices; ++i)
-        {
-            std::cout << "Algorithm " << i << ": Implementation = " << choices[i]->getAlgorithmVariant().getImplementation() << std::endl;
-        }
-
-        // std::iota(selection, selection + nbChoices, 0);
-        return 0;
-    }
-
-    //!
-    //! \brief called by TensorRT to report choices it made.
-    //!
-    //! \details Writes the TensorRT algorithm choices into a file.
-    //!
-    void reportAlgorithms(const nvinfer1::IAlgorithmContext *const *algoContexts,
-                          const nvinfer1::IAlgorithm *const *algoChoices, int32_t nbAlgorithms) noexcept override
-    {
-        std::ofstream algorithmFile(mCacheFileName);
-        if (!algorithmFile.good())
-        {
-            sample::gLogError << "Cannot open algorithm cache file: " << mCacheFileName << " to write." << std::endl;
-            abort();
-        }
-
-        std::cout << nbAlgorithms << "\n";
-
-        for (int32_t i = 0; i < nbAlgorithms; i++)
-        {
-            std::cout << algoContexts[i]->getName() << "\n";
-            std::cout << algoChoices[i]->getAlgorithmVariant().getImplementation() << "\n";
-            std::cout << algoChoices[i]->getAlgorithmVariant().getTactic() << "\n";
-
-            // Write number of inputs and outputs.
-            const int32_t nbInputs = algoContexts[i]->getNbInputs();
-            algorithmFile << nbInputs << "\n";
-            const int32_t nbOutputs = algoContexts[i]->getNbOutputs();
-            algorithmFile << nbOutputs << "\n";
-
-            // Write input and output formats.
-            for (int32_t j = 0; j < nbInputs + nbOutputs; j++)
-            {
-                algorithmFile << static_cast<int32_t>(algoChoices[i]->getAlgorithmIOInfoByIndex(j)->getTensorFormat())
-                              << "\n";
-                algorithmFile << static_cast<int32_t>(algoChoices[i]->getAlgorithmIOInfoByIndex(j)->getDataType())
-                              << "\n";
-            }
-        }
-        algorithmFile.close();
-    }
-
-    AlgorithmCacheWriter(const std::string &cacheFileName)
-        : mCacheFileName(cacheFileName)
-    {
-    }
-
-private:
-    std::string mCacheFileName;
-};
-
-//------------------------------------------------------------------------------------------TensorRT--------------------------------------------------------------------------------------------------------
-//!
-//! \brief The SampleMNISTAPIParams structure groups the additional parameters required by
-//!         the SampleMNISTAPI sample.
-//!
-struct SampleMNISTAPIParams : public samplesCommon::SampleParams
-{
-    int inputH;                  //!< The input height
-    int inputW;                  //!< The input width
-    int outputSize;              //!< The output size
-    std::string weightsFile;     //!< The filename of the weights file
-    std::string mnistMeansProto; //!< The proto file containing means
-};
-
-//! \brief  The SampleMNISTAPI class implements the MNIST API sample
-//!
-//! \details It creates the network for MNIST classification using the API
-//!
-class SampleMNISTAPI
-{
-public:
-    SampleMNISTAPI(const SampleMNISTAPIParams &params)
-        : mParams(params), mEngine(nullptr)
+    SampleOnnxMNIST(const samplesCommon::OnnxSampleParams &params)
+        : mParams(params), mRuntime(nullptr), mEngine(nullptr)
     {
     }
 
@@ -181,55 +85,49 @@ public:
     //!
     bool infer();
 
-    //!
-    //! \brief Cleans up any state created in the sample class
-    //!
-    bool teardown();
-
 private:
-    SampleMNISTAPIParams mParams; //!< The parameters for the sample.
+    samplesCommon::OnnxSampleParams mParams; //!< The parameters for the sample.
 
-    int mNumber{0}; //!< The number to classify
+    nvinfer1::Dims mInputDims;  //!< The dimensions of the input to the network.
+    nvinfer1::Dims mOutputDims; //!< The dimensions of the output to the network.
+    int mNumber{0};             //!< The number to classify
+
+    std::shared_ptr<nvinfer1::IRuntime> mRuntime;   //!< The TensorRT runtime used to deserialize the engine
+    std::shared_ptr<nvinfer1::ICudaEngine> mEngine; //!< The TensorRT engine used to run the network
 
     std::map<std::string, nvinfer1::Weights> mWeightMap; //!< The weight name to weight value map
 
-    std::vector<std::unique_ptr<samplesCommon::HostMemory>> weightsMemory; //!< Host weights memory holder
-
-    std::shared_ptr<nvinfer1::ICudaEngine> mEngine; //!< The TensorRT engine used to run the network
-
     //!
-    //! \brief Uses the API to create the MNIST Network
+    //! \brief Parses an ONNX model for MNIST and creates a TensorRT network
     //!
     bool constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &builder,
-                          SampleUniquePtr<nvinfer1::INetworkDefinition> &network, SampleUniquePtr<nvinfer1::IBuilderConfig> &config);
+                          SampleUniquePtr<nvinfer1::INetworkDefinition> &network, SampleUniquePtr<nvinfer1::IBuilderConfig> &config,
+                          SampleUniquePtr<nvonnxparser::IParser> &parser, SampleUniquePtr<nvinfer1::ITimingCache> &timingCache);
 
     //!
     //! \brief Reads the input  and stores the result in a managed buffer
     //!
-    bool processInput(const samplesCommon::BufferManager &buffers, float *input);
+    bool processInput(const samplesCommon::BufferManager &buffers);
 
     //!
     //! \brief Classifies digits and verify result
     //!
-    bool verifyOutput(const samplesCommon::BufferManager &buffers, float *input, float *weight);
+    bool verifyOutput(const samplesCommon::BufferManager &buffers);
 
-    //!
-    //! \brief Loads weights from weights file
-    //!
-    std::map<std::string, nvinfer1::Weights> loadWeights(const std::string &file, float *weight);
+    std::map<std::string, nvinfer1::Weights> loadWeights(float *weight);
 };
 
 //!
 //! \brief Creates the network, configures the builder and creates the network engine
 //!
-//! \details This function creates the MNIST network by using the API to create a model and builds
+//! \details This function creates the Onnx MNIST network by parsing the Onnx model and builds
 //!          the engine that will be used to run MNIST (mEngine)
 //!
-//! \return Returns true if the engine was created successfully and false otherwise
+//! \return true if the engine was created successfully and false otherwise
 //!
-bool SampleMNISTAPI::build()
+bool SampleOnnxMNIST::build()
 {
-    mWeightMap = loadWeights(locateFile(mParams.weightsFile, mParams.dataDirs), weight);
+    mWeightMap = loadWeights(weight);
 
     auto builder = SampleUniquePtr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(sample::gLogger.getTRTLogger()));
     if (!builder)
@@ -237,14 +135,11 @@ bool SampleMNISTAPI::build()
         return false;
     }
 
-    const auto explicitBatchFlag = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kEXPLICIT_BATCH);
-    auto network = SampleUniquePtr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(explicitBatchFlag));
+    auto network = SampleUniquePtr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(0));
     if (!network)
     {
         return false;
     }
-
-    // AlgorithmCacheWriter selector(gCacheFileName);
 
     auto config = SampleUniquePtr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
     if (!config)
@@ -252,68 +147,19 @@ bool SampleMNISTAPI::build()
         return false;
     }
 
-    config->setFlag(nvinfer1::BuilderFlag::kDISABLE_TIMING_CACHE);
-
-    // config->setAlgorithmSelector(&selector);
-
-    auto constructed = constructNetwork(builder, network, config);
-    if (!constructed)
+    auto parser = SampleUniquePtr<nvonnxparser::IParser>(nvonnxparser::createParser(*network, sample::gLogger.getTRTLogger()));
+    if (!parser)
     {
         return false;
     }
 
-    ASSERT(network->getNbInputs() == 1);
-    auto inputDims = network->getInput(0)->getDimensions();
-    ASSERT(inputDims.nbDims == 4);
+    auto timingCache = SampleUniquePtr<nvinfer1::ITimingCache>();
 
-    ASSERT(network->getNbOutputs() == 1);
-    auto outputDims = network->getOutput(0)->getDimensions();
-    ASSERT(outputDims.nbDims == 4);
-
-    return true;
-}
-
-//!
-//! \brief Uses the API to create the MNIST Network
-//!
-//! \param network Pointer to the network that will be populated with the MNIST network
-//!
-//! \param builder Pointer to the engine builder
-//!
-bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &builder,
-                                      SampleUniquePtr<nvinfer1::INetworkDefinition> &network, SampleUniquePtr<nvinfer1::IBuilderConfig> &config)
-{
-    // Create input tensor of shape { 1, 1, 28, 28 }
-    ITensor *data = network->addInput(
-        mParams.inputTensorNames[0].c_str(), DataType::kFLOAT, Dims4{1, input_channels, HW, HW});
-    ASSERT(data);
-
-    // Add convolution layer with 20 outputs and a 5x5 filter.
-    IConvolutionLayer *conv1 = network->addConvolutionNd(
-        *data, K, Dims{2, {RS, RS}}, mWeightMap["c1_weight"], mWeightMap["c1_bias"]);
-    conv1->setStride(DimsHW{1, 1});
-    conv1->setPadding(DimsHW{0, 0});
-    ASSERT(conv1);
-
-    // Add softmax layer to determine the probability.
-    // ISoftMaxLayer *prob = network->addSoftMax(*sigmoid3->getOutput(0));
-    // ASSERT(prob);
-    conv1->getOutput(0)->setName(mParams.outputTensorNames[0].c_str());
-    network->markOutput(*conv1->getOutput(0));
-
-    // Build engine
-    // config->setMaxWorkspaceSize(32_MiB);
-    if (mParams.fp16)
+    auto constructed = constructNetwork(builder, network, config, parser, timingCache);
+    if (!constructed)
     {
-        config->setFlag(BuilderFlag::kFP16);
+        return false;
     }
-    if (mParams.int8)
-    {
-        config->setFlag(BuilderFlag::kINT8);
-        samplesCommon::setAllDynamicRanges(network.get(), 64.0f, 64.0f);
-    }
-
-    samplesCommon::enableDLA(builder.get(), config.get(), mParams.dlaCore);
 
     // CUDA stream used for profiling by the builder.
     auto profileStream = samplesCommon::makeCudaStream();
@@ -329,18 +175,91 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
         return false;
     }
 
-    SampleUniquePtr<IRuntime> runtime{createInferRuntime(sample::gLogger.getTRTLogger())};
-    if (!runtime)
+    if (timingCache != nullptr && !mParams.timingCacheFile.empty())
+    {
+        samplesCommon::updateTimingCacheFile(
+            sample::gLogger.getTRTLogger(), mParams.timingCacheFile, timingCache.get(), *builder);
+    }
+
+    mRuntime = std::shared_ptr<nvinfer1::IRuntime>(createInferRuntime(sample::gLogger.getTRTLogger()));
+    if (!mRuntime)
     {
         return false;
     }
 
     mEngine = std::shared_ptr<nvinfer1::ICudaEngine>(
-        runtime->deserializeCudaEngine(plan->data(), plan->size()), samplesCommon::InferDeleter());
+        mRuntime->deserializeCudaEngine(plan->data(), plan->size()), samplesCommon::InferDeleter());
     if (!mEngine)
     {
         return false;
     }
+
+    ASSERT(network->getNbInputs() == 1);
+    mInputDims = network->getInput(0)->getDimensions();
+    ASSERT(mInputDims.nbDims == 4);
+
+    ASSERT(network->getNbOutputs() == 1);
+    mOutputDims = network->getOutput(0)->getDimensions();
+    ASSERT(mOutputDims.nbDims == 4);
+
+    return true;
+}
+
+//!
+//! \brief Uses a ONNX parser to create the Onnx MNIST Network and marks the
+//!        output layers
+//!
+//! \param network Pointer to the network that will be populated with the Onnx MNIST network
+//!
+//! \param builder Pointer to the engine builder
+//!
+bool SampleOnnxMNIST::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &builder,
+                                       SampleUniquePtr<nvinfer1::INetworkDefinition> &network, SampleUniquePtr<nvinfer1::IBuilderConfig> &config,
+                                       SampleUniquePtr<nvonnxparser::IParser> &parser, SampleUniquePtr<nvinfer1::ITimingCache> &timingCache)
+{
+    ITensor *data = network->addInput(
+        mParams.inputTensorNames[0].c_str(), DataType::kFLOAT, Dims4{1, input_channels, HW, HW});
+    ASSERT(data);
+
+    // Add convolution layer with 20 outputs and a 5x5 filter.
+    IConvolutionLayer *conv1 = network->addConvolutionNd(
+        *data,
+        K,
+        Dims{2, {RS, RS}},
+        mWeightMap["c1_weight"],
+        mWeightMap["c1_bias"]);
+    conv1->setStrideNd(DimsHW{1, 1});
+    conv1->setPaddingNd(DimsHW{0, 0});
+    ASSERT(conv1);
+
+    // Add softmax layer to determine the probability.
+    // ISoftMaxLayer *prob = network->addSoftMax(*sigmoid3->getOutput(0));
+    // ASSERT(prob);
+    conv1->getOutput(0)->setName(mParams.outputTensorNames[0].c_str());
+    network->markOutput(*conv1->getOutput(0));
+
+    if (mParams.fp16)
+    {
+        config->setFlag(BuilderFlag::kFP16);
+    }
+    if (mParams.bf16)
+    {
+        config->setFlag(BuilderFlag::kBF16);
+    }
+    if (mParams.int8)
+    {
+        config->setFlag(BuilderFlag::kINT8);
+        network->getInput(0)->setDynamicRange(-1.0F, 1.0F);
+        constexpr float kTENSOR_DYNAMIC_RANGE = 4.0F;
+        samplesCommon::setAllDynamicRanges(network.get(), kTENSOR_DYNAMIC_RANGE, kTENSOR_DYNAMIC_RANGE);
+    }
+    if (mParams.timingCacheFile.size())
+    {
+        timingCache = samplesCommon::buildTimingCacheFromFile(
+            sample::gLogger.getTRTLogger(), *config, mParams.timingCacheFile, sample::gLogError);
+    }
+
+    samplesCommon::enableDLA(builder.get(), config.get(), mParams.dlaCore);
 
     return true;
 }
@@ -351,8 +270,9 @@ bool SampleMNISTAPI::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder> &build
 //! \details This function is the main execution function of the sample. It allocates the buffer,
 //!          sets inputs and executes the engine.
 //!
-bool SampleMNISTAPI::infer()
+bool SampleOnnxMNIST::infer()
 {
+    // Create RAII buffer manager object
     samplesCommon::BufferManager buffers(mEngine);
 
     auto context = SampleUniquePtr<nvinfer1::IExecutionContext>(mEngine->createExecutionContext());
@@ -361,12 +281,20 @@ bool SampleMNISTAPI::infer()
         return false;
     }
 
+    for (int32_t i = 0, e = mEngine->getNbIOTensors(); i < e; i++)
+    {
+        auto const name = mEngine->getIOTensorName(i);
+        context->setTensorAddress(name, buffers.getDeviceBuffer(name));
+    }
+
+    // Read the input data into the managed buffers
     ASSERT(mParams.inputTensorNames.size() == 1);
-    if (!processInput(buffers, input))
+    if (!processInput(buffers))
     {
         return false;
     }
 
+    // Memcpy from host input buffers to device input buffers
     buffers.copyInputToDevice();
 
     bool status = context->executeV2(buffers.getDeviceBindings().data());
@@ -375,11 +303,12 @@ bool SampleMNISTAPI::infer()
         return false;
     }
 
+    // Memcpy from device output buffers to host output buffers
     buffers.copyOutputToHost();
 
-    if (debug && !verifyOutput(buffers, input, weight))
+    // Verify results
+    if (debug && !verifyOutput(buffers))
     {
-        printf("Verification failed\n");
         return false;
     }
 
@@ -389,7 +318,7 @@ bool SampleMNISTAPI::infer()
 //!
 //! \brief Reads the input and stores the result in a managed buffer
 //!
-bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, float *input)
+bool SampleOnnxMNIST::processInput(const samplesCommon::BufferManager &buffers)
 {
     srand(time(0));
 
@@ -430,7 +359,7 @@ bool SampleMNISTAPI::processInput(const samplesCommon::BufferManager &buffers, f
 //!
 //! \return whether the classification output matches expectations
 //!
-bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, float *input, float *weight)
+bool SampleOnnxMNIST::verifyOutput(const samplesCommon::BufferManager &buffers)
 {
     output = static_cast<float *>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
     bool answer = true;
@@ -467,7 +396,7 @@ bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, f
                         }
                     }
                 }
-                if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 5)
+                if (abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)) > 0.0001)
                 {
                     printf("The error is here. The actual result is %f, should be %f on (%d, %d, %d)\n", output[i * PQ * PQ + j * PQ + k], tempC, i, j, k);
                     answer = false;
@@ -480,11 +409,30 @@ bool SampleMNISTAPI::verifyOutput(const samplesCommon::BufferManager &buffers, f
 }
 
 //!
-//! \brief Cleans up any state created in the sample class
+//! \brief Initializes members of the params struct using the command line args
 //!
-bool SampleMNISTAPI::teardown()
+samplesCommon::OnnxSampleParams initializeSampleParams(const samplesCommon::Args &args)
 {
-    return true;
+    samplesCommon::OnnxSampleParams params;
+    if (args.dataDirs.empty()) // Use default directories if user hasn't provided directory paths
+    {
+        params.dataDirs.push_back("data/mnist/");
+        params.dataDirs.push_back("data/samples/mnist/");
+    }
+    else // Use the data directory provided by the user
+    {
+        params.dataDirs = args.dataDirs;
+    }
+    params.onnxFileName = "mnist.onnx";
+    params.inputTensorNames.push_back("Input3");
+    params.outputTensorNames.push_back("Plus214_Output_0");
+    params.dlaCore = args.useDLACore;
+    params.int8 = args.runInInt8;
+    params.fp16 = args.runInFp16;
+    params.bf16 = args.runInBf16;
+    params.timingCacheFile = args.timingCacheFile;
+
+    return params;
 }
 
 //!
@@ -493,7 +441,7 @@ bool SampleMNISTAPI::teardown()
 //! \details TensorRT weight files have a simple space delimited format
 //!          [type] [size] <data x size in hex>
 //!
-std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::string &file, float *weight)
+std::map<std::string, nvinfer1::Weights> SampleOnnxMNIST::loadWeights(float *weight)
 {
     std::map<std::string, nvinfer1::Weights> weightMap;
 
@@ -530,55 +478,6 @@ std::map<std::string, nvinfer1::Weights> SampleMNISTAPI::loadWeights(const std::
     weightMap["c1_weight"] = wt_c1_weight;
 
     return weightMap;
-}
-//!
-//! \brief Initializes members of the params struct using the command line args
-//!
-SampleMNISTAPIParams initializeSampleParams(const samplesCommon::Args &args)
-{
-    SampleMNISTAPIParams params;
-    if (args.dataDirs.empty()) //!< Use default directories if user hasn't provided directory paths
-    {
-        params.dataDirs.push_back(".");
-        params.dataDirs.push_back(".");
-    }
-    else //!< Use the data directory provided by the user
-    {
-        params.dataDirs = args.dataDirs;
-    }
-    params.inputTensorNames.push_back("data");
-    params.outputTensorNames.push_back("prob");
-    params.dlaCore = args.useDLACore;
-    params.int8 = args.runInInt8;
-    params.fp16 = args.runInFp16;
-
-    params.inputH = HW;
-    params.inputW = HW;
-    params.outputSize = K * PQ * PQ;
-    params.weightsFile = "";
-    params.mnistMeansProto = "";
-
-    return params;
-}
-
-//!
-//! \brief Prints the help information for running this sample
-//!
-void printHelpInfo()
-{
-    std::cout
-        << "Usage: ./sample_mnist_api [-h or --help] [-d or --datadir=<path to data directory>] [--useDLACore=<int>]"
-        << std::endl;
-    std::cout << "--help          Display help information" << std::endl;
-    std::cout << "--datadir       Specify path to a data directory, overriding the default. This option can be used "
-                 "multiple times to add multiple directories. If no data directories are given, the default is to use "
-                 "(data/samples/mnist/, data/mnist/)"
-              << std::endl;
-    std::cout << "--useDLACore=N  Specify a DLA engine for layers that support DLA. Value can range from 0 to n-1, "
-                 "where n is the number of DLA engines on the platform."
-              << std::endl;
-    std::cout << "--int8          Run in Int8 mode." << std::endl;
-    std::cout << "--fp16          Run in FP16 mode." << std::endl;
 }
 #endif
 
@@ -652,7 +551,7 @@ void verification(float *input, float *weight, float *output)
                             }
                         }
                     }
-                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 1e-1)
+                    if (fabs(output[i * PQ * PQ + j * PQ + k] - tempC) > 0.0001)
                     {
                         printf("The error is here. The actual result is %f, we get %f on (%d, %d, %d), the diff is %d\n", tempC, output[i * PQ * PQ + j * PQ + k], i, j, k, abs(int(round(output[i * PQ * PQ + j * PQ + k]) - tempC)));
                         printf("Error configuration (%d, %d, %d)\n", input_channels, HW, K);
@@ -1188,7 +1087,7 @@ void pass(int argc, char **argv)
 
     sample::gLogger.reportTestStart(sampleTest);
 
-    SampleMNISTAPI sample(initializeSampleParams(args));
+    SampleOnnxMNIST sample(initializeSampleParams(args));
 
     // sample::gLogInfo << "Building and running a GPU inference engine for MNIST API" << std::endl;
 
@@ -1288,27 +1187,27 @@ void pass(int argc, char **argv)
 #if ARRAY_NAIVE
         int threads = min(64, HW * HW);
         int total = K * (PQ * PQ);
-        convolution_naive<<<(total + threads - 1) / threads, threads>>>((float(*)[HW][HW])d_input, (float(*)[input_channels][RS][RS])d_weight, (float(*)[PQ][PQ])d_output);
+        convolution_naive<<<(total + threads - 1) / threads, threads>>>((float (*)[HW][HW])d_input, (float (*)[input_channels][RS][RS])d_weight, (float (*)[PQ][PQ])d_output);
 #endif
 
 #if ARRAY_TILING
         dim3 threads(TILE_S, TILE_S);
         dim3 blocks((PQ + LIM - 1) / LIM, (PQ + LIM - 1) / LIM, K);
-        convolution_tiling<<<blocks, threads>>>((float(*)[HW][HW])d_input, (float(*)[input_channels][RS][RS])d_weight, (float(*)[PQ][PQ])d_output);
+        convolution_tiling<<<blocks, threads>>>((float (*)[HW][HW])d_input, (float (*)[input_channels][RS][RS])d_weight, (float (*)[PQ][PQ])d_output);
 #endif
 
 #if DIRECT
 #if CONV_SHARED
         const dim3 numBlocks((PQ + LIM - 1) / LIM, (PQ + LIM - 1) / LIM, K);
         const dim3 threadsPerBlock(1024);
-        kernel_conv_filter<<<numBlocks, threadsPerBlock>>>((float(*)[HW][HW])d_input,
+        kernel_conv_filter<<<numBlocks, threadsPerBlock>>>((float (*)[HW][HW])d_input,
 #else
         int total = K * PQ * PQ;
         int threads = 64;
-        kernel_conv_filter<<<(total + threads - 1) / threads, threads>>>((float(*)[HW][HW])d_input,
+        kernel_conv_filter<<<(total + threads - 1) / threads, threads>>>((float (*)[HW][HW])d_input,
 #endif
-                                                           (float(*)[PQ][PQ])d_output,
-                                                           (float(*)[input_channels][RS][RS])d_weight);
+                                                           (float (*)[PQ][PQ])d_output,
+                                                           (float (*)[input_channels][RS][RS])d_weight);
 #endif
 
 #if CUDNN
@@ -1392,38 +1291,38 @@ void pass(int argc, char **argv)
         // im2col_gpu_kernel_ext<<<(N1+K1-1)/K1, K1>>>(PQ*PQ, d_input, HW, HW, RS, RS, 0, 0, STRIDE, STRIDE, 1, 1, PQ, PQ,ic_workspace);
         ///*
         im2col_gpu_kernel<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-          (float *)d_input,         // data_im,
-           HW,                       // height,
-           HW,                       // width,
-           RS,                       // ksize,
-           0,                        // pad,
-           STRIDE,                   // stride,
-           PQ,                       // height_col,
-           PQ,                       // width_col,
-           (float *)im2col_A);       // data_col);
+                                                                                     (float *)d_input,         // data_im,
+                                                                                     HW,                       // height,
+                                                                                     HW,                       // width,
+                                                                                     RS,                       // ksize,
+                                                                                     0,                        // pad,
+                                                                                     STRIDE,                   // stride,
+                                                                                     PQ,                       // height_col,
+                                                                                     PQ,                       // width_col,
+                                                                                     (float *)im2col_A);       // data_col);
 
-        //im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
-        //                                                                                                                (float *)d_input,         // data_im,
-        //                                                                                                                HW,                       // height,
-        //                                                                                                                HW,                       // width,
-        //                                                                                                               RS,                       // ksize,
-        //                                                                                                                0,                        // pad,
-        //                                                                                                                STRIDE,                   // stride,
-        //                                                                                                                PQ,                       // height_col,
-        //                                                                                                                PQ,                       // width_col,
-        //                                                                                                                (float *)im2col_A);       // data_col);
+        // im2col_gpu_kernel_optimized<<<(UNROLL_NB + UNROLL_TPB - 1) / UNROLL_TPB, UNROLL_TPB, HW * HW * sizeof(float)>>>(PQ * PQ * input_channels, // num_kernels, = channels * height_col * width_col;
+        //                                                                                                                 (float *)d_input,         // data_im,
+        //                                                                                                                 HW,                       // height,
+        //                                                                                                                 HW,                       // width,
+        //                                                                                                                RS,                       // ksize,
+        //                                                                                                                 0,                        // pad,
+        //                                                                                                                 STRIDE,                   // stride,
+        //                                                                                                                 PQ,                       // height_col,
+        //                                                                                                                 PQ,                       // width_col,
+        //                                                                                                                 (float *)im2col_A);       // data_col);
 
-        //start = clock();
-        //im2col_cpu((float *)input,
-        //             input_channels,
-        //             HW, HW, RS, RS,
-        //             0, 0,
-        //             STRIDE, STRIDE,
-        //             0, 0,
-        //            (float *)im2col_A_cpu);
-        //  end = clock();
-        //  im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
-        // cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
+        // start = clock();
+        // im2col_cpu((float *)input,
+        //              input_channels,
+        //              HW, HW, RS, RS,
+        //              0, 0,
+        //              STRIDE, STRIDE,
+        //              0, 0,
+        //             (float *)im2col_A_cpu);
+        //   end = clock();
+        //   im2col_time = im2col_time + (float)(end - start) / CLOCKS_PER_SEC;
+        //  cudaMemcpy(im2col_A, im2col_A_cpu, RS * RS * input_channels * PQ * PQ * sizeof(float), cudaMemcpyHostToDevice);
 
         err = cudaGetLastError();
         if (err != cudaSuccess)
@@ -1438,8 +1337,8 @@ void pass(int argc, char **argv)
 
         int ker_tpb = 512;
         int ker_nb = K * input_channels * RS * RS;
-        ker2row_kernel<<<(ker_nb + ker_tpb - 1) / ker_tpb, ker_tpb>>>((float(*)[input_channels * RS * RS]) gemm_B,
-                                                                      (float(*)[input_channels][RS][RS])d_weight);
+        ker2row_kernel<<<(ker_nb + ker_tpb - 1) / ker_tpb, ker_tpb>>>((float (*)[input_channels * RS * RS]) gemm_B,
+                                                                      (float (*)[input_channels][RS][RS])d_weight);
         err = cudaGetLastError();
         if (err != cudaSuccess)
         {
@@ -1451,8 +1350,8 @@ void pass(int argc, char **argv)
 #if GEMM_GLOBAL
         int total = K * PQ * PQ;
         int threadsPerBlock = min(1024, PQ * PQ);
-        gemm_global_kernel<<<(total + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>((float(*)[input_channels * RS * RS]) gemm_B, (float(*)[PQ * PQ]) im2col_A,
-                                                                                                 (float(*)[PQ * PQ]) d_output);
+        gemm_global_kernel<<<(total + threadsPerBlock - 1) / threadsPerBlock, threadsPerBlock>>>((float (*)[input_channels * RS * RS]) gemm_B, (float (*)[PQ * PQ]) im2col_A,
+                                                                                                 (float (*)[PQ * PQ]) d_output);
 #else
         int m = K;                        // l.n / l.groups
         int k = input_channels * RS * RS; // l.size*l.size
@@ -1523,7 +1422,6 @@ void pass(int argc, char **argv)
     }
 
 #if TRT
-    sample.teardown();
 #else
     if (debug)
     {

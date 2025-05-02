@@ -1,8 +1,8 @@
 import pandas as pd
 
-df = pd.read_csv("CHWKRS.csv")
+df = pd.read_csv("./30confs.csv")
 
-print(df["C"])
+print(len(df["C"]))
 
 C = df["C"]
 HW = df["HW"]

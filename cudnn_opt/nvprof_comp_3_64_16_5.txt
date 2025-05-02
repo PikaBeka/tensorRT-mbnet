@@ -1,22 +1,53 @@
-==15885== NVPROF is profiling process 15885, command: ./mbnet
-==15885== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
-==15885== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
-==15885== Profiling application: ./mbnet
-==15885== Profiling result:
-   Start  Duration            Grid Size      Block Size     Regs*    SSMem*    DSMem*      Size  Throughput  SrcMemType  DstMemType           Device   Context    Stream  Name
-311.31ms  8.1600us                    -               -         -         -         -  4.6875KB  560.98MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-4.10506s  12.801us                    -               -         -         -         -      384B  28.608MB/s      Device           -  NVIDIA Tegra X2         1        22  [CUDA memset]
-4.10508s  2.2720us                    -               -         -         -         -      384B  161.18MB/s      Device           -  NVIDIA Tegra X2         1        23  [CUDA memset]
-4.10508s  2.3040us                    -               -         -         -         -      384B  158.95MB/s      Device           -  NVIDIA Tegra X2         1        24  [CUDA memset]
-4.10509s  2.2080us                    -               -         -         -         -      384B  165.86MB/s      Device           -  NVIDIA Tegra X2         1        25  [CUDA memset]
-4.10531s  1.7280us                    -               -         -         -         -      112B  61.812MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-4.10540s  1.7600us                    -               -         -         -         -      112B  60.688MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-4.13108s  55.298us                    -               -         -         -         -  48.000KB  847.68MB/s    Pageable      Device  NVIDIA Tegra X2         1         7  [CUDA memcpy HtoD]
-6.81993s  1.0780ms            (113 1 1)         (8 8 1)        64  2.2500KB        0B         -           -           -           -  NVIDIA Tegra X2         1         7  void implicit_convolve_sgemm<float, float, int=1024, int=5, int=5, int=3, int=3, int=3, int=1, bool=0, bool=0, bool=1>(int, int, int, float const *, int, float*, float const *, kernel_conv_params, __int64, int, float, float, int, float const *, float const *, bool, int, int) [424]
-6.82102s  87.714us                    -               -         -         -         -  225.00KB  2.4463GB/s      Device    Pageable  NVIDIA Tegra X2         1         7  [CUDA memcpy DtoH]
+==PROF== Connected to process 16715 (/home/beknur/Documents/tensorRT-mbnet/mbnet)
+==PROF== Profiling "computeOffsetsKernel" - 0: 0%....50%....100% - 7 passes
+==PROF== Profiling "_5x_cudnn_ampere_scudnn_128x3..." - 1: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 2: 0%....50%....100% - 7 passes
+==PROF== Profiling "_5x_cudnn_ampere_scudnn_128x3..." - 3: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 4: 0%....50%....100% - 7 passes
+==PROF== Profiling "_5x_cudnn_ampere_scudnn_128x3..." - 5: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 6: 0%....50%....100% - 7 passes
+==PROF== Profiling "_5x_cudnn_ampere_scudnn_128x3..." - 7: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 8: 0%....50%....100% - 7 passes
+==PROF== Profiling "_5x_cudnn_ampere_scudnn_128x3..." - 9: 0%....50%....100% - 7 passes
+==PROF== Disconnected from process 16715
+[16715] mbnet@127.0.0.1
+  _5x_cudnn_ampere_scudnn_128x32_relu_interior_nn_v1 (29, 1, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 5
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.98
+    SM Frequency                    Mhz    896.99    898.57    897.78
+    Elapsed Cycles                cycle 26,235.00 26,429.00 26,337.60
+    Memory Throughput                 %     13.44     13.56     13.50
+    DRAM Throughput                   %      1.13      1.27      1.24
+    Duration                         us     29.22     29.44     29.33
+    L1/TEX Cache Throughput           %     15.04     15.23     15.14
+    L2 Cache Throughput               %      3.14      3.16      3.15
+    SM Active Cycles              cycle 23,327.37 23,624.70 23,466.36
+    Compute (SM) Throughput           %     14.34     14.47     14.41
+    ----------------------- ----------- --------- --------- ---------
 
-Regs: Number of registers used per CUDA thread. This number includes registers used internally by the CUDA driver and/or tools and can be more than what the compiler shows.
-SSMem: Static shared memory allocated per CUDA block.
-DSMem: Dynamic shared memory allocated per CUDA block.
-SrcMemType: The type of source memory accessed by memory operation/copy
-DstMemType: The type of destination memory accessed by memory operation/copy
+  void cask__5x_cudnn::computeOffsetsKernel<0, 0>(cask__5x_cudnn::ComputeOffsetsParams) (15, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 5
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.82     6.86     6.83
+    SM Frequency                    Mhz   877.56   885.60   879.79
+    Elapsed Cycles                cycle 3,204.00 3,261.00 3,228.60
+    Memory Throughput                 %     1.94     1.98     1.96
+    DRAM Throughput                   %     0.35     0.37     0.36
+    Duration                         us     3.65     3.68     3.67
+    L1/TEX Cache Throughput           %     3.52     3.67     3.63
+    L2 Cache Throughput               %     1.94     1.98     1.96
+    SM Active Cycles              cycle   747.23   779.60   755.54
+    Compute (SM) Throughput           %     3.07     3.14     3.11
+    ----------------------- ----------- -------- -------- --------
+
+  Note: The shown averages are calculated as the arithmetic mean of the metric values after the evaluation of the    
+  metrics for each individual kernel launch.                                                                         
+  If aggregating across varying launch configurations (like shared memory, cache config settings), the arithmetic    
+  mean can be misleading and looking at the individual results is recommended instead.                               
+  This output mode is backwards compatible to the per-kernel summary output of nvprof                                
+

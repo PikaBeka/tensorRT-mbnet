@@ -1,124 +1,2281 @@
-==3871== NVPROF is profiling process 3871, command: ./mbnet
-==3871== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
-==3871== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
-==3871== Profiling application: ./mbnet
-==3871== Profiling result:
-            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   70.64%  2.24267s     10004  224.18us  212.83us  335.30us  trt_maxwell_scudnn_128x32_relu_interior_nn_v0
-                   10.21%  324.26ms     10026  32.342us  2.4000us  55.999us  [CUDA memcpy DtoH]
-                    8.37%  265.74ms     40117  6.6240us     512ns  29.440us  [CUDA memcpy HtoD]
-                    5.51%  174.80ms     20048  8.7180us  6.7200us  19.200us  [CUDA memcpy DtoD]
-                    1.12%  35.508ms     40081     885ns     639ns  223.52us  [CUDA memset]
-                    0.61%  19.259ms        27  713.30us  595.74us  1.6864ms  void gemv2N_kernel<int, int, float2, float2, float2, int=128, int=8, int=4, int=4, int=1, cublasGemvParams<cublasGemvTensorStridedBatched<float2 const >, cublasGemvTensorStridedBatched<float2>, float2>>(float2 const )
-                    0.30%  9.5219ms         5  1.9044ms  1.0374ms  3.7579ms  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=4>, fused::KpqkPtrWriter<float, int=1, int=1, int=4>, float, float, int=5, int=3, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.26%  8.1812ms         3  2.7271ms  2.6881ms  2.7625ms  void gemv2T_kernel_val<int, int, float2, float2, float2, int=128, int=16, int=2, int=2, bool=0, cublasGemvParams<cublasGemvTensorStridedBatched<float2 const >, cublasGemvTensorStridedBatched<float2>, float2>>(float2 const , float2, float2)
-                    0.17%  5.3411ms        10  534.11us  514.53us  558.75us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=2, int=5, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.12%  3.7765ms         3  1.2588ms  1.2357ms  1.2945ms  void explicit_convolve_sgemm<float, int, int=128, int=6, int=7, int=3, int=3, int=5, int=0, bool=0>(int, int, int, float const *, int, float const *, int, float*, kernel_conv_params, __int64, int, __int64, int, float, float, int, float const *, float const *)
-                    0.12%  3.7648ms        10  376.48us  366.91us  396.45us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=4, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.11%  3.5895ms         3  1.1965ms  1.1821ms  1.2206ms  trt_maxwell_scudnn_128x128_relu_medium_nn_v0
-                    0.11%  3.5656ms         3  1.1885ms  1.1807ms  1.2008ms  trt_maxwell_scudnn_128x128_relu_large_nn_v0
-                    0.11%  3.5288ms         3  1.1763ms  1.1657ms  1.1899ms  trt_maxwell_scudnn_128x128_relu_large_nn_v1
-                    0.11%  3.5276ms         3  1.1759ms  1.1651ms  1.1858ms  trt_maxwell_scudnn_128x128_relu_small_nn_v0
-                    0.11%  3.4984ms         3  1.1661ms  1.1501ms  1.1814ms  trt_maxwell_scudnn_128x128_relu_medium_nn_v1
-                    0.11%  3.4779ms         3  1.1593ms  1.1472ms  1.1730ms  trt_maxwell_scudnn_128x128_relu_interior_nn_v0
-                    0.11%  3.4523ms         3  1.1508ms  1.1462ms  1.1555ms  trt_maxwell_scudnn_128x128_relu_small_nn_v1
-                    0.11%  3.4121ms         3  1.1374ms  1.1312ms  1.1418ms  trt_maxwell_scudnn_128x128_relu_interior_nn_v1
-                    0.11%  3.3996ms         6  566.61us  561.63us  573.12us  void implicit_convolve_sgemm<float, float, int=1024, int=5, int=5, int=3, int=3, int=3, int=1, bool=0, bool=0, bool=1>(int, int, int, float const *, int, float*, float const *, kernel_conv_params, __int64, int, float, float, int, float const *, float const *, bool, int, int)
-                    0.11%  3.3664ms         6  561.06us  518.08us  613.76us  void CUTENSOR_NAMESPACE::permutationKernelPLC3<CUTENSOR_NAMESPACE::VectorWrite2DTensorView<unsigned char=0, unsigned char=1, bool=0, unsigned int=4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::VectorRead2DTensorView<unsigned char=1, unsigned char=0, bool=0, unsigned int=4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::ThreadLevelElementwise<CUTENSOR_NAMESPACE::ElementwiseConfig2DCommonCase<CUTENSOR_NAMESPACE::GeneralUnarySmall<float>, CUTENSOR_NAMESPACE::GeneralBinary<float>, int=2, int=64, int=64, int=256, char=4, bool=0, bool=1, bool=1, bool=1, bool=0>, float>, CUTENSOR_NAMESPACE::ElementwiseRuntimePLC3<float, float, float, float>::Params>(unsigned int=4)
-                    0.09%  2.7367ms         5  547.33us  532.99us  565.60us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=3, int=5, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.08%  2.6733ms         5  534.67us  523.04us  560.19us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=2, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.08%  2.6270ms        15  175.13us  172.64us  177.76us  void op_generic_tensor_kernel<int=3, float, float, float, int=256, cudnnGenericOp_t=0, cudnnNanPropagation_t=0, int=0>(cudnnTensorStruct, float*, cudnnTensorStruct, float const *, cudnnTensorStruct, float const *, float, float, float, cudnnActivationStruct, reducedDivisorArray, int)
-                    0.08%  2.6016ms         5  520.32us  502.88us  536.64us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=2>, fused::KpqkPtrWriter<float, int=1, int=1, int=2>, float, float, int=5, int=2, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.08%  2.5828ms         5  516.55us  509.76us  530.24us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=2, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.06%  2.0085ms         5  401.69us  397.73us  414.08us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=3, int=4, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.06%  1.9459ms         5  389.19us  372.35us  432.61us  void fused::fusedConvolutionReluKernel<fused::SrcChwcPtr_FltTex_Reader<float, int=1, int=1, int=1, int=1>, fused::KpqkPtrWriter<float, int=1, int=1, int=1>, float, float, int=5, int=5, int=1, int=5, int=5, int=1, int=1>(fused::ConvolutionParams<floatSrcType, int=1, int=1Type>)
-                    0.06%  1.9145ms         3  638.17us  624.48us  654.08us  trt_maxwell_scudnn_128x64_relu_large_nn_v1
-                    0.06%  1.8789ms         3  626.31us  617.98us  637.66us  trt_maxwell_scudnn_128x64_relu_medium_nn_v1
-                    0.06%  1.8536ms         3  617.85us  600.48us  645.12us  trt_maxwell_scudnn_128x64_relu_small_nn_v1
-                    0.06%  1.8286ms         3  609.53us  604.45us  617.44us  trt_maxwell_scudnn_128x64_relu_large_nn_v0
-                    0.06%  1.8203ms         3  606.76us  603.49us  612.80us  trt_maxwell_scudnn_128x64_relu_medium_nn_v0
-                    0.06%  1.8175ms         3  605.84us  595.84us  617.25us  trt_maxwell_scudnn_128x64_relu_interior_nn_v1
-                    0.06%  1.7898ms         3  596.58us  590.56us  606.01us  trt_maxwell_scudnn_128x64_relu_small_nn_v0
-                    0.05%  1.7461ms         3  582.02us  578.72us  588.48us  trt_maxwell_scudnn_128x64_relu_interior_nn_v0
-                    0.04%  1.3233ms        27  49.010us  38.080us  84.480us  void fft2d_c2r_32x32<float, bool=0, bool=0, unsigned int=0, bool=0, bool=0>(float*, float2 const *, int, int, int, int, int, int, int, int, int, float, float, cudnn::reduced_divisor, bool, float*, float*, int2, int, int)
-                    0.04%  1.2874ms         3  429.13us  412.32us  442.56us  trt_maxwell_scudnn_128x32_relu_large_nn_v1
-                    0.04%  1.2696ms         3  423.20us  416.09us  436.48us  trt_maxwell_scudnn_128x32_relu_medium_nn_v1
-                    0.04%  1.2064ms         3  402.13us  391.93us  421.44us  trt_maxwell_scudnn_128x32_relu_small_nn_v1
-                    0.04%  1.1457ms         3  381.89us  370.46us  394.72us  trt_maxwell_scudnn_128x32_relu_interior_nn_v1
-                    0.03%  1.1072ms         3  369.06us  362.72us  380.64us  trt_maxwell_scudnn_128x32_relu_medium_nn_v0
-                    0.03%  1.1026ms         3  367.52us  363.84us  373.92us  trt_maxwell_scudnn_128x32_relu_large_nn_v0
-                    0.03%  1.0673ms        27  39.528us  28.000us  71.456us  void fft2d_r2c_32x32<float, bool=0, unsigned int=0, bool=0>(float2*, float const *, int, int, int, int, int, int, int, int, int, cudnn::reduced_divisor, bool, int2, int, int)
-                    0.03%  1.0501ms         3  350.02us  345.85us  357.76us  trt_maxwell_scudnn_128x32_relu_small_nn_v0
-                    0.03%  1.0336ms         6  172.27us  56.960us  299.04us  void fft2d_r2c_64x64<float, bool=1>(float2*, float const *, int, int, int, int, int, int, int, int)
-                    0.03%  836.44us         9  92.938us  46.080us  151.33us  void transpose_readWrite_alignment_kernel<float2, float2, int=1, bool=0, int=6, int=4, int=4>(cublasTransposeParams<float2>, float2 const *, float2*, float2 const *)
-                    0.03%  807.61us         3  269.20us  268.64us  269.76us  void cudnn::cnn::im2col4d_kernel<float, long>(cudnn::cnn::im2col4d_params, cudnnConvolutionStruct, cudnnTensorStruct, float const *, cudnnTensorStruct*)
-                    0.02%  728.96us         4  182.24us  180.32us  187.39us  void genericReformat::copyPackedKernel<float, float, bool=1, bool=1, genericReformat::IdentityCoordMapper<int=4>, int=4>(unsigned int, unsigned int, void const *, genericReformat::ArrayN<genericReformat::IdentityCoordMapper<int=4>>, genericReformat::ArrayNWithReducedDivisors<genericReformat::IdentityCoordMapper<int=4>>, genericReformat::ArrayN, int, int, int, float const *, void*, genericReformat::ArrayN, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayN, int, int, int, float const , int=4)
-                    0.02%  619.04us         3  206.35us  194.91us  227.49us  void fft2d_c2r_64x64<float, bool=0, bool=1>(float*, float2*, int, int, int, int, int, int, int, int, int, int, float, float, int, float*, float*)
-                    0.01%  365.28us        25  14.611us  13.920us  15.680us  void cask_trt::computeOffsetsKernel<bool=0, bool=0>(cask_trt::ComputeOffsetsParams)
-                    0.01%  255.58us         3  85.194us  80.096us  95.264us  void fft2d_r2c_32x32<float, bool=0, unsigned int=5, bool=1>(float2*, float const *, int, int, int, int, int, int, int, int, int, cudnn::reduced_divisor, bool, int2, int, int)
-                    0.01%  188.29us         4  47.071us  44.960us  52.799us  void genericReformat::copyPackedKernel<float, float, bool=1, bool=1, genericReformat::ArrayN<int=4>, int=4>(unsigned int, unsigned int, void const *, genericReformat::ArrayN<genericReformat::ArrayN<int=4>>, genericReformat::ArrayNWithReducedDivisors<genericReformat::ArrayN<int=4>>, void const *, int, int, int, float const *, void*, void const *, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayNWithReducedDivisors, void const *, int, int, int, float const , int=4)
-                    0.00%  35.392us         3  11.797us  10.880us  12.352us  void flip_filter<float, float>(float*, float const *, int, int, int, int)
-      API calls:   19.18%  14.0165s     50010  280.27us  29.727us  116.11ms  cudaMemcpy
-                   14.71%  10.7534s     30049  357.86us  3.0400us  11.071ms  cudaStreamSynchronize
-                   10.19%  7.45057s    260173  28.636us  1.2800us  1.27164s  cudaFree
-                    9.28%  6.78414s     10003  678.21us  75.647us  2.6733ms  cudaHostAlloc
-                    7.57%  5.53096s    140146  39.465us  13.792us  4.4578ms  cudaMalloc
-                    6.57%  4.80479s     80026  60.040us  8.2230us  2.86437s  cudaMemGetInfo
-                    5.15%  3.76429s     10003  376.32us  47.871us  3.5393ms  cudaFreeHost
-                    4.56%  3.32950s     80025  41.605us  2.9120us  2.71787s  cudaStreamCreateWithFlags
-                    3.59%  2.62437s     10302  254.74us  30.304us  2.00624s  cudaLaunchKernel
-                    3.08%  2.25278s    810304  2.7800us     512ns  806.62us  cudaDeviceGetAttribute
-                    2.86%  2.09321s     20233  103.46us     928ns  1.7654ms  cudaMemcpyAsync
-                    2.02%  1.47835s    480141  3.0780us  1.4080us  3.4630ms  cudaEventDestroy
-                    1.94%  1.42090s       159  8.9365ms  9.4720us  172.35ms  cuModuleUnload
-                    1.84%  1.34565s    480138  2.8020us  1.4400us  1.5302ms  cudaEventCreateWithFlags
-                    1.82%  1.33308s     30014  44.415us  27.840us  375.20us  cudaGetDeviceProperties
-                    1.51%  1.10215s     40081  27.498us  14.271us  808.15us  cudaMemsetAsync
-                    1.36%  991.73ms    130038  7.6260us  3.3600us  1.6993ms  cudaStreamDestroy
-                    1.32%  965.14ms     70021  13.783us  4.0000us  2.2036ms  cudaDeviceSynchronize
-                    0.31%  225.36ms     60026  3.7540us  1.3440us  1.3585ms  cudaGetDevice
-                    0.23%  164.72ms     40012  4.1160us  2.8160us  656.57us  cudaStreamCreateWithPriority
-                    0.22%  162.32ms       157  1.0339ms  119.78us  6.5231ms  cudaEventSynchronize
-                    0.22%  159.12ms     10001  15.910us  11.392us  152.51us  cudaStreamCreate
-                    0.14%  102.29ms     10359  9.8740us  1.6960us  306.59us  cudaEventRecord
-                    0.11%  77.870ms     50456  1.5430us     448ns  723.48us  cudaGetLastError
-                    0.09%  65.615ms     10003  6.5590us  3.4560us  178.69us  cudaHostGetDevicePointer
-                    0.06%  42.546ms     30010  1.4170us     447ns  789.02us  cudaGetDeviceCount
-                    0.03%  23.824ms     10003  2.3810us  1.8240us  107.84us  cudaDeviceGetStreamPriorityRange
-                    0.02%  13.707ms     20008     685ns     416ns  735.87us  cudaRuntimeGetVersion
-                    0.01%  6.7034ms     10004     670ns     448ns  58.592us  cudaDriverGetVersion
-                    0.01%  5.2255ms       157  33.283us  13.856us  194.40us  cudaStreamAddCallback
-                    0.00%  1.3724ms       157  8.7410us  4.6720us  20.127us  cudaEventElapsedTime
-                    0.00%  799.19us       568  1.4070us     416ns  70.591us  cuDeviceGetAttribute
-                    0.00%  392.03us        11  35.638us  31.712us  42.975us  cudaCreateTextureObject
-                    0.00%  315.77us        87  3.6290us  1.6640us  10.207us  cudaStreamWaitEvent
-                    0.00%  154.82us        11  14.074us  11.584us  17.024us  cudaDestroyTextureObject
-                    0.00%  97.472us         6  16.245us  9.3440us  23.424us  cuDeviceTotalMem
-                    0.00%  45.279us         3  15.093us  9.9830us  21.216us  cudaEventCreate
-                    0.00%  28.575us         5  5.7150us  4.8960us  6.7520us  cuInit
-                    0.00%  21.216us         8  2.6520us  1.0240us  8.6720us  cuDeviceGetCount
-                    0.00%  13.056us         5  2.6110us  1.4720us  4.0640us  cuDriverGetVersion
-                    0.00%  12.160us         6  2.0260us  1.3760us  2.4000us  cuDeviceGetName
-                    0.00%  11.392us         7  1.6270us     800ns  3.6160us  cuDeviceGet
-                    0.00%  9.2480us         6  1.5410us     640ns  3.2960us  cudaPeekAtLastError
-                    0.00%  8.1280us        11     738ns     544ns     928ns  cudaCreateChannelDesc
-                    0.00%  5.8560us         6     976ns     736ns  1.5680us  cuDeviceGetUuid
-                    0.00%  3.8080us         2  1.9040us  1.6960us  2.1120us  cuDevicePrimaryCtxRelease
+==PROF== Connected to process 10897 (/home/beknur/Documents/tensorRT-mbnet/mbnet)
+==PROF== Profiling "computeOffsetsKernel" - 0: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 1: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 2: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 3: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 4: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 5: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 6: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 7: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 8: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 9: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 10: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 11: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 12: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 13: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 14: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 15: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 16: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 17: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 18: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 19: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 20: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 21: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 22: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 23: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 24: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 25: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 26: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 27: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 28: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 29: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 30: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 31: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 32: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 33: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 34: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 35: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 36: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 37: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 38: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 39: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 40: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 41: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 42: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 43: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 44: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 45: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 46: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 47: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 48: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 49: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 50: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 51: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 52: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 53: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 54: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 55: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 56: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 57: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 58: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 59: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 60: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 61: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 62: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 63: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 64: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 65: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 66: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 67: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 68: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 69: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 70: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 71: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 72: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 73: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 74: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 75: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 76: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 77: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 78: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 79: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 80: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 81: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 82: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 83: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 84: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 85: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 86: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 87: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 88: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 89: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 90: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 91: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 92: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 93: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 94: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 95: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 96: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 97: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 98: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 99: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 100: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 101: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 102: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 103: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 104: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 105: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 106: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 107: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 108: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 109: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 110: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 111: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 112: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 113: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 114: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 115: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 116: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 117: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 118: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 119: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 120: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 121: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 122: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 123: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 124: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 125: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 126: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 127: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 128: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 129: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 130: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_relu..." - 131: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 132: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 133: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 134: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 135: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 136: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 137: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 138: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 139: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 140: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_relu..." - 141: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 142: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 143: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 144: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 145: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 146: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 147: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 148: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 149: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 150: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 151: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 152: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 153: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 154: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 155: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 156: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 157: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 158: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 159: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 160: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 161: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 162: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 163: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 164: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 165: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 166: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 167: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 168: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 169: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 170: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 171: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 172: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 173: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 174: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 175: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 176: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 177: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 178: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 179: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 180: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 181: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 182: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 183: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 184: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 185: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 186: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 187: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 188: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 189: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 190: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 191: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 192: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 193: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 194: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 195: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 196: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 197: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 198: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 199: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 200: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 201: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 202: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 203: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 204: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 205: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 206: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 207: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 208: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 209: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 210: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 211: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 212: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 213: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 214: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 215: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 216: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 217: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 218: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 219: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 220: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 221: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 222: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 223: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 224: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 225: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 226: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 227: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 228: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 229: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 230: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 231: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 232: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 233: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 234: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 235: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 236: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 237: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 238: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 239: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 240: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 241: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 242: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 243: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 244: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 245: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 246: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 247: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 248: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 249: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 250: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 251: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 252: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 253: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 254: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 255: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 256: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 257: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 258: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 259: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 260: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 261: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 262: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 263: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 264: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 265: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 266: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 267: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 268: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 269: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 270: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 271: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 272: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 273: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 274: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 275: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 276: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 277: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 278: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 279: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 280: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 281: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 282: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 283: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 284: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 285: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 286: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 287: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 288: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 289: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 290: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 291: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 292: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 293: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 294: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 295: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 296: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 297: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 298: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 299: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 300: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 301: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 302: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 303: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 304: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 305: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 306: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 307: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 308: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 309: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 310: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 311: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 312: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 313: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 314: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 315: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 316: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 317: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 318: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 319: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 320: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 321: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 322: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 323: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 324: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 325: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 326: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 327: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 328: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 329: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 330: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 331: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 332: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 333: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 334: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 335: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 336: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 337: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 338: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 339: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 340: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 341: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 342: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 343: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 344: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 345: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 346: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 347: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 348: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_ldg..." - 349: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 350: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 351: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 352: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 353: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 354: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 355: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 356: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 357: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 358: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 359: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 360: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 361: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 362: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 363: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 364: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 365: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 366: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 367: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 368: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 369: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 370: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 371: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 372: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 373: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 374: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 375: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 376: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 377: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 378: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 379: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 380: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 381: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 382: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 383: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 384: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 385: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 386: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 387: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 388: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 389: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 390: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 391: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 392: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 393: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 394: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 395: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 396: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 397: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 398: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 399: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 400: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 401: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 402: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 403: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 404: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 405: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 406: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 407: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 408: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 409: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 410: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 411: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 412: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 413: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 414: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 415: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 416: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 417: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 418: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 419: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 420: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 421: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 422: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 423: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 424: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 425: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 426: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 427: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 428: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 429: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 430: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 431: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 432: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 433: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 434: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 435: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 436: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 437: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 438: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 439: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 440: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 441: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 442: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 443: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 444: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 445: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 446: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 447: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 448: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 449: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 450: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 451: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 452: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 453: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 454: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 455: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 456: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 457: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 458: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 459: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 460: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 461: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 462: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 463: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 464: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 465: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 466: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 467: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 468: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 469: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 470: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 471: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 472: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 473: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 474: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 475: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 476: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 477: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 478: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x32_slic..." - 479: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 480: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 481: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 482: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 483: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 484: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 485: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 486: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 487: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 488: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x64_slic..." - 489: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 490: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 491: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 492: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 493: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 494: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 495: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 496: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 497: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 498: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 499: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 500: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 501: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 502: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 503: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 504: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 505: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 506: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 507: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 508: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 509: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 510: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 511: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 512: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 513: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 514: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 515: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 516: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 517: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 518: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 519: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 520: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 521: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 522: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 523: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 524: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 525: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 526: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 527: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 528: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 529: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 530: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 531: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 532: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 533: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 534: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 535: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 536: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 537: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 538: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 539: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 540: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 541: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 542: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 543: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 544: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 545: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 546: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 547: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 548: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 549: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 550: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 551: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 552: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 553: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 554: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 555: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 556: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 557: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 558: 0%....50%....100% - 7 passes
+==PROF== Profiling "sm80_xmma_fprop_implicit_gemm..." - 559: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 560: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 561: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 562: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 563: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 564: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 565: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 566: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 567: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 568: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 569: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 570: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 571: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 572: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 573: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 574: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 575: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 576: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 577: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 578: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 579: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 580: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 581: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 582: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 583: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 584: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 585: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 586: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 587: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 588: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 589: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 590: 0%....50%....100% - 7 passes
+==PROF== Profiling "nchwToNhwcKernel" - 591: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 592: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 593: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 594: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 595: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 596: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 597: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 598: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 599: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 600: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 601: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 602: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 603: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 604: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 605: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 606: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 607: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 608: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 609: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 610: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 611: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 612: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 613: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 614: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 615: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 616: 0%....50%....100% - 7 passes
+==PROF== Profiling "permutationKernelPLC3" - 617: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 618: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 619: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 620: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 621: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 622: 0%....50%....100% - 7 passes
+==PROF== Profiling "nhwcToNchwKernel" - 623: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 624: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyVectorizedKernel" - 625: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 626: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 627: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyVectorizedKernel" - 628: 0%....50%....100% - 7 passes
+==PROF== Profiling "copyPackedKernel" - 629: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 630: 0%....50%....100% - 7 passes
+==PROF== Profiling "naiveSlice" - 631: 0%....50%....100% - 7 passes
+==PROF== Profiling "naiveSlice" - 632: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 633: 0%....50%....100% - 7 passes
+==PROF== Profiling "computeOffsetsKernel" - 634: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 635: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 636: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 637: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 638: 0%....50%....100% - 7 passes
+==PROF== Profiling "trt_ampere_scudnn_128x128_rel..." - 639: 0%....50%....100% - 7 passes
+==PROF== Disconnected from process 10897
+[10897] mbnet@127.0.0.1
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x16x8_stage3_warpsize4x1x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.93      6.98      6.96
+    SM Frequency                    Mhz    895.88    898.16    896.78
+    Elapsed Cycles                cycle 13,803.00 14,067.00 13,978.83
+    Memory Throughput                 %     22.56     22.89     22.68
+    DRAM Throughput                   %      2.03      2.09      2.05
+    Duration                         us     15.39     15.68     15.58
+    L1/TEX Cache Throughput           %     26.83     27.12     26.95
+    L2 Cache Throughput               %      6.34      6.46      6.38
+    SM Active Cycles              cycle 11,440.33 11,563.23 11,503.06
+    Compute (SM) Throughput           %     30.68     31.11     30.84
+    ----------------------- ----------- --------- --------- ---------
 
-==3871== NVTX result:
-==3871==   Thread "<unnamed>" (id = 2475470864)
-==3871==     Domain "TensorRT"
-==3871==       Range "(Unnamed Layer* 0) [Convolution]"
-            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
-          Range:  100.00%  804.91ms     10000  80.491us  65.471us  1.7960ms  (Unnamed Layer* 0) [Convolution]
- GPU activities:  100.00%  2.24139s     10000  224.14us  212.83us  335.30us  trt_maxwell_scudnn_128x32_relu_interior_nn_v0
-      API calls:  100.00%  601.00ms     10000  60.099us  48.320us  807.93us  cudaLaunchKernel
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x64x8_stage3_warpsize2x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.97
+    SM Frequency                    Mhz    897.79    898.60    898.21
+    Elapsed Cycles                cycle 20,611.00 20,850.00 20,768.17
+    Memory Throughput                 %     29.68     30.08     29.94
+    DRAM Throughput                   %      1.64      1.78      1.70
+    Duration                         us     22.94     23.20     23.11
+    L1/TEX Cache Throughput           %     33.61     33.98     33.81
+    L2 Cache Throughput               %      4.81      4.87      4.84
+    SM Active Cycles              cycle 18,100.77 18,318.13 18,214.58
+    Compute (SM) Throughput           %     44.08     44.63     44.45
+    ----------------------- ----------- --------- --------- ---------
 
-==3871==       Range "ExecutionContext::execute"
-            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
-          Range:  100.00%  9.29979s     10000  929.98us  452.19us  11.333ms  ExecutionContext::execute
- GPU activities:   96.58%  2.24139s     10000  224.14us  212.83us  335.30us  trt_maxwell_scudnn_128x32_relu_interior_nn_v0
-                    3.42%  79.480ms     10000  7.9480us  6.7200us  12.640us  [CUDA memcpy DtoD]
-      API calls:   58.80%  857.78ms     10000  85.778us  54.656us  797.72us  cudaMemcpyAsync
-                   41.20%  601.00ms     10000  60.099us  48.320us  807.93us  cudaLaunchKernel
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize256x128x8_stage3_warpsize4x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 15, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.43    898.85    898.68
+    Elapsed Cycles                cycle 51,153.00 51,636.00 51,393.83
+    Memory Throughput                 %     19.97     20.18     20.05
+    DRAM Throughput                   %      0.75      0.81      0.80
+    Duration                         us     56.93     57.44     57.18
+    L1/TEX Cache Throughput           %     41.25     41.68     41.48
+    L2 Cache Throughput               %      1.77      1.80      1.78
+    SM Active Cycles              cycle 24,636.73 24,922.97 24,788.45
+    Compute (SM) Throughput           %     30.83     31.13     30.97
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize32x32x8_stage3_warpsize1x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 113, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.98      6.97
+    SM Frequency                    Mhz    896.36    898.08    897.56
+    Elapsed Cycles                cycle 15,783.00 15,983.00 15,856.50
+    Memory Throughput                 %     37.77     38.96     38.40
+    DRAM Throughput                   %      1.73      1.80      1.78
+    Duration                         us     17.57     17.79     17.66
+    L1/TEX Cache Throughput           %     44.11     45.27     44.83
+    L2 Cache Throughput               %      6.53      6.61      6.58
+    SM Active Cycles              cycle 13,395.20 13,684.53 13,508.62
+    Compute (SM) Throughput           %     42.90     43.86     43.45
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize32x32x8_stage3_warpsize1x2x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 113, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.97      6.96
+    SM Frequency                    Mhz    896.14    898.14    897.23
+    Elapsed Cycles                cycle 15,050.00 15,346.00 15,198.00
+    Memory Throughput                 %     40.16     41.11     40.56
+    DRAM Throughput                   %      1.88      2.30      2.11
+    Duration                         us     16.77     17.12     16.93
+    L1/TEX Cache Throughput           %     47.35     47.73     47.50
+    L2 Cache Throughput               %      6.73      6.87      6.80
+    SM Active Cycles              cycle 12,743.73 12,851.70 12,784.59
+    Compute (SM) Throughput           %     44.58     45.61     45.10
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize64x128x8_stage3_warpsize1x4x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.98      6.98
+    SM Frequency                    Mhz    898.46    898.72    898.60
+    Elapsed Cycles                cycle 28,957.00 29,108.00 29,033.17
+    Memory Throughput                 %     42.33     42.55     42.41
+    DRAM Throughput                   %      1.26      1.54      1.37
+    Duration                         us     32.22     32.38     32.30
+    L1/TEX Cache Throughput           %     46.83     47.20     47.04
+    L2 Cache Throughput               %      3.89      3.91      3.90
+    SM Active Cycles              cycle 26,039.23 26,194.07 26,103.07
+    Compute (SM) Throughput           %     57.08     57.47     57.23
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize64x64x8_stage3_warpsize1x4x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.97      6.97
+    SM Frequency                    Mhz    896.94    898.34    897.60
+    Elapsed Cycles                cycle 19,359.00 19,492.00 19,397.50
+    Memory Throughput                 %     40.52     40.64     40.60
+    DRAM Throughput                   %      1.64      1.81      1.73
+    Duration                         us     21.57     21.73     21.61
+    L1/TEX Cache Throughput           %     46.13     46.37     46.26
+    L2 Cache Throughput               %      5.46      5.49      5.49
+    SM Active Cycles              cycle 16,949.10 17,025.43 16,984.67
+    Compute (SM) Throughput           %     51.31     51.50     51.45
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize64x64x8_stage3_warpsize1x4x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.97      6.96
+    SM Frequency                    Mhz    896.42    898.70    897.62
+    Elapsed Cycles                cycle 18,766.00 18,905.00 18,824.00
+    Memory Throughput                 %     41.45     41.76     41.60
+    DRAM Throughput                   %      1.69      2.07      1.88
+    Duration                         us     20.90     21.09     20.97
+    L1/TEX Cache Throughput           %     47.41     47.76     47.60
+    L2 Cache Throughput               %      5.57      5.62      5.60
+    SM Active Cycles              cycle 16,390.93 16,493.83 16,430.53
+    Compute (SM) Throughput           %     51.92     52.27     52.12
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize128x16x8_stage3_warpsize4x1x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.99      6.98
+    SM Frequency                    Mhz    898.07    898.95    898.56
+    Elapsed Cycles                cycle 36,202.00 36,336.00 36,276.33
+    Memory Throughput                 %     36.41     36.68     36.53
+    DRAM Throughput                   %      0.80      0.84      0.83
+    Duration                         us     40.29     40.45     40.37
+    L1/TEX Cache Throughput           %     41.54     41.88     41.74
+    L2 Cache Throughput               %      2.59      2.60      2.60
+    SM Active Cycles              cycle 17,297.07 17,423.73 17,348.13
+    Compute (SM) Throughput           %     35.44     35.71     35.56
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize128x16x8_stage3_warpsize4x1x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.98      6.98
+    SM Frequency                    Mhz    897.78    898.66    898.14
+    Elapsed Cycles                cycle 33,795.00 33,933.00 33,869.83
+    Memory Throughput                 %     38.13     38.48     38.30
+    DRAM Throughput                   %      0.88      0.93      0.90
+    Duration                         us     37.63     37.79     37.71
+    L1/TEX Cache Throughput           %     43.57     43.97     43.85
+    L2 Cache Throughput               %      2.69      2.73      2.70
+    SM Active Cycles              cycle 16,469.13 16,587.93 16,505.73
+    Compute (SM) Throughput           %     36.72     37.12     36.91
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize128x64x8_stage3_warpsize2x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    898.51    899.32    899.07
+    Elapsed Cycles                cycle 55,802.00 56,171.00 55,949.50
+    Memory Throughput                 %     54.09     54.65     54.47
+    DRAM Throughput                   %      0.62      0.70      0.65
+    Duration                         us     62.05     62.46     62.22
+    L1/TEX Cache Throughput           %     58.74     58.86     58.80
+    L2 Cache Throughput               %      1.83      1.88      1.84
+    SM Active Cycles              cycle 39,888.47 39,966.77 39,923.98
+    Compute (SM) Throughput           %     42.72     43.14     43.00
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize256x64x8_stage3_warpsize2x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 15, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ---------- ---------- ----------
+    Metric Name             Metric Unit    Minimum    Maximum    Average
+    ----------------------- ----------- ---------- ---------- ----------
+    DRAM Frequency                  Ghz       6.99       6.99       6.99
+    SM Frequency                    Mhz     899.23     899.53     899.41
+    Elapsed Cycles                cycle 106,765.00 107,386.00 107,134.17
+    Memory Throughput                 %      21.74      21.92      21.82
+    DRAM Throughput                   %       0.47       0.50       0.49
+    Duration                         us     118.69     119.39     119.11
+    L1/TEX Cache Throughput           %      44.42      44.71      44.55
+    L2 Cache Throughput               %       1.02       1.03       1.02
+    SM Active Cycles              cycle  41,666.27  41,877.93  41,800.77
+    Compute (SM) Throughput           %      21.11      21.31      21.21
+    ----------------------- ----------- ---------- ---------- ----------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize32x32x8_stage3_warpsize1x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 113, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.99    899.25    899.12
+    Elapsed Cycles                cycle 54,030.00 54,388.00 54,211.67
+    Memory Throughput                 %     73.22     73.80     73.48
+    DRAM Throughput                   %      0.52      0.64      0.58
+    Duration                         us     60.10     60.48     60.29
+    L1/TEX Cache Throughput           %     81.04     81.43     81.27
+    L2 Cache Throughput               %      1.97      1.99      1.98
+    SM Active Cycles              cycle 33,394.87 33,553.87 33,470.56
+    Compute (SM) Throughput           %     34.19     34.47     34.32
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize32x32x8_stage3_warpsize1x2x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 113, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.73    899.02    898.87
+    Elapsed Cycles                cycle 54,054.00 54,466.00 54,226.50
+    Memory Throughput                 %     74.54     74.91     74.76
+    DRAM Throughput                   %      0.49      0.54      0.51
+    Duration                         us     60.13     60.58     60.32
+    L1/TEX Cache Throughput           %     82.46     82.84     82.68
+    L2 Cache Throughput               %      1.93      1.97      1.94
+    SM Active Cycles              cycle 32,821.83 32,973.70 32,890.44
+    Compute (SM) Throughput           %     34.46     34.63     34.57
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x16x16_stage3_warpsize1x1x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(32, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ---------- ---------- ----------
+    Metric Name             Metric Unit    Minimum    Maximum    Average
+    ----------------------- ----------- ---------- ---------- ----------
+    DRAM Frequency                  Ghz       6.99       6.99       6.99
+    SM Frequency                    Mhz     899.22     899.66     899.41
+    Elapsed Cycles                cycle 105,729.00 105,900.00 105,803.33
+    Memory Throughput                 %      30.17      30.47      30.32
+    DRAM Throughput                   %       0.33       0.34       0.34
+    Duration                         us     117.54     117.76     117.63
+    L1/TEX Cache Throughput           %      31.51      31.75      31.62
+    L2 Cache Throughput               %       1.09       1.09       1.09
+    SM Active Cycles              cycle  41,742.13  42,053.00  41,917.62
+    Compute (SM) Throughput           %      25.48      25.74      25.61
+    ----------------------- ----------- ---------- ---------- ----------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x16x16_stage3_warpsize1x1x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(32, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.99      6.99      6.99
+    SM Frequency                    Mhz    899.32    899.52    899.42
+    Elapsed Cycles                cycle 96,262.00 99,018.00 97,793.83
+    Memory Throughput                 %     28.57     28.79     28.68
+    DRAM Throughput                   %      0.37      0.41      0.38
+    Duration                         us    107.01    110.08    108.73
+    L1/TEX Cache Throughput           %     29.76     29.95     29.85
+    L2 Cache Throughput               %      1.18      1.21      1.19
+    SM Active Cycles              cycle 44,247.97 44,543.63 44,402.13
+    Compute (SM) Throughput           %     23.70     23.88     23.80
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x32x32_stage3_warpsize1x1x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(32, 1, 1), Device 0, CC 8.6, Invocations 4
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ---------- ---------- ----------
+    Metric Name             Metric Unit    Minimum    Maximum    Average
+    ----------------------- ----------- ---------- ---------- ----------
+    DRAM Frequency                  Ghz       6.99       6.99       6.99
+    SM Frequency                    Mhz     899.71     899.81     899.76
+    Elapsed Cycles                cycle 216,550.00 217,344.00 216,958.75
+    Memory Throughput                 %      20.74      20.82      20.78
+    DRAM Throughput                   %       2.69       2.80       2.74
+    Duration                         us     240.67     241.57     241.13
+    L1/TEX Cache Throughput           %      20.87      20.94      20.90
+    L2 Cache Throughput               %       4.75       4.80       4.78
+    SM Active Cycles              cycle 215,538.90 216,309.97 215,987.63
+    Compute (SM) Throughput           %      16.41      16.47      16.43
+    ----------------------- ----------- ---------- ---------- ----------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x32x32_stage3_warpsize1x1x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(32, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ---------- ---------- ----------
+    Metric Name             Metric Unit    Minimum    Maximum    Average
+    ----------------------- ----------- ---------- ---------- ----------
+    DRAM Frequency                  Ghz       6.99       6.99       6.99
+    SM Frequency                    Mhz     899.60     899.84     899.74
+    Elapsed Cycles                cycle 203,063.00 203,942.00 203,535.33
+    Memory Throughput                 %      21.64      21.73      21.69
+    DRAM Throughput                   %       1.96       2.02       1.99
+    Duration                         us     225.66     226.66     226.21
+    L1/TEX Cache Throughput           %      21.74      21.90      21.83
+    L2 Cache Throughput               %       3.93       3.97       3.95
+    SM Active Cycles              cycle 201,521.03 202,924.83 202,135.23
+    Compute (SM) Throughput           %      17.29      17.37      17.33
+    ----------------------- ----------- ---------- ---------- ----------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x64x8_stage3_warpsize1x4x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.09    899.73    899.41
+    Elapsed Cycles                cycle 61,863.00 62,210.00 62,053.67
+    Memory Throughput                 %     68.80     69.28     69.02
+    DRAM Throughput                   %      0.57      0.64      0.60
+    Duration                         us     68.80     69.15     68.99
+    L1/TEX Cache Throughput           %     75.04     75.52     75.21
+    L2 Cache Throughput               %      1.81      1.82      1.82
+    SM Active Cycles              cycle 40,601.70 40,846.87 40,765.12
+    Compute (SM) Throughput           %     45.76     46.04     45.88
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x64x8_stage3_warpsize1x4x1_g1_ffma_t1r5s5_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.18    899.54    899.30
+    Elapsed Cycles                cycle 58,992.00 59,261.00 59,106.00
+    Memory Throughput                 %     71.44     71.95     71.70
+    DRAM Throughput                   %      0.55      0.60      0.58
+    Duration                         us     65.60     65.89     65.72
+    L1/TEX Cache Throughput           %     78.15     78.34     78.23
+    L2 Cache Throughput               %      1.90      1.92      1.90
+    SM Active Cycles              cycle 39,146.37 39,254.13 39,205.82
+    Compute (SM) Throughput           %     46.97     47.29     47.13
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nchw_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.10    899.73    899.30
+    Elapsed Cycles                cycle 67,491.00 67,660.00 67,549.50
+    Memory Throughput                 %     19.50     19.61     19.56
+    DRAM Throughput                   %      0.61      0.69      0.63
+    Duration                         us     75.01     75.23     75.11
+    L1/TEX Cache Throughput           %     20.68     20.82     20.75
+    L2 Cache Throughput               %      7.52      7.54      7.54
+    SM Active Cycles              cycle 63,480.50 63,841.23 63,638.61
+    Compute (SM) Throughput           %     36.64     36.84     36.74
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nchw_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    898.97    899.41    899.15
+    Elapsed Cycles                cycle 64,617.00 64,941.00 64,776.17
+    Memory Throughput                 %     19.41     19.53     19.47
+    DRAM Throughput                   %      0.64      0.66      0.65
+    Duration                         us     71.84     72.22     72.04
+    L1/TEX Cache Throughput           %     20.70     20.79     20.73
+    L2 Cache Throughput               %      7.83      7.87      7.85
+    SM Active Cycles              cycle 60,620.53 60,890.83 60,823.69
+    Compute (SM) Throughput           %     38.12     38.29     38.22
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.05    899.54    899.27
+    Elapsed Cycles                cycle 65,168.00 65,651.00 65,447.00
+    Memory Throughput                 %     18.26     18.35     18.30
+    DRAM Throughput                   %      0.63      0.67      0.64
+    Duration                         us     72.48     72.99     72.77
+    L1/TEX Cache Throughput           %     19.41     19.47     19.44
+    L2 Cache Throughput               %      7.68      7.73      7.70
+    SM Active Cycles              cycle 61,394.63 61,623.50 61,494.99
+    Compute (SM) Throughput           %     37.82     37.95     37.87
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_t1r5s5_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.16    899.62    899.33
+    Elapsed Cycles                cycle 64,289.00 64,440.00 64,357.83
+    Memory Throughput                 %     18.96     19.04     19.00
+    DRAM Throughput                   %      0.63      0.70      0.66
+    Duration                         us     71.49     71.65     71.56
+    L1/TEX Cache Throughput           %     20.17     20.23     20.20
+    L2 Cache Throughput               %      7.82      7.84      7.83
+    SM Active Cycles              cycle 60,449.70 60,521.60 60,493.54
+    Compute (SM) Throughput           %     38.44     38.49     38.47
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x16x8_stage3_warpsize4x1x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.97      6.96
+    SM Frequency                    Mhz    896.22    897.93    897.01
+    Elapsed Cycles                cycle 17,577.00 17,680.00 17,621.50
+    Memory Throughput                 %     19.07     19.17     19.12
+    DRAM Throughput                   %      1.73      1.82      1.77
+    Duration                         us     19.58     19.68     19.64
+    L1/TEX Cache Throughput           %     21.85     22.02     21.96
+    L2 Cache Throughput               %      5.11      5.15      5.13
+    SM Active Cycles              cycle 15,052.53 15,148.00 15,095.18
+    Compute (SM) Throughput           %     35.43     35.60     35.53
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x32x8_stage3_warpsize2x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.97      6.97
+    SM Frequency                    Mhz    897.28    898.19    897.71
+    Elapsed Cycles                cycle 19,586.00 19,606.00 19,595.33
+    Memory Throughput                 %     22.28     22.48     22.35
+    DRAM Throughput                   %      1.57      1.81      1.64
+    Duration                         us     21.82     21.82     21.82
+    L1/TEX Cache Throughput           %     25.46     25.51     25.49
+    L2 Cache Throughput               %      4.88      4.92      4.89
+    SM Active Cycles              cycle 17,168.50 17,204.83 17,190.07
+    Compute (SM) Throughput           %     39.41     39.72     39.56
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x64x8_stage2_warpsize1x4x1_g1_ffma_aligna4_alignc4_beta0_packed_stride_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.98
+    SM Frequency                    Mhz    897.85    898.82    898.39
+    Elapsed Cycles                cycle 22,853.00 23,054.00 22,973.83
+    Memory Throughput                 %     44.35     45.07     44.70
+    DRAM Throughput                   %      1.27      1.61      1.38
+    Duration                         us     25.44     25.66     25.57
+    L1/TEX Cache Throughput           %     50.54     50.81     50.68
+    L2 Cache Throughput               %      4.01      4.05      4.03
+    SM Active Cycles              cycle 20,226.30 20,333.27 20,279.43
+    Compute (SM) Throughput           %     39.44     40.08     39.76
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x64x8_stage2_warpsize2x2x1_g1_ffma_aligna4_alignc4_beta0_packed_stride_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.97
+    SM Frequency                    Mhz    897.49    898.58    898.02
+    Elapsed Cycles                cycle 22,721.00 22,891.00 22,801.00
+    Memory Throughput                 %     45.05     45.43     45.16
+    DRAM Throughput                   %      1.29      1.49      1.37
+    Duration                         us     25.28     25.50     25.39
+    L1/TEX Cache Throughput           %     50.99     51.09     51.05
+    L2 Cache Throughput               %      4.07      4.14      4.09
+    SM Active Cycles              cycle 20,135.10 20,175.40 20,151.47
+    Compute (SM) Throughput           %     39.79     40.13     39.89
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize128x64x8_stage2_warpsize4x1x1_g1_ffma_aligna4_alignc4_beta0_packed_stride_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    897.43    898.34    897.91
+    Elapsed Cycles                cycle 24,812.00 24,897.00 24,855.00
+    Memory Throughput                 %     48.96     49.18     49.06
+    DRAM Throughput                   %      1.19      1.29      1.22
+    Duration                         us     27.62     27.71     27.67
+    L1/TEX Cache Throughput           %     54.71     54.87     54.79
+    L2 Cache Throughput               %      3.76      3.83      3.78
+    SM Active Cycles              cycle 22,185.93 22,247.60 22,214.54
+    Compute (SM) Throughput           %     36.81     36.97     36.88
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize32x32x8_stage3_warpsize1x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 113, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    896.94    898.62    897.65
+    Elapsed Cycles                cycle 17,339.00 17,833.00 17,588.83
+    Memory Throughput                 %     36.36     37.60     37.09
+    DRAM Throughput                   %      1.61      1.84      1.74
+    Duration                         us     19.33     19.87     19.59
+    L1/TEX Cache Throughput           %     41.81     42.22     42.03
+    L2 Cache Throughput               %      5.84      6.00      5.92
+    SM Active Cycles              cycle 15,337.10 15,477.70 15,397.06
+    Compute (SM) Throughput           %     48.75     50.27     49.65
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nchwkcrs_nchw_tilesize64x64x8_stage3_warpsize1x4x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.99      6.97
+    SM Frequency                    Mhz    896.73    899.05    897.98
+    Elapsed Cycles                cycle 22,702.00 22,801.00 22,743.33
+    Memory Throughput                 %     36.13     36.37     36.25
+    DRAM Throughput                   %      1.41      1.66      1.53
+    Duration                         us     25.28     25.41     25.32
+    L1/TEX Cache Throughput           %     40.58     40.88     40.72
+    L2 Cache Throughput               %      4.67      4.72      4.68
+    SM Active Cycles              cycle 20,181.33 20,207.23 20,193.58
+    Compute (SM) Throughput           %     52.15     52.28     52.19
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize128x16x8_stage3_warpsize4x1x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.17    898.97    898.49
+    Elapsed Cycles                cycle 40,618.00 40,756.00 40,677.33
+    Memory Throughput                 %     35.51     35.69     35.64
+    DRAM Throughput                   %      0.65      0.71      0.68
+    Duration                         us     45.22     45.34     45.27
+    L1/TEX Cache Throughput           %     39.62     39.85     39.73
+    L2 Cache Throughput               %      2.20      2.21      2.21
+    SM Active Cycles              cycle 22,579.83 22,693.20 22,635.07
+    Compute (SM) Throughput           %     33.10     33.30     33.24
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize128x32x8_stage3_warpsize2x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.43    899.29    898.85
+    Elapsed Cycles                cycle 43,816.00 44,051.00 43,948.17
+    Memory Throughput                 %     58.70     59.10     58.90
+    DRAM Throughput                   %      0.78      0.82      0.81
+    Duration                         us     48.77     48.99     48.89
+    L1/TEX Cache Throughput           %     64.62     65.21     64.98
+    L2 Cache Throughput               %      2.26      2.27      2.26
+    SM Active Cycles              cycle 30,009.40 30,283.20 30,123.73
+    Compute (SM) Throughput           %     36.82     37.06     36.95
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize32x32x8_stage3_warpsize1x2x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 113, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.04    899.48    899.29
+    Elapsed Cycles                cycle 58,145.00 58,696.00 58,379.50
+    Memory Throughput                 %     73.04     73.70     73.34
+    DRAM Throughput                   %      0.45      0.49      0.47
+    Duration                         us     64.64     65.25     64.91
+    L1/TEX Cache Throughput           %     80.92     81.18     81.07
+    L2 Cache Throughput               %      1.78      1.79      1.79
+    SM Active Cycles              cycle 35,630.57 35,744.07 35,677.87
+    Compute (SM) Throughput           %     36.72     37.06     36.88
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_f32f32_f32_nhwckrsc_nhwc_tilesize64x64x8_stage3_warpsize1x4x1_g1_ffma_aligna4_alignc4_execute_kernel_trt (1, 57, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.99      6.99      6.99
+    SM Frequency                    Mhz    899.14    899.62    899.40
+    Elapsed Cycles                cycle 61,800.00 62,266.00 62,019.33
+    Memory Throughput                 %     70.86     71.42     71.11
+    DRAM Throughput                   %      0.54      0.63      0.59
+    Duration                         us     68.70     69.22     68.95
+    L1/TEX Cache Throughput           %     77.18     77.61     77.38
+    L2 Cache Throughput               %      1.80      1.82      1.81
+    SM Active Cycles              cycle 41,744.73 41,965.03 41,854.00
+    Compute (SM) Throughput           %     48.52     48.87     48.67
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_tf32f32_f32_nhwckrsc_nchw_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.01    899.36    899.24
+    Elapsed Cycles                cycle 69,610.00 69,766.00 69,688.33
+    Memory Throughput                 %     20.37     20.44     20.40
+    DRAM Throughput                   %      0.55      0.59      0.57
+    Duration                         us     77.41     77.57     77.49
+    L1/TEX Cache Throughput           %     21.61     21.74     21.69
+    L2 Cache Throughput               %      7.28      7.30      7.29
+    SM Active Cycles              cycle 65,357.07 65,731.67 65,483.37
+    Compute (SM) Throughput           %     35.49     35.58     35.54
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_tf32f32_f32_nhwckrsc_nchw_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 4
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    898.96    899.28    899.16
+    Elapsed Cycles                cycle 66,638.00 66,794.00 66,720.25
+    Memory Throughput                 %     20.27     20.32     20.29
+    DRAM Throughput                   %      0.62      0.69      0.65
+    Duration                         us     74.11     74.27     74.20
+    L1/TEX Cache Throughput           %     21.54     21.61     21.58
+    L2 Cache Throughput               %      7.62      7.63      7.62
+    SM Active Cycles              cycle 62,686.93 62,890.10 62,784.96
+    Compute (SM) Throughput           %     37.04     37.11     37.07
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.00    899.40    899.23
+    Elapsed Cycles                cycle 67,653.00 67,887.00 67,746.33
+    Memory Throughput                 %     18.84     18.94     18.89
+    DRAM Throughput                   %      0.63      0.66      0.64
+    Duration                         us     75.23     75.49     75.33
+    L1/TEX Cache Throughput           %     19.98     20.12     20.06
+    L2 Cache Throughput               %      7.42      7.48      7.44
+    SM Active Cycles              cycle 63,596.73 63,818.00 63,690.84
+    Compute (SM) Throughput           %     36.52     36.67     36.59
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.99      6.96
+    SM Frequency                    Mhz    894.19    897.35    895.66
+    Elapsed Cycles                cycle 13,757.00 13,927.00 13,813.00
+    Memory Throughput                 %     13.98     14.24     14.14
+    DRAM Throughput                   %      1.58      1.70      1.65
+    Duration                         us     15.33     15.55     15.42
+    L1/TEX Cache Throughput           %     16.49     16.95     16.77
+    L2 Cache Throughput               %      5.85      5.93      5.90
+    SM Active Cycles              cycle 11,562.47 11,899.73 11,699.09
+    Compute (SM) Throughput           %     16.57     16.89     16.75
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.98      6.96
+    SM Frequency                    Mhz    895.12    897.77    896.23
+    Elapsed Cycles                cycle 16,645.00 16,868.00 16,738.17
+    Memory Throughput                 %     12.23     12.37     12.31
+    DRAM Throughput                   %      1.51      1.68      1.62
+    Duration                         us     18.59     18.82     18.67
+    L1/TEX Cache Throughput           %     14.03     14.33     14.18
+    L2 Cache Throughput               %      5.51      5.58      5.55
+    SM Active Cycles              cycle 14,370.57 14,619.80 14,473.96
+    Compute (SM) Throughput           %     17.63     17.90     17.80
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.98
+    SM Frequency                    Mhz    896.87    898.15    897.45
+    Elapsed Cycles                cycle 18,971.00 19,116.00 19,065.83
+    Memory Throughput                 %     11.47     11.57     11.54
+    DRAM Throughput                   %      1.33      1.47      1.39
+    Duration                         us     21.15     21.31     21.24
+    L1/TEX Cache Throughput           %     13.06     13.26     13.17
+    L2 Cache Throughput               %      4.84      4.88      4.86
+    SM Active Cycles              cycle 16,599.33 16,847.83 16,707.37
+    Compute (SM) Throughput           %     15.32     15.45     15.41
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    896.15    897.92    897.01
+    Elapsed Cycles                cycle 19,826.00 20,108.00 19,961.67
+    Memory Throughput                 %      8.70      8.80      8.76
+    DRAM Throughput                   %      1.23      1.38      1.29
+    Duration                         us     22.08     22.43     22.25
+    L1/TEX Cache Throughput           %      9.79      9.96      9.92
+    L2 Cache Throughput               %      4.54      4.60      4.57
+    SM Active Cycles              cycle 17,583.33 17,874.57 17,654.92
+    Compute (SM) Throughput           %     10.05     10.16     10.12
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    895.71    897.14    896.43
+    Elapsed Cycles                cycle 19,139.00 19,422.00 19,264.33
+    Memory Throughput                 %      8.44      8.56      8.50
+    DRAM Throughput                   %      1.26      1.35      1.31
+    Duration                         us     21.34     21.66     21.49
+    L1/TEX Cache Throughput           %      9.64      9.77      9.70
+    L2 Cache Throughput               %      4.72      4.82      4.76
+    SM Active Cycles              cycle 16,725.90 16,957.57 16,856.24
+    Compute (SM) Throughput           %     10.54     10.68     10.61
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.97      6.96
+    SM Frequency                    Mhz    894.69    897.11    895.82
+    Elapsed Cycles                cycle 14,030.00 14,347.00 14,168.50
+    Memory Throughput                 %     11.76     11.99     11.87
+    DRAM Throughput                   %      1.67      1.97      1.87
+    Duration                         us     15.65     16.03     15.81
+    L1/TEX Cache Throughput           %     13.97     14.18     14.07
+    L2 Cache Throughput               %      6.37      6.48      6.42
+    SM Active Cycles              cycle 11,880.07 12,056.57 11,969.98
+    Compute (SM) Throughput           %     11.43     11.65     11.53
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.96      6.95
+    SM Frequency                    Mhz    894.11    896.66    895.27
+    Elapsed Cycles                cycle 13,926.00 14,194.00 14,089.33
+    Memory Throughput                 %     11.07     11.20     11.13
+    DRAM Throughput                   %      1.71      2.02      1.87
+    Duration                         us     15.55     15.87     15.73
+    L1/TEX Cache Throughput           %     13.06     13.25     13.20
+    L2 Cache Throughput               %      6.38      6.50      6.43
+    SM Active Cycles              cycle 11,798.37 11,973.37 11,843.68
+    Compute (SM) Throughput           %     11.42     11.55     11.48
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x32_stage1_warpsize4x1x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.93      6.97      6.95
+    SM Frequency                    Mhz    892.52    896.18    894.63
+    Elapsed Cycles                cycle 10,964.00 11,162.00 11,100.17
+    Memory Throughput                 %     13.52     13.65     13.59
+    DRAM Throughput                   %      2.22      2.51      2.34
+    Duration                         us     12.26     12.48     12.41
+    L1/TEX Cache Throughput           %     16.26     16.96     16.62
+    L2 Cache Throughput               %      8.10      8.24      8.15
+    SM Active Cycles              cycle  8,829.30  9,210.80  9,009.59
+    Compute (SM) Throughput           %     14.10     14.25     14.18
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x64_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.98      6.96
+    SM Frequency                    Mhz    895.42    897.87    896.64
+    Elapsed Cycles                cycle 16,641.00 16,782.00 16,687.83
+    Memory Throughput                 %     12.02     12.33     12.15
+    DRAM Throughput                   %      1.72      1.91      1.83
+    Duration                         us     18.56     18.69     18.61
+    L1/TEX Cache Throughput           %     13.94     14.21     14.08
+    L2 Cache Throughput               %      5.80      5.85      5.83
+    SM Active Cycles              cycle 14,293.10 14,543.27 14,406.08
+    Compute (SM) Throughput           %     17.25     17.70     17.45
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x64_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.97      6.96
+    SM Frequency                    Mhz    895.15    896.66    896.06
+    Elapsed Cycles                cycle 15,354.00 15,675.00 15,528.17
+    Memory Throughput                 %     11.68     11.79     11.73
+    DRAM Throughput                   %      1.73      1.89      1.80
+    Duration                         us     17.15     17.50     17.33
+    L1/TEX Cache Throughput           %     13.59     13.82     13.71
+    L2 Cache Throughput               %      6.04      6.17      6.10
+    SM Active Cycles              cycle 13,227.27 13,445.07 13,339.11
+    Compute (SM) Throughput           %     13.50     13.62     13.55
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x64_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.98      6.96
+    SM Frequency                    Mhz    894.47    896.88    895.46
+    Elapsed Cycles                cycle 14,641.00 15,035.00 14,835.50
+    Memory Throughput                 %     10.61     10.84     10.73
+    DRAM Throughput                   %      1.87      2.07      1.96
+    Duration                         us     16.35     16.80     16.57
+    L1/TEX Cache Throughput           %     12.55     12.80     12.72
+    L2 Cache Throughput               %      6.26      6.43      6.34
+    SM Active Cycles              cycle 12,434.27 12,695.87 12,518.98
+    Compute (SM) Throughput           %     13.61     13.90     13.75
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x64_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.92     6.98     6.94
+    SM Frequency                    Mhz   893.24   896.10   894.47
+    Elapsed Cycles                cycle 9,121.00 9,353.00 9,225.67
+    Memory Throughput                 %    17.81    18.12    17.95
+    DRAM Throughput                   %     2.82     3.21     3.04
+    Duration                         us    10.18    10.46    10.31
+    L1/TEX Cache Throughput           %    22.67    23.08    22.93
+    L2 Cache Throughput               %     9.92    10.25    10.07
+    SM Active Cycles              cycle 7,147.00 7,274.13 7,193.98
+    Compute (SM) Throughput           %    16.39    16.69    16.53
+    ----------------------- ----------- -------- -------- --------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x64_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.93      6.98      6.96
+    SM Frequency                    Mhz    894.44    896.65    895.36
+    Elapsed Cycles                cycle 11,640.00 11,767.00 11,697.50
+    Memory Throughput                 %     12.86     13.05     12.97
+    DRAM Throughput                   %      2.22      2.39      2.29
+    Duration                         us     12.99     13.15     13.06
+    L1/TEX Cache Throughput           %     16.41     16.63     16.47
+    L2 Cache Throughput               %      7.86      7.94      7.90
+    SM Active Cycles              cycle  9,100.43  9,232.13  9,196.64
+    Compute (SM) Throughput           %     12.94     13.15     13.06
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x16x64_stage1_warpsize4x1x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.91     6.96     6.94
+    SM Frequency                    Mhz   892.52   896.49   894.17
+    Elapsed Cycles                cycle 9,041.00 9,222.00 9,141.83
+    Memory Throughput                 %    16.03    16.16    16.11
+    DRAM Throughput                   %     2.71     2.85     2.78
+    Duration                         us    10.08    10.30    10.22
+    L1/TEX Cache Throughput           %    20.66    20.90    20.80
+    L2 Cache Throughput               %    10.00    10.20    10.08
+    SM Active Cycles              cycle 7,033.63 7,119.23 7,069.43
+    Compute (SM) Throughput           %    16.18    16.30    16.26
+    ----------------------- ----------- -------- -------- --------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.93      6.96      6.95
+    SM Frequency                    Mhz    895.32    897.09    895.90
+    Elapsed Cycles                cycle 14,010.00 14,110.00 14,064.17
+    Memory Throughput                 %     14.77     14.96     14.87
+    DRAM Throughput                   %      1.59      1.85      1.66
+    Duration                         us     15.62     15.74     15.70
+    L1/TEX Cache Throughput           %     17.52     17.75     17.63
+    L2 Cache Throughput               %      5.79      5.83      5.81
+    SM Active Cycles              cycle 11,816.83 11,970.27 11,898.76
+    Compute (SM) Throughput           %     16.83     17.05     16.94
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.98      6.96
+    SM Frequency                    Mhz    895.38    896.92    896.29
+    Elapsed Cycles                cycle 17,280.00 17,559.00 17,364.33
+    Memory Throughput                 %     12.70     12.82     12.76
+    DRAM Throughput                   %      1.52      1.65      1.59
+    Duration                         us     19.30     19.58     19.37
+    L1/TEX Cache Throughput           %     14.75     14.87     14.79
+    L2 Cache Throughput               %      5.31      5.39      5.36
+    SM Active Cycles              cycle 14,925.53 15,046.93 15,003.84
+    Compute (SM) Throughput           %     17.99     18.16     18.07
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    895.16    897.83    896.81
+    Elapsed Cycles                cycle 17,599.00 17,831.00 17,689.17
+    Memory Throughput                 %     12.96     13.09     13.04
+    DRAM Throughput                   %      1.54      1.85      1.67
+    Duration                         us     19.62     19.87     19.72
+    L1/TEX Cache Throughput           %     14.78     15.15     14.99
+    L2 Cache Throughput               %      5.19      5.33      5.25
+    SM Active Cycles              cycle 15,286.97 15,610.10 15,413.65
+    Compute (SM) Throughput           %     17.85     18.00     17.93
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    897.08    897.94    897.46
+    Elapsed Cycles                cycle 22,007.00 22,435.00 22,246.67
+    Memory Throughput                 %      9.14      9.25      9.19
+    DRAM Throughput                   %      1.18      1.23      1.22
+    Duration                         us     24.51     24.99     24.78
+    L1/TEX Cache Throughput           %     10.39     10.51     10.43
+    L2 Cache Throughput               %      4.14      4.22      4.17
+    SM Active Cycles              cycle 19,434.20 19,659.93 19,569.54
+    Compute (SM) Throughput           %     11.58     11.72     11.64
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.97
+    SM Frequency                    Mhz    896.54    898.14    897.35
+    Elapsed Cycles                cycle 21,922.00 22,094.00 22,003.67
+    Memory Throughput                 %      8.53      8.60      8.56
+    DRAM Throughput                   %      1.13      1.26      1.21
+    Duration                         us     24.42     24.64     24.52
+    L1/TEX Cache Throughput           %      9.55      9.72      9.64
+    L2 Cache Throughput               %      4.16      4.20      4.19
+    SM Active Cycles              cycle 19,366.33 19,716.33 19,525.09
+    Compute (SM) Throughput           %     11.50     11.59     11.54
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.95      6.98      6.97
+    SM Frequency                    Mhz    896.30    897.80    897.08
+    Elapsed Cycles                cycle 21,828.00 22,211.00 21,972.33
+    Memory Throughput                 %      7.89      7.97      7.93
+    DRAM Throughput                   %      1.19      1.34      1.25
+    Duration                         us     24.35     24.74     24.49
+    L1/TEX Cache Throughput           %      8.92      9.04      9.00
+    L2 Cache Throughput               %      4.13      4.22      4.18
+    SM Active Cycles              cycle 19,327.10 19,594.57 19,413.96
+    Compute (SM) Throughput           %     11.43     11.55     11.50
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    894.80    896.38    895.79
+    Elapsed Cycles                cycle 14,128.00 14,395.00 14,231.17
+    Memory Throughput                 %     12.73     12.83     12.78
+    DRAM Throughput                   %      1.74      1.91      1.85
+    Duration                         us     15.78     16.06     15.88
+    L1/TEX Cache Throughput           %     14.90     15.35     15.15
+    L2 Cache Throughput               %      6.40      6.53      6.48
+    SM Active Cycles              cycle 11,864.83 12,218.23 12,023.68
+    Compute (SM) Throughput           %     14.56     14.68     14.62
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.97      6.97
+    SM Frequency                    Mhz    895.47    897.36    896.39
+    Elapsed Cycles                cycle 14,025.00 14,162.00 14,092.00
+    Memory Throughput                 %     11.56     11.92     11.77
+    DRAM Throughput                   %      1.77      1.86      1.81
+    Duration                         us     15.65     15.81     15.72
+    L1/TEX Cache Throughput           %     13.79     14.19     13.99
+    L2 Cache Throughput               %      6.47      6.54      6.51
+    SM Active Cycles              cycle 11,711.63 12,048.83 11,875.58
+    Compute (SM) Throughput           %     14.13     14.57     14.39
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x16_stage1_warpsize4x1x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.97      6.96
+    SM Frequency                    Mhz    894.59    897.09    895.92
+    Elapsed Cycles                cycle 13,884.00 14,082.00 13,978.83
+    Memory Throughput                 %     11.21     11.31     11.28
+    DRAM Throughput                   %      1.72      1.93      1.82
+    Duration                         us     15.49     15.71     15.60
+    L1/TEX Cache Throughput           %     13.21     13.41     13.30
+    L2 Cache Throughput               %      6.48      6.57      6.53
+    SM Active Cycles              cycle 11,758.27 11,941.07 11,858.54
+    Compute (SM) Throughput           %     14.25     14.39     14.35
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x64_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna4_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.97      6.97
+    SM Frequency                    Mhz    896.43    897.58    896.84
+    Elapsed Cycles                cycle 19,737.00 20,299.00 20,039.33
+    Memory Throughput                 %     12.08     12.34     12.22
+    DRAM Throughput                   %      1.56      1.64      1.59
+    Duration                         us     21.98     22.62     22.34
+    L1/TEX Cache Throughput           %     13.77     14.11     13.94
+    L2 Cache Throughput               %      4.95      5.09      5.01
+    SM Active Cycles              cycle 17,313.43 17,745.00 17,535.77
+    Compute (SM) Throughput           %     17.51     17.88     17.71
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x64_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.98      6.96
+    SM Frequency                    Mhz    894.73    896.35    895.79
+    Elapsed Cycles                cycle 14,250.00 14,366.00 14,321.33
+    Memory Throughput                 %     14.19     14.38     14.29
+    DRAM Throughput                   %      2.25      2.36      2.29
+    Duration                         us     15.90     16.03     15.98
+    L1/TEX Cache Throughput           %     16.72     17.01     16.87
+    L2 Cache Throughput               %      6.93      6.99      6.96
+    SM Active Cycles              cycle 12,018.63 12,217.47 12,114.80
+    Compute (SM) Throughput           %     18.12     18.37     18.25
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x64_stage1_warpsize4x1x1_g1_tensor16x8x8_aligna8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    895.01    896.76    896.31
+    Elapsed Cycles                cycle 14,064.00 14,232.00 14,130.00
+    Memory Throughput                 %     12.50     12.68     12.60
+    DRAM Throughput                   %      2.04      2.19      2.11
+    Duration                         us     15.68     15.87     15.76
+    L1/TEX Cache Throughput           %     14.73     14.87     14.80
+    L2 Cache Throughput               %      6.79      6.87      6.84
+    SM Active Cycles              cycle 11,875.43 11,975.63 11,928.03
+    Compute (SM) Throughput           %     17.67     17.91     17.80
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x64_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc4_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.97      6.96
+    SM Frequency                    Mhz    893.33    896.22    894.90
+    Elapsed Cycles                cycle 12,483.00 12,723.00 12,602.17
+    Memory Throughput                 %     14.12     14.28     14.21
+    DRAM Throughput                   %      2.18      2.34      2.28
+    Duration                         us     13.95     14.24     14.08
+    L1/TEX Cache Throughput           %     16.91     17.13     17.03
+    L2 Cache Throughput               %      7.49      7.63      7.56
+    SM Active Cycles              cycle 10,369.17 10,507.30 10,431.49
+    Compute (SM) Throughput           %     15.73     15.92     15.84
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x64_stage1_warpsize4x1x1_g1_tensor16x8x8_alignc8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.96      6.95
+    SM Frequency                    Mhz    894.42    895.64    895.28
+    Elapsed Cycles                cycle 12,207.00 12,467.00 12,330.33
+    Memory Throughput                 %     12.99     13.21     13.09
+    DRAM Throughput                   %      2.13      2.36      2.24
+    Duration                         us     13.63     13.92     13.77
+    L1/TEX Cache Throughput           %     15.80     15.88     15.83
+    L2 Cache Throughput               %      7.62      7.76      7.69
+    SM Active Cycles              cycle 10,179.53 10,229.80 10,213.30
+    Compute (SM) Throughput           %     15.91     16.18     16.03
+    ----------------------- ----------- --------- --------- ---------
+
+  sm80_xmma_fprop_implicit_gemm_indexed_wo_smem_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x32x64_stage1_warpsize4x1x1_g1_tensor16x8x8_execute_kernel_trt (1, 29, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.94      6.98      6.96
+    SM Frequency                    Mhz    895.06    896.37    895.82
+    Elapsed Cycles                cycle 12,704.00 12,790.00 12,754.50
+    Memory Throughput                 %     11.84     12.16     12.05
+    DRAM Throughput                   %      2.29      2.38      2.31
+    Duration                         us     14.18     14.27     14.23
+    L1/TEX Cache Throughput           %     14.70     14.97     14.78
+    L2 Cache Throughput               %      7.39      7.44      7.41
+    SM Active Cycles              cycle 10,239.10 10,425.77 10,367.06
+    Compute (SM) Throughput           %     15.30     15.71     15.57
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_ldg4_relu_exp_interior_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.65    899.48    899.12
+    Elapsed Cycles                cycle 51,900.00 52,196.00 52,038.17
+    Memory Throughput                 %     37.01     37.25     37.11
+    DRAM Throughput                   %      0.80      0.94      0.86
+    Duration                         us     57.73     58.05     57.87
+    L1/TEX Cache Throughput           %     40.01     40.19     40.10
+    L2 Cache Throughput               %      1.85      1.86      1.85
+    SM Active Cycles              cycle 48,072.17 48,279.13 48,174.63
+    Compute (SM) Throughput           %     57.34     57.71     57.49
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_ldg4_relu_exp_medium_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 2
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    898.85    899.28    899.07
+    Elapsed Cycles                cycle 52,233.00 52,440.00 52,336.50
+    Memory Throughput                 %     36.97     37.17     37.07
+    DRAM Throughput                   %      0.82      0.83      0.82
+    Duration                         us     58.08     58.34     58.21
+    L1/TEX Cache Throughput           %     39.88     39.98     39.93
+    L2 Cache Throughput               %      1.86      1.87      1.87
+    SM Active Cycles              cycle 48,430.17 48,555.47 48,492.82
+    Compute (SM) Throughput           %     57.66     57.97     57.82
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_ldg4_relu_exp_small_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.52    899.43    898.88
+    Elapsed Cycles                cycle 52,434.00 52,804.00 52,604.33
+    Memory Throughput                 %     36.64     36.92     36.82
+    DRAM Throughput                   %      0.80      0.82      0.81
+    Duration                         us     58.34     58.75     58.52
+    L1/TEX Cache Throughput           %     39.64     39.77     39.69
+    L2 Cache Throughput               %      1.85      1.86      1.86
+    SM Active Cycles              cycle 48,685.67 48,855.47 48,793.31
+    Compute (SM) Throughput           %     56.96     57.39     57.23
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_relu_exp_interior_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.63    899.48    898.99
+    Elapsed Cycles                cycle 52,628.00 52,845.00 52,750.83
+    Memory Throughput                 %     41.35     41.45     41.39
+    DRAM Throughput                   %      0.78      0.86      0.83
+    Duration                         us     58.56     58.78     58.67
+    L1/TEX Cache Throughput           %     44.39     44.44     44.41
+    L2 Cache Throughput               %      1.83      1.89      1.84
+    SM Active Cycles              cycle 49,002.93 49,054.60 49,033.97
+    Compute (SM) Throughput           %     58.50     58.63     58.55
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_relu_interior_nn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.99      6.98
+    SM Frequency                    Mhz    897.66    898.69    898.24
+    Elapsed Cycles                cycle 29,070.00 29,135.00 29,104.67
+    Memory Throughput                 %     37.54     37.69     37.63
+    DRAM Throughput                   %      1.12      1.20      1.15
+    Duration                         us     32.35     32.45     32.39
+    L1/TEX Cache Throughput           %     41.57     41.62     41.60
+    L2 Cache Throughput               %      2.93      2.95      2.93
+    SM Active Cycles              cycle 26,345.03 26,377.67 26,362.31
+    Compute (SM) Throughput           %     48.89     49.08     49.00
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_relu_medium_nn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 9
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.99      6.98
+    SM Frequency                    Mhz    897.74    899.10    898.34
+    Elapsed Cycles                cycle 29,462.00 29,682.00 29,576.11
+    Memory Throughput                 %     37.15     37.50     37.37
+    DRAM Throughput                   %      1.03      1.18      1.10
+    Duration                         us     32.80     33.06     32.92
+    L1/TEX Cache Throughput           %     41.32     41.37     41.34
+    L2 Cache Throughput               %      2.90      2.93      2.92
+    SM Active Cycles              cycle 26,730.40 26,765.70 26,751.18
+    Compute (SM) Throughput           %     49.11     49.57     49.40
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x128_relu_small_nn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.97
+    SM Frequency                    Mhz    897.76    898.64    898.13
+    Elapsed Cycles                cycle 29,456.00 29,633.00 29,560.00
+    Memory Throughput                 %     37.37     37.50     37.43
+    DRAM Throughput                   %      1.15      1.18      1.17
+    Duration                         us     32.80     32.99     32.91
+    L1/TEX Cache Throughput           %     41.27     41.39     41.31
+    L2 Cache Throughput               %      2.92      2.94      2.93
+    SM Active Cycles              cycle 26,716.37 26,796.77 26,768.83
+    Compute (SM) Throughput           %     48.81     48.97     48.89
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x32_relu_interior_nn_v1 (29, 1, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.97
+    SM Frequency                    Mhz    897.04    898.16    897.80
+    Elapsed Cycles                cycle 26,208.00 26,327.00 26,282.83
+    Memory Throughput                 %     13.36     13.60     13.53
+    DRAM Throughput                   %      1.13      1.37      1.28
+    Duration                         us     29.18     29.31     29.27
+    L1/TEX Cache Throughput           %     15.08     15.23     15.16
+    L2 Cache Throughput               %      3.19      3.20      3.19
+    SM Active Cycles              cycle 23,328.67 23,569.03 23,435.18
+    Compute (SM) Throughput           %     14.26     14.51     14.44
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x32_relu_small_nn_v1 (29, 1, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.99      6.98
+    SM Frequency                    Mhz    898.00    898.74    898.25
+    Elapsed Cycles                cycle 26,969.00 27,079.00 27,032.33
+    Memory Throughput                 %     13.16     13.31     13.25
+    DRAM Throughput                   %      1.15      1.28      1.17
+    Duration                         us     30.02     30.14     30.09
+    L1/TEX Cache Throughput           %     14.66     14.79     14.72
+    L2 Cache Throughput               %      3.15      3.20      3.17
+    SM Active Cycles              cycle 24,203.37 24,425.07 24,317.66
+    Compute (SM) Throughput           %     14.39     14.55     14.48
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x32_sliced1x4_ldg4_relu_exp_interior_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    898.88    899.43    899.18
+    Elapsed Cycles                cycle 60,788.00 61,522.00 61,133.67
+    Memory Throughput                 %     40.07     40.34     40.19
+    DRAM Throughput                   %      0.59      0.68      0.63
+    Duration                         us     67.58     68.42     67.98
+    L1/TEX Cache Throughput           %     43.34     43.48     43.39
+    L2 Cache Throughput               %      1.57      1.59      1.58
+    SM Active Cycles              cycle 56,630.37 56,808.17 56,744.54
+    Compute (SM) Throughput           %     50.15     50.49     50.31
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x32_sliced1x4_ldg4_relu_exp_small_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 4
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.98
+    SM Frequency                    Mhz    898.93    899.15    899.03
+    Elapsed Cycles                cycle 61,552.00 61,738.00 61,642.75
+    Memory Throughput                 %     40.02     40.10     40.05
+    DRAM Throughput                   %      0.71      0.77      0.74
+    Duration                         us     68.45     68.67     68.56
+    L1/TEX Cache Throughput           %     42.74     42.82     42.79
+    L2 Cache Throughput               %      1.60      1.62      1.60
+    SM Active Cycles              cycle 57,725.03 57,823.10 57,763.55
+    Compute (SM) Throughput           %     50.44     50.55     50.48
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x64_relu_interior_nn_v1 (29, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    897.18    898.21    897.74
+    Elapsed Cycles                cycle 23,544.00 23,658.00 23,589.67
+    Memory Throughput                 %     26.13     26.20     26.17
+    DRAM Throughput                   %      1.29      1.42      1.33
+    Duration                         us     26.21     26.34     26.27
+    L1/TEX Cache Throughput           %     29.06     29.35     29.25
+    L2 Cache Throughput               %      3.62      3.64      3.63
+    SM Active Cycles              cycle 20,999.10 21,211.70 21,075.19
+    Compute (SM) Throughput           %     31.26     31.35     31.31
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x64_relu_medium_nn_v1 (29, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.97
+    SM Frequency                    Mhz    897.18    898.78    897.76
+    Elapsed Cycles                cycle 25,286.00 25,375.00 25,328.50
+    Memory Throughput                 %     24.48     24.61     24.53
+    DRAM Throughput                   %      1.27      1.29      1.28
+    Duration                         us     28.13     28.26     28.21
+    L1/TEX Cache Throughput           %     27.26     27.33     27.29
+    L2 Cache Throughput               %      3.43      3.48      3.45
+    SM Active Cycles              cycle 22,690.80 22,750.53 22,725.13
+    Compute (SM) Throughput           %     30.34     30.50     30.40
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x64_relu_small_nn_v1 (29, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.96      6.98      6.97
+    SM Frequency                    Mhz    897.51    898.72    897.93
+    Elapsed Cycles                cycle 24,623.00 24,712.00 24,654.67
+    Memory Throughput                 %     25.13     25.33     25.20
+    DRAM Throughput                   %      1.48      1.60      1.52
+    Duration                         us     27.42     27.49     27.45
+    L1/TEX Cache Throughput           %     28.00     28.10     28.04
+    L2 Cache Throughput               %      3.52      3.58      3.53
+    SM Active Cycles              cycle 22,069.27 22,147.37 22,119.32
+    Compute (SM) Throughput           %     30.44     30.68     30.52
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x64_relu_xregs_large_nn_v1 (29, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.97      6.98      6.98
+    SM Frequency                    Mhz    897.06    898.71    897.97
+    Elapsed Cycles                cycle 24,897.00 25,035.00 24,961.33
+    Memory Throughput                 %     24.86     25.11     24.96
+    DRAM Throughput                   %      1.32      1.76      1.46
+    Duration                         us     27.71     27.90     27.79
+    L1/TEX Cache Throughput           %     27.83     27.89     27.86
+    L2 Cache Throughput               %      3.48      3.50      3.49
+    SM Active Cycles              cycle 22,269.07 22,312.93 22,293.14
+    Compute (SM) Throughput           %     31.04     31.34     31.17
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x64_sliced1x2_ldg4_relu_exp_interior_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    899.01    899.48    899.25
+    Elapsed Cycles                cycle 53,088.00 53,369.00 53,215.00
+    Memory Throughput                 %     39.08     39.44     39.27
+    DRAM Throughput                   %      0.71      0.87      0.78
+    Duration                         us     59.04     59.36     59.17
+    L1/TEX Cache Throughput           %     42.12     42.21     42.15
+    L2 Cache Throughput               %      1.80      1.83      1.81
+    SM Active Cycles              cycle 49,399.50 49,498.70 49,467.72
+    Compute (SM) Throughput           %     56.50     57.03     56.78
+    ----------------------- ----------- --------- --------- ---------
+
+  trt_ampere_scudnn_128x64_sliced1x2_ldg4_relu_exp_large_nhwc_tn_v1 (29, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 6
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.98      6.99      6.99
+    SM Frequency                    Mhz    898.88    899.47    899.21
+    Elapsed Cycles                cycle 58,601.00 58,910.00 58,751.67
+    Memory Throughput                 %     35.27     35.83     35.54
+    DRAM Throughput                   %      0.68      0.76      0.74
+    Duration                         us     65.15     65.50     65.33
+    L1/TEX Cache Throughput           %     38.27     38.43     38.33
+    L2 Cache Throughput               %      1.66      1.69      1.68
+    SM Active Cycles              cycle 54,373.53 54,598.33 54,508.21
+    Compute (SM) Throughput           %     51.88     52.69     52.27
+    ----------------------- ----------- --------- --------- ---------
+
+  void CUTENSOR_NAMESPACE::permutationKernelPLC3<CUTENSOR_NAMESPACE::VectorWrite2DTensorView<0, 1, 0, 4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::VectorRead2DTensorView<1, 0, 0, 4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::ThreadLevelElementwise<CUTENSOR_NAMESPACE::ElementwiseConfig2DCommonCase<CUTENSOR_NAMESPACE::GeneralUnarySmall<float>, CUTENSOR_NAMESPACE::GeneralBinary<float>, 2, 64, 64, 256, 4, 0, 1, 1, 1, 0>, float>, CUTENSOR_NAMESPACE::ElementwiseRuntimePLC3<float, float, float, float>::Params>(T4) (57, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 12
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- --------- --------- ---------
+    Metric Name             Metric Unit   Minimum   Maximum   Average
+    ----------------------- ----------- --------- --------- ---------
+    DRAM Frequency                  Ghz      6.92      6.97      6.95
+    SM Frequency                    Mhz    894.33    897.65    896.05
+    Elapsed Cycles                cycle 11,714.00 11,837.00 11,750.67
+    Memory Throughput                 %     15.42     15.66     15.57
+    DRAM Throughput                   %      5.85      6.28      5.97
+    Duration                         us     13.06     13.22     13.11
+    L1/TEX Cache Throughput           %     18.53     18.96     18.64
+    L2 Cache Throughput               %      6.32      6.39      6.37
+    SM Active Cycles              cycle  9,620.43  9,845.57  9,786.91
+    Compute (SM) Throughput           %     40.31     40.95     40.71
+    ----------------------- ----------- --------- --------- ---------
+
+  void CUTENSOR_NAMESPACE::permutationKernelPLC3<CUTENSOR_NAMESPACE::VectorWrite2DTensorView<0, 1, 0, 4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::VectorRead2DTensorView<1, 0, 0, 4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::ThreadLevelElementwise<CUTENSOR_NAMESPACE::ElementwiseConfig2DSmallMode0<CUTENSOR_NAMESPACE::GeneralUnarySmall<float>, CUTENSOR_NAMESPACE::GeneralBinary<float>, 2, 4, 64, 64, 4, 0, 1, 1, 1, 0>, float>, CUTENSOR_NAMESPACE::ElementwiseRuntimePLC3<float, float, float, float>::Params>(T4) (1, 64, 1)x(64, 1, 1), Device 0, CC 8.6, Invocations 12
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.87     6.97     6.91
+    SM Frequency                    Mhz   884.75   891.50   888.83
+    Elapsed Cycles                cycle 5,722.00 5,822.00 5,767.08
+    Memory Throughput                 %     4.29     4.74     4.52
+    DRAM Throughput                   %     3.35     3.41     3.38
+    Duration                         us     6.43     6.56     6.49
+    L1/TEX Cache Throughput           %     2.72     3.15     2.92
+    L2 Cache Throughput               %     4.29     4.74     4.52
+    SM Active Cycles              cycle 3,884.93 4,051.30 3,940.34
+    Compute (SM) Throughput           %     5.84     6.71     6.26
+    ----------------------- ----------- -------- -------- --------
+
+  void cask_trt::computeOffsetsKernel<0, 0>(cask_trt::ComputeOffsetsParams) (15, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 73
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.76     6.93     6.84
+    SM Frequency                    Mhz   873.95   888.92   881.54
+    Elapsed Cycles                cycle 3,208.00 3,389.00 3,268.29
+    Memory Throughput                 %     1.89     2.06     1.95
+    DRAM Throughput                   %     0.35     0.54     0.38
+    Duration                         us     3.65     3.84     3.71
+    L1/TEX Cache Throughput           %     3.43     3.69     3.59
+    L2 Cache Throughput               %     1.89     2.06     1.95
+    SM Active Cycles              cycle   743.13   799.07   764.48
+    Compute (SM) Throughput           %     3.02     3.19     3.12
+    ----------------------- ----------- -------- -------- --------
+
+  void cuInt8::nchwToNhwcKernel<float>(int, int, int, int, int, int, int, int, bool, const T1 *, T1 *) (128, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 12
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.83     6.93     6.89
+    SM Frequency                    Mhz   885.17   889.74   887.38
+    Elapsed Cycles                cycle 4,631.00 4,879.00 4,744.08
+    Memory Throughput                 %    21.21    22.18    21.87
+    DRAM Throughput                   %     3.28     3.82     3.50
+    Duration                         us     5.22     5.50     5.34
+    L1/TEX Cache Throughput           %    36.36    38.66    37.99
+    L2 Cache Throughput               %     5.12     5.63     5.42
+    SM Active Cycles              cycle 2,654.20 2,822.50 2,701.89
+    Compute (SM) Throughput           %    25.35    26.53    26.14
+    ----------------------- ----------- -------- -------- --------
+
+  void cuInt8::nhwcToNchwKernel<float>(int, int, int, int, int, int, int, int, const T1 *, T1 *) (113, 1, 1)x(256, 1, 1), Device 0, CC 8.6, Invocations 12
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.86     6.96     6.90
+    SM Frequency                    Mhz   882.37   889.62   886.26
+    Elapsed Cycles                cycle 4,587.00 4,879.00 4,665.50
+    Memory Throughput                 %    18.85    19.86    19.40
+    DRAM Throughput                   %    13.80    14.88    14.51
+    Duration                         us     5.15     5.50     5.26
+    L1/TEX Cache Throughput           %    31.01    33.14    32.46
+    L2 Cache Throughput               %    14.55    15.40    15.16
+    SM Active Cycles              cycle 2,724.30 2,912.07 2,782.83
+    Compute (SM) Throughput           %    20.52    21.61    21.11
+    ----------------------- ----------- -------- -------- --------
+
+  void cuSliceLayer::naiveSlice<int, 0, 1>(cuSliceLayer::LaunchParams<T1>) (1, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 2
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.88     6.97     6.92
+    SM Frequency                    Mhz   886.15   887.06   886.60
+    Elapsed Cycles                cycle 3,234.00 3,236.00 3,235.00
+    Memory Throughput                 %     0.67     0.68     0.67
+    DRAM Throughput                   %     0.23     0.23     0.23
+    Duration                         us     3.65     3.65     3.65
+    L1/TEX Cache Throughput           %    22.43    23.65    23.04
+    L2 Cache Throughput               %     0.67     0.68     0.67
+    SM Active Cycles              cycle    50.73    53.50    52.12
+    Compute (SM) Throughput           %     0.02     0.02     0.02
+    ----------------------- ----------- -------- -------- --------
+
+  void genericReformat::copyPackedKernel<float, float, 1, 1, genericReformat::ArrayN<4>, 4>(unsigned int, unsigned int, const void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, T5) (96, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 4
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.81     6.91     6.85
+    SM Frequency                    Mhz   880.46   881.82   881.10
+    Elapsed Cycles                cycle 4,064.00 4,096.00 4,085.25
+    Memory Throughput                 %     4.74     4.79     4.76
+    DRAM Throughput                   %     3.73     3.83     3.76
+    Duration                         us     4.61     4.64     4.63
+    L1/TEX Cache Throughput           %     4.22     4.32     4.27
+    L2 Cache Throughput               %     4.74     4.79     4.76
+    SM Active Cycles              cycle 2,265.47 2,324.10 2,299.96
+    Compute (SM) Throughput           %     8.85     9.05     8.94
+    ----------------------- ----------- -------- -------- --------
+
+  void genericReformat::copyPackedKernel<float, float, 1, 1, genericReformat::ArrayN<4>, 4>(unsigned int, unsigned int, const void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, T5) (128, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 4
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.86     6.93     6.89
+    SM Frequency                    Mhz   883.39   886.62   884.71
+    Elapsed Cycles                cycle 4,162.00 4,219.00 4,182.75
+    Memory Throughput                 %     7.50     7.62     7.56
+    DRAM Throughput                   %     3.71     4.43     4.09
+    Duration                         us     4.70     4.77     4.72
+    L1/TEX Cache Throughput           %    10.49    10.93    10.73
+    L2 Cache Throughput               %     7.50     7.62     7.56
+    SM Active Cycles              cycle 2,287.67 2,335.13 2,308.35
+    Compute (SM) Throughput           %    12.98    13.09    13.03
+    ----------------------- ----------- -------- -------- --------
+
+  void genericReformat::copyPackedKernel<float, float, 1, 1, genericReformat::ArrayN<5>, 5>(unsigned int, unsigned int, const void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, T5) (10, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 2
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.86     6.88     6.87
+    SM Frequency                    Mhz   881.50   883.03   882.27
+    Elapsed Cycles                cycle 3,702.00 3,754.00 3,728.00
+    Memory Throughput                 %     1.60     1.63     1.61
+    DRAM Throughput                   %     0.93     0.94     0.93
+    Duration                         us     4.19     4.26     4.22
+    L1/TEX Cache Throughput           %     1.79     1.83     1.81
+    L2 Cache Throughput               %     1.60     1.63     1.61
+    SM Active Cycles              cycle   656.77   672.13   664.45
+    Compute (SM) Throughput           %     1.24     1.26     1.25
+    ----------------------- ----------- -------- -------- --------
+
+  void genericReformat::copyPackedKernel<float, float, 1, 1, genericReformat::IdentityCoordMapper<4>, 4>(unsigned int, unsigned int, const void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, int, int, const float *, T5) (450, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 8
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.90     6.95     6.93
+    SM Frequency                    Mhz   889.96   895.17   892.96
+    Elapsed Cycles                cycle 6,667.00 6,778.00 6,725.62
+    Memory Throughput                 %    40.96    42.23    41.45
+    DRAM Throughput                   %     9.65    10.15     9.86
+    Duration                         us     7.49     7.58     7.53
+    L1/TEX Cache Throughput           %    36.59    39.12    38.14
+    L2 Cache Throughput               %    40.96    42.23    41.45
+    SM Active Cycles              cycle 4,757.77 5,078.20 4,842.47
+    Compute (SM) Throughput           %    23.34    27.36    25.43
+    ----------------------- ----------- -------- -------- --------
+
+  void genericReformat::copyVectorizedKernel<double, float, float, 1, 0, 1>(unsigned int, const void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, const float *, void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, const float *) (1, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 1
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.81     6.81     6.81
+    SM Frequency                    Mhz   877.98   877.98   877.98
+    Elapsed Cycles                cycle 2,952.00 2,952.00 2,952.00
+    Memory Throughput                 %     0.72     0.72     0.72
+    DRAM Throughput                   %     0.25     0.25     0.25
+    Duration                         us     3.36     3.36     3.36
+    L1/TEX Cache Throughput           %    29.08    29.08    29.08
+    L2 Cache Throughput               %     0.72     0.72     0.72
+    SM Active Cycles              cycle    41.27    41.27    41.27
+    Compute (SM) Throughput           %     0.02     0.02     0.02
+    ----------------------- ----------- -------- -------- --------
+
+  void genericReformat::copyVectorizedKernel<double, float, float, 1, 0, 1>(unsigned int, const void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, const float *, void *, genericReformat::ArrayN<T6>, genericReformat::ArrayNWithReducedDivisors<T6>, genericReformat::ArrayN<T6>, int, const float *) (5, 1, 1)x(128, 1, 1), Device 0, CC 8.6, Invocations 1
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- -------- -------- --------
+    Metric Name             Metric Unit  Minimum  Maximum  Average
+    ----------------------- ----------- -------- -------- --------
+    DRAM Frequency                  Ghz     6.79     6.79     6.79
+    SM Frequency                    Mhz   878.44   878.44   878.44
+    Elapsed Cycles                cycle 2,980.00 2,980.00 2,980.00
+    Memory Throughput                 %     1.22     1.22     1.22
+    DRAM Throughput                   %     0.69     0.69     0.69
+    Duration                         us     3.39     3.39     3.39
+    L1/TEX Cache Throughput           %     5.65     5.65     5.65
+    L2 Cache Throughput               %     1.22     1.22     1.22
+    SM Active Cycles              cycle   212.50   212.50   212.50
+    Compute (SM) Throughput           %     0.14     0.14     0.14
+    ----------------------- ----------- -------- -------- --------
+
+  Note: The shown averages are calculated as the arithmetic mean of the metric values after the evaluation of the    
+  metrics for each individual kernel launch.                                                                         
+  If aggregating across varying launch configurations (like shared memory, cache config settings), the arithmetic    
+  mean can be misleading and looking at the individual results is recommended instead.                               
+  This output mode is backwards compatible to the per-kernel summary output of nvprof                                
 

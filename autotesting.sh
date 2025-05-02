@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(unroll_cublass tensorrt cudnn cudnn_opt mbnet_method)
+out_path=(cudnn_opt mbnet_method)
 metrics=(
 	None
 	# sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_warp gld_efficiency gst_efficiency shared_efficiency shared_utilization
@@ -11,6 +11,6 @@ metrics=(
 for j in ${!out_path[@]}; do
 	for i in ${!metrics[@]}; do
 		./tester.sh ${out_path[$j]} ${metrics[$i]}
-		sleep 10
 	done
+	sleep 10
 done

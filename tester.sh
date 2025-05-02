@@ -24,10 +24,10 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #RS=(3 3 3 3 3 3 3 3 3 3 3 3 3)
 
 # ResNet-34
-C=(3 64 64 128 64 128 256 128 256 512 256)
-HW=(224 56 56 28 28 28 14 14 14 7 7)
-K=(64 64 128 128 128 256 256 256 512 512 512)
-RS=(7 3 3 3 1 3 3 1 3 3 1)
+#C=(3 64 64 128 64 128 256 128 256 512 256)
+#HW=(224 56 56 28 28 28 14 14 14 7 7)
+#K=(64 64 128 128 128 256 256 256 512 512 512)
+#RS=(7 3 3 3 1 3 3 1 3 3 1)
 
 # YOLOV4
 #C=(3 32 64 64 64 32 64 64 64 128 64 64 64 64 64 64 64 128 256 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 256 512 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 512 1024 512 512 512 512 512 512 512 512 512 512 512 1024 512 1024 512 512 1024 512 256 256 256 512 256 512 256 128 128 128 256 128 256 128 256 255 256 256 512 256 512 256 512 255 512 512 1024 512 1024 512 1024 )
@@ -41,10 +41,10 @@ RS=(7 3 3 3 1 3 3 1 3 3 1)
 #K=(32 64 64 32 32 64 128 64 64 128 256 128 128 256 512 256 512 255 128 256 255)
 #RS=(3 3 3 3 3 1 3 3 3 1 3 3 3 1 3 1 3 1 1 3 1)
 
-#C=(3)
-#HW=(64)
-#K=(16)
-#RS=(5)
+# C=(3)
+# HW=(64)
+# K=(16)
+# RS=(5)
 #TILE_S=(8)
 
 #C=(3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32 64 128 128 128 256 256 256 512)
@@ -79,6 +79,12 @@ RS=(7 3 3 3 1 3 3 1 3 3 1)
 #HW=(320)
 #K=(6)
 #RS=(5)
+
+# 20% of 150
+C=(3 1 32 512 512 512 512 384 512 128 128 128 1024 1024 1024 3 3 3 128 64 128 512 512 256 256 256 255 256 256 128)
+HW=(64 32 8 56 44 56 50 12 52 107 14 85 25 58 40 416 224 608 95 163 67 25 51 55 42 14 38 38 71 101)
+K=(16 6 64 28 255 192 512 384 512 256 256 256 512 512 512 16 64 32 128 64 128 1024 1024 512 512 512 256 256 128 128)
+RS=(5 5 5 5 1 3 1 3 3 1 3 3 1 1 1 3 3 3 3 3 1 3 3 3 3 3 3 1 1 3)
 
 #input file to change macro define
 in_file=mbnet.h
@@ -228,16 +234,16 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
         # fi
         if [[ ${HW[$i]} -lt 20 ]];
         then
-            if [[${HW[$i]} -lt 12]];
+            if [[ ${HW[$i]} -lt 12 ]];
             then
                 echo 'Running mbnet with unroll_cublass method\n'
                 sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             else
-                if [[${HW[$i]} -lt 13]];
+                if [[ ${HW[$i]} -lt 13 ]];
                 then
-                    if [[${K[$i]} -lt 255]];
+                    if [[ ${K[$i]} -lt 255 ]];
                     then
-                        if [[${K[$i]} -lt 191]];
+                        if [[ ${K[$i]} -lt 191 ]];
                         then
                             echo 'Running mbnet with tensorrt method\n'
                             sed -i 's/define TRT .*/define TRT 1/' $in_file
@@ -250,16 +256,16 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                         sed -i 's/define TRT .*/define TRT 1/' $in_file
                     fi
                 else
-                    if [[${C[$i]} -lt 191]];
+                    if [[ ${C[$i]} -lt 191 ]];
                     then
-                        if [[${K[$i]} -lt 161]];
+                        if [[ ${K[$i]} -lt 161 ]];
                         then
                             echo 'Running mbnet with unroll_cublass method\n'
                             sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                         else
-                            if [[${K[$i]} -lt 385]];
+                            if [[ ${K[$i]} -lt 385 ]];
                             then
-                                if [[${RS[$i]} -lt 3]];
+                                if [[ ${RS[$i]} -lt 3 ]];
                                 then
                                     echo 'Running mbnet with unroll_cublass method\n'
                                     sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
@@ -440,7 +446,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
     sed -i 's/define RS .*/define RS '${RS[$i]}'/' ${in_file}                        # change RS
     #sed -i 's/define TILE_S .*/define TILE_S '${TILE_S[$i]}'/' ${in_file} # change TILE_S
 
-    /usr/local/cuda/bin/nvcc -o mbnet trt_dependencies/*.cpp trt_dependencies/*.cc mbnet.cu -lnvinfer -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w
+   /usr/local/cuda/bin/nvcc -gencode arch=compute_80,code=sm_80 -gencode arch=compute_90,code=sm_90 -o mbnet trt_dependencies/common/*.cpp trt_dependencies/utils/*.cpp mbnet.cu -lnvinfer -lnvinfer_plugin -lcuda -lnvonnxparser -lcudart -lcublas -lcudnn -lprotobuf -lpthread -lstdc++ -lm -w
 
     if [[ "$is_metrics" = true ]]; then
         #echo 'metrics run'
@@ -449,7 +455,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
         if [[ "$is_trace" = true ]]; then
             /usr/local/cuda/bin/nvprof --log-file trace/${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}_${RS[$i]}.txt --print-gpu-trace ./mbnet
         else
-            /usr/local/cuda/bin/nvprof --log-file ${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}_${RS[$i]}.txt ./mbnet # stroe nvprof into the txt file
+            /usr/local/cuda/bin/ncu --print-summary per-kernel --cache-control none --clock-control none --metrics gpu__time_duration.sum --csv --log-file "${method}/nvprof_comp_${C[$i]}_${HW[$i]}_${K[$i]}_${RS[$i]}.csv" ./mbnet
         fi
     fi
 done
