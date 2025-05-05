@@ -24,6 +24,8 @@ if __name__ == '__main__':
                     while True:
                         pos = log.tell()
                         line = log.readline()
+                        if not line:  # End of file
+                            break
                         if "Kernel Name" in line:
                             log.seek(pos)  # rewind to beginning of the header line
                             break
@@ -34,12 +36,12 @@ if __name__ == '__main__':
                         if kernel_name:
                             kernel_names.add(kernel_name)
 
-            print(kernel_names)
+            # print(kernel_names)
             headers += sorted(kernel_names)
             writer = csv.writer(fopen)
             headers.append('Total_time')  # column for total time
             headers.append('Kernel_time')  # column for kernel time (convolution time)
-            print(headers)
+            # print(headers)
             writer.writerow(headers)
         print('Created csv file ' + method)
 

@@ -27,6 +27,8 @@ if __name__ == '__main__':
                     while True:
                         pos = log.tell()
                         line = log.readline()
+                        if not line:  # End of file
+                            break
                         if "Kernel Name" in line:
                             log.seek(pos)  # rewind to beginning of the header line
                             break

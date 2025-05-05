@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out_path=(cudnn_opt mbnet_method)
+out_path=(cudnn cudnn_opt)
 metrics=(
 	None
 	# sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_warp gld_efficiency gst_efficiency shared_efficiency shared_utilization
