@@ -105,4 +105,48 @@ This modular setup allows consistent benchmarking of the same configuration acro
 
 ## Parsing
 
-After profiling the configuration the results are stored in directores of each library in the format: nvprof_C_HW_K_RS.txt
+After profiling a configuration, the runtime results are saved in a separate folder for each library. The output filenames follow this format: nvprof_comp_<C><HW><K>_<RS>.txt. For example, a profile of a configuration with C=64, HW=112, K=128, RS=3 will produce: nvprof_comp_64_112_128_3.txt
+
+These files are stored in directories named after each library (e.g., `cublas/`, `cudnn/`, `tensorrt/`, etc.).
+
+To aggregate results:
+
+1. **Edit** `config.py`  
+   Define the list of configurations you want to parse or filter.
+
+2. **Run parsing scripts**  
+   Execute the following scripts to generate CSV summaries of performance:
+
+   ```bash
+   python create_csv.py
+   python parse.py
+
+These scripts will:
+* Read the raw profiler logs.
+* Extract the specified performance metrics.
+* Output consolidated CSV files for analysis or visualization.
+
+After generating CSV files for each library, you can determine the fastest backend for every configuration. This data can be used to train a machine learning model that predicts the optimal library for a given convolutional setup.
+
+In our research, we trained two **Decision Tree** models:
+
+- **79-configuration Decision Tree**
+- **150-configuration Decision Tree**
+
+![79 configuration tree](./docs/79_conf.png)
+
+![150 configuration tree](./docs/150_conf.png)
+
+---
+
+### Integration with `tester.sh`
+
+Both tree implementations are embedded in the `tester.sh` script. You can activate either version by commenting/uncommenting the corresponding lines.
+
+When `tester.sh` is called with the `mbnet` method, the script:
+
+1. Uses a lookup table to predict the best-performing library for the given configuration.
+2. Sets the appropriate macro flag in `mbnet.h` (e.g., `#define CUBLAS 1`).
+3. Compiles and runs the `mbnet.cu` file using the predicted backend.
+
+This ML-driven selection enables **dynamic backend switching** without manual tuning, providing high performance across diverse convolutional workloads.
