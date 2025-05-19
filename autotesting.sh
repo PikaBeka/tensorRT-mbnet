@@ -14,3 +14,27 @@ for j in ${!out_path[@]}; do
 		sleep 10
 	done
 done
+
+
+for j in ${!out_path[@]}; do
+        for i in ${!metrics[@]}; do
+                ./vgg.sh ${out_path[$j]} ${metrics[$i]}
+                sleep 10
+        done
+done
+
+
+for j in ${!out_path[@]}; do
+        for i in ${!metrics[@]}; do
+                ./tiny.sh ${out_path[$j]} ${metrics[$i]}
+                sleep 10
+        done
+done
+
+
+for j in ${!out_path[@]}; do
+        for i in ${!metrics[@]}; do
+                ./yolo.sh ${out_path[$j]} ${metrics[$i]}
+                sleep 10
+        done
+done

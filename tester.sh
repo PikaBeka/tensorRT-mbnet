@@ -228,16 +228,16 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
         # fi
         if [[ ${HW[$i]} -lt 20 ]];
         then
-            if [[ ${HW[$i]} -lt 12 ]];
+            if [[ ${HW[$i]} -lt 13 ]];
             then
                 echo 'Running mbnet with unroll_cublass method\n'
                 sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
             else
-                if [[ ${HW[$i]} -lt 13 ]];
+                if [[ ${HW[$i]} -lt 14 ]];
                 then
-                    if [[ ${K[$i]} -lt 255 ]];
+                    if [[ ${K[$i]} -lt 256 ]];
                     then
-                        if [[ ${K[$i]} -lt 191 ]];
+                        if [[ ${K[$i]} -lt 192 ]];
                         then
                             echo 'Running mbnet with tensorrt method\n'
                             sed -i 's/define TRT .*/define TRT 1/' $in_file
@@ -250,7 +250,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                         sed -i 's/define TRT .*/define TRT 1/' $in_file
                     fi
                 else
-                    if [[ ${C[$i]} -lt 191 ]];
+                    if [[ ${C[$i]} -lt 192 ]];
                     then
                         if [[ ${K[$i]} -lt 161 ]];
                         then
@@ -287,14 +287,14 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                     then
                         if [[ ${HW[$i]} -lt 99 ]];
                         then
-                            if [[ ${HW[$i]} -lt 27 ]];
+                            if [[ ${HW[$i]} -lt 28 ]];
                             then
                                 if [[ ${K[$i]} -lt 193 ]];
                                 then
                                     echo 'Running mbnet with tensorrt method\n'
                                     sed -i 's/define TRT .*/define TRT 1/' $in_file
                                 else
-                                    if [[ ${HW[$i]} -lt 26 ]];
+                                    if [[ ${HW[$i]} -lt 27 ]];
                                     then
                                         echo 'Running mbnet with tensorrt method\n'
                                         sed -i 's/define TRT .*/define TRT 1/' $in_file
@@ -316,7 +316,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                                         sed -i 's/define TRT .*/define TRT 1/' $in_file
                                     fi
                                 else
-                                    if [[ ${C[$i]} -lt 255 ]];
+                                    if [[ ${C[$i]} -lt 256 ]];
                                     then
                                         echo 'Running mbnet with tensorrt method\n'
                                         sed -i 's/define TRT .*/define TRT 1/' $in_file
@@ -332,9 +332,9 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                                 echo 'Running mbnet with tensorrt method\n'
                                 sed -i 's/define TRT .*/define TRT 1/' $in_file
                             else
-                                if [[ ${HW[$i]} -lt 142 ]];
+                                if [[ ${HW[$i]} -lt 143 ]];
                                 then
-                                    if [[ ${HW[$i]} -lt 103 ]];
+                                    if [[ ${HW[$i]} -lt 104 ]];
                                     then
                                         echo 'Running mbnet with cudnn optimized method\n'
                                         sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
@@ -345,7 +345,7 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                                         sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
                                     fi
                                 else
-                                    if [[ ${C[$i]} -lt 9 ]];
+                                    if [[ ${C[$i]} -lt 10 ]];
                                     then
                                         echo 'Running mbnet with cudnn optimized method\n'
                                         sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
@@ -358,9 +358,9 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                             fi
                         fi
                     else
-                        if [[ ${C[$i]} -lt 17 ]];
+                        if [[ ${C[$i]} -lt 18 ]];
                         then
-                            if [[ ${K[$i]} -lt 4 ]];
+                            if [[ ${K[$i]} -lt 5 ]];
                             then
                                 echo 'Running mbnet with unroll_cublass method\n'
                                 sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
@@ -374,12 +374,12 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
                         fi
                     fi
                 else
-                    if [[ ${HW[$i]} -lt 32 ]];
+                    if [[ ${HW[$i]} -lt 33 ]];
                     then
                         echo 'Running mbnet with tensorrt method\n'
                         sed -i 's/define TRT .*/define TRT 1/' $in_file
                     else
-                        if [[ ${HW[$i]} -lt 58 ]];
+                        if [[ ${HW[$i]} -lt 59 ]];
                         then
                             if [[ ${RS[$i]} -lt 3 ]];
                             then
