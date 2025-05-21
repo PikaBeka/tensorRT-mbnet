@@ -11,11 +11,11 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #K=(3 6 6 6 6 6 9 9 12 12 16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64) # 30
 
 # AlexNet
-#C=(3 96 256 384 384)
-#HW=(64 26 12 12 12)
-#K=(96 256 384 384 256)
-#RS=(11 5 3 3 3)
-#TILE_S=(14 8 6 5 5)
+C=(3 96 256 384 384)
+HW=(64 26 12 12 12)
+K=(96 256 384 384 256)
+RS=(11 5 3 3 3)
+TILE_S=(14 8 6 5 5)
 
 # VGGNet-16
 #C=(3 64 64 128 128 256 256 256 512 512 512 512 512)
@@ -24,10 +24,10 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #RS=(3 3 3 3 3 3 3 3 3 3 3 3 3)
 
 # ResNet-34
-#C=(3 64 64 128 64 128 256 128 256 512 256)
-#HW=(224 56 56 28 28 28 14 14 14 7 7)
-#K=(64 64 128 128 128 256 256 256 512 512 512)
-#RS=(7 3 3 3 1 3 3 1 3 3 1)
+# C=(3 64 64 128 64 128 256 128 256 512 256)
+# HW=(224 56 56 28 28 28 14 14 14 7 7)
+# K=(64 64 128 128 128 256 256 256 512 512 512)
+# RS=(7 3 3 3 1 3 3 1 3 3 1)
 
 # YOLOV4
 #C=(3 32 64 64 64 32 64 64 64 128 64 64 64 64 64 64 64 128 256 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 256 512 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 256 512 1024 512 512 512 512 512 512 512 512 512 512 512 1024 512 1024 512 512 1024 512 256 256 256 512 256 512 256 128 128 128 256 128 256 128 256 255 256 256 512 256 512 256 512 255 512 512 1024 512 1024 512 1024 )
@@ -62,20 +62,15 @@ metrics=(sm_efficiency achieved_occupancy warp_execution_efficiency inst_per_war
 #RS=(3 3 3 3 3 3 3 3 3 3 3 3 3 7 3 1 3 5 1 3 3 3 3 3 3 3 3 3)
 
 # ----- ------ List of all sizes
-C=(3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32 64 128 128 128 256 256 256 512 1 1 1 1 1 1 1 1 1 1 3 96 256 384 384 3 16 32 64 128 512 1024 256 512 256 384 256 3 64 64 128 128 256 256 512 512 3 64 512 512 192 192 192 256 256 256 64 64 128 128 256)
-HW=(150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8 64 56 28 14 256 128 64 56 256 400 320 256 128 32 256 64 256 64 64 26 12 12 12 416 208 104 52 26 13 13 13 13 13 13 13 224 224 112 112 56 56 28 28 56 28 28 14 224 28 28 28 28 56 56 28 28 14 14 7)
-K=(16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64 256 256 512 256 128 64 56 28 3 6 6 6 6 6 9 9 12 12 96 256 384 384 256 16 32 64 128 256 1024 256 512 255 128 256 255 64 64 128 128 256 256 512 512 192 64 96 512 64 16 128 128 32 64 128 128 256 256 512 512)
-RS=(5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 11 5 3 3 3 3 3 3 3 3 3 1 3 1 1 3 1 3 3 3 3 3 3 3 3 3 1 3 3 7 5 1 3 3 3 3 3 3 3 3 3)
+# C=(3 3 3 6 6 6 6 6 6 6 6 6 16 16 16 16 16 16 32 32 64 128 128 128 256 256 256 512 1 1 1 1 1 1 1 1 1 1 3 96 256 384 384 3 16 32 64 128 512 1024 256 512 256 384 256 3 64 64 128 128 256 256 512 512 3 64 512 512 192 192 192 256 256 256 64 64 128 128 256)
+# HW=(150 64 32 150 128 70 32 16 8 32 16 8 32 16 8 32 16 8 32 8 64 56 28 14 256 128 64 56 256 400 320 256 128 32 256 64 256 64 64 26 12 12 12 416 208 104 52 26 13 13 13 13 13 13 13 224 224 112 112 56 56 28 28 56 28 28 14 224 28 28 28 28 56 56 28 28 14 14 7)
+# K=(16 16 16 16 16 16 16 16 16 32 32 32 32 32 32 64 64 64 64 64 256 256 512 256 128 64 56 28 3 6 6 6 6 6 9 9 12 12 96 256 384 384 256 16 32 64 128 256 1024 256 512 255 128 256 255 64 64 128 128 256 256 512 512 192 64 96 512 64 16 128 128 32 64 128 128 256 256 512 512)
+# RS=(5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 11 5 3 3 3 3 3 3 3 3 3 1 3 1 1 3 1 3 3 3 3 3 3 3 3 3 1 3 3 7 5 1 3 3 3 3 3 3 3 3 3)
 
 #C=(6 6 6 6 6 256 1 192 128 64 256 512 1 1 16 1)
 #HW=(16 16 8 8 128 56 32 28 56 64 56 28 320 256 208 256)
 #K=(16 32 32 16 16 64 6 16 256 256 256 512 6 6 32 9)
 #RS=(5 5 5 5 5 3 5 5 5 5 3 3 5 5 3 5)
-
-#C=(1)
-#HW=(320)
-#K=(6)
-#RS=(5)
 
 # 20% of 150
 # C=(3 1 32 512 512 512 512 384 512 128 128 128 1024 1024 1024 3 3 3 128 64 128 512 512 256 256 256 255 256 256 128)
@@ -229,209 +224,92 @@ for i in ${!C[@]}; do # loop to place all configuration files into use
      	# 	    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
         #     fi
         # fi
-        if [[ ${HW[$i]} -lt 20 ]];
+        if [[ ${HW[$i]} -lt 140 ]];
         then
-            if [[ ${HW[$i]} -lt 12 ]];
+            if [[ ${C[$i]} -lt 25 ]];
             then
-                echo 'Running mbnet with unroll_cublass method\n'
-                sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-            else
-                if [[ ${HW[$i]} -lt 13 ]];
+                if [[ ${C[$i]} -lt 12 ]];
                 then
-                    if [[ ${K[$i]} -lt 255 ]];
+                    if [[ ${HW[$i]} -lt 100 ]];
                     then
-                        if [[ ${K[$i]} -lt 191 ]];
-                        then
-                            echo 'Running mbnet with tensorrt method\n'
-                            sed -i 's/define TRT .*/define TRT 1/' $in_file
-                        else
-                            echo 'Running mbnet with unroll_cublass method\n'
-                            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                        fi
-                    else
-                        echo 'Running mbnet with tensorrt method\n'
-                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                    fi
-                else
-                    if [[ ${C[$i]} -lt 191 ]];
-                    then
-                        if [[ ${K[$i]} -lt 161 ]];
-                        then
-                            echo 'Running mbnet with unroll_cublass method\n'
-                            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                        else
-                            if [[ ${K[$i]} -lt 385 ]];
-                            then
-                                if [[ ${RS[$i]} -lt 3 ]];
-                                then
-                                    echo 'Running mbnet with unroll_cublass method\n'
-                                    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                else
-                                    echo 'Running mbnet with tensorrt method\n'
-                                    sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                fi
-                            else
-                                echo 'Running mbnet with unroll_cublass method\n'
-                                sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                            fi
-                        fi
+                        echo 'Running mbnet with unroll_cublass method\n'
+                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                     else
                         echo 'Running mbnet with unroll_cublass method\n'
                         sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                     fi
-                fi
-            fi
-        else
-            if [[ ${K[$i]} -lt 769 ]];
-            then
-                if [[ ${K[$i]} -lt 385 ]];
-                then
-                    if [[ ${HW[$i]} -lt 241 ]];
+                else
+                    if [[ ${HW[$i]} -lt 21 ]];
                     then
-                        if [[ ${HW[$i]} -lt 99 ]];
-                        then
-                            if [[ ${HW[$i]} -lt 27 ]];
-                            then
-                                if [[ ${K[$i]} -lt 193 ]];
-                                then
-                                    echo 'Running mbnet with tensorrt method\n'
-                                    sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                else
-                                    if [[ ${HW[$i]} -lt 26 ]];
-                                    then
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with cudnn optimized method\n'
-                                        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-                                        sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-                                    fi
-                                fi
-                            else
-                                if [[ ${RS[$i]} -lt 3 ]];
-                                then
-                                    if [[ ${C[$i]} -lt 97 ]];
-                                    then
-                                        echo 'Running mbnet with unroll_cublass method\n'
-                                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    fi
-                                else
-                                    if [[ ${C[$i]} -lt 255 ]];
-                                    then
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with unroll_cublass method\n'
-                                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                    fi
-                                fi
-                            fi
-                        else
-                            if [[ ${K[$i]} -lt 25 ]];
-                            then
-                                echo 'Running mbnet with tensorrt method\n'
-                                sed -i 's/define TRT .*/define TRT 1/' $in_file
-                            else
-                                if [[ ${HW[$i]} -lt 142 ]];
-                                then
-                                    if [[ ${HW[$i]} -lt 103 ]];
-                                    then
-                                        echo 'Running mbnet with cudnn optimized method\n'
-                                        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-                                        sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with cudnn optimized method\n'
-                                        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-                                        sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-                                    fi
-                                else
-                                    if [[ ${C[$i]} -lt 9 ]];
-                                    then
-                                        echo 'Running mbnet with cudnn optimized method\n'
-                                        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-                                        sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with unroll_cublass method\n'
-                                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                    fi
-                                fi
-                            fi
-                        fi
+                        echo 'Running mbnet with unroll_cublass method\n'
+                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                     else
-                        if [[ ${C[$i]} -lt 17 ]];
+                        if [[ ${K[$i]} -lt 49 ]];
                         then
-                            if [[ ${K[$i]} -lt 4 ]];
-                            then
-                                echo 'Running mbnet with unroll_cublass method\n'
-                                sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                            else
-                                echo 'Running mbnet with tensorrt method\n'
-                                sed -i 's/define TRT .*/define TRT 1/' $in_file
-                            fi
+                            echo 'Running mbnet with tensorrt method\n'
+                            sed -i 's/define TRT .*/define TRT 1/' $in_file
                         else
                             echo 'Running mbnet with unroll_cublass method\n'
                             sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                         fi
                     fi
-                else
-                    if [[ ${HW[$i]} -lt 32 ]];
+                fi
+            else
+                if [[ ${K[$i]} -lt 224 ]];
+                then
+                    if [[ ${K[$i]} -lt 45 ]];
                     then
-                        echo 'Running mbnet with tensorrt method\n'
-                        sed -i 's/define TRT .*/define TRT 1/' $in_file
+                        echo 'Running mbnet with unroll_cublass method\n'
+                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                     else
-                        if [[ ${HW[$i]} -lt 58 ]];
+                        if [[ ${RS[$i]} -lt 3 ]];
                         then
-                            if [[ ${RS[$i]} -lt 3 ]];
-                            then
-                                if [[ ${HW[$i]} -lt 47 ]];
-                                then
-                                    if [[ ${C[$i]} -lt 769 ]];
-                                    then
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with unroll_cublass method\n'
-                                        sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                    fi
-                                else
-                                    echo 'Running mbnet with unroll_cublass method\n'
-                                    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                fi
-                            else
-                                if [[ ${C[$i]} -lt 385 ]];
-                                then
-                                    echo 'Running mbnet with unroll_cublass method\n'
-                                    sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
-                                else
-                                    if [[ ${HW[$i]} -lt 52 ]];
-                                    then
-                                        echo 'Running mbnet with tensorrt method\n'
-                                        sed -i 's/define TRT .*/define TRT 1/' $in_file
-                                    else
-                                        echo 'Running mbnet with cudnn optimized method\n'
-                                        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-                                        sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
-                                    fi
-                                fi
-                            fi
+                            echo 'Running mbnet with unroll_cublass method\n'
+                            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
                         else
                             echo 'Running mbnet with tensorrt method\n'
                             sed -i 's/define TRT .*/define TRT 1/' $in_file
                         fi
                     fi
+                else
+                    if [[ ${HW[$i]} -lt 21 ]];
+                    then
+                        if [[ ${K[$i]} -lt 321 ]];
+                        then
+                            echo 'Running mbnet with unroll_cublass method\n'
+                            sed -i 's/define UNROLL .*/define UNROLL 1/' $in_file
+                        else
+                            echo 'Running mbnet with cudnn optimized method\n'
+                            sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
+                            sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
+                        fi
+                    else
+                        echo 'Running mbnet with cudnn optimized method\n'
+                        sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
+                        sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
+                    fi
                 fi
+            fi
+        else
+            if [[ ${K[$i]} -lt 15 ]];
+            then
+                echo 'Running mbnet with cudnn optimized method\n'
+                sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
+                sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
             else
-                if [[ ${HW[$i]} -lt 39 ]];
+                if [[ ${C[$i]} -lt 12 ]];
                 then
+                    if [[ ${HW[$i]} -lt 188 ]];
+                    then
+                        echo 'Running mbnet with tensorrt method\n'
+                        sed -i 's/define TRT .*/define TRT 1/' $in_file
+                    else
+                        echo 'Running mbnet with tensorrt method\n'
+                        sed -i 's/define TRT .*/define TRT 1/' $in_file
+                    fi
+                else
                     echo 'Running mbnet with tensorrt method\n'
                     sed -i 's/define TRT .*/define TRT 1/' $in_file
-                else
-                    echo 'Running mbnet with cudnn optimized method\n'
-                    sed -i 's/define CUDNN .*/define CUDNN 1/' $in_file
-                    sed -i 's/define DARKNET .*/define DARKNET 1/' $in_file
                 fi
             fi
         fi
