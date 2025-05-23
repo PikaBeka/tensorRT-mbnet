@@ -1,0 +1,43 @@
+==14368== NVPROF is profiling process 14368, command: ./mbnet
+==14368== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
+==14368== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
+==14368== Profiling application: ./mbnet
+==14368== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   61.26%  116.300s     10000  11.630ms  11.499ms  15.460ms  maxwell_scudnn_128x128_relu_small_nn_v1
+                   20.02%  38.0056s     10000  3.8006ms  1.9153ms  10.165ms  [CUDA memcpy DtoH]
+                   18.57%  35.2638s     10003  3.5253ms  1.7280us  13.248ms  [CUDA memcpy HtoD]
+                    0.15%  287.60ms     10000  28.760us  27.008us  1.4131ms  void cask_cudnn::computeOffsetsKernel<bool=0, bool=0>(cask_cudnn::ComputeOffsetsParams)
+                    0.00%  14.304us         4  3.5760us  2.1440us  7.7440us  [CUDA memset]
+      API calls:   53.55%  119.340s     10016  11.915ms  1.6960us  20.042ms  cudaFree
+                   41.48%  92.4398s     20003  4.6213ms  71.969us  17.422ms  cudaMemcpy
+                    1.90%  4.24392s     20000  212.20us  38.240us  2.40746s  cudaLaunchKernel
+                    1.46%  3.25590s         8  406.99ms  3.3280us  3.25587s  cudaStreamCreateWithFlags
+                    0.77%  1.71535s       159  10.788ms  8.0640us  201.28ms  cuModuleUnload
+                    0.52%  1.16471s     10011  116.34us  15.712us  288.36ms  cudaMalloc
+                    0.29%  637.72ms     10000  63.771us  25.664us  664.33us  cudaMemGetInfo
+                    0.02%  39.567ms     20000  1.9780us     704ns  694.82us  cudaGetLastError
+                    0.00%  1.7542ms         1  1.7542ms  1.7542ms  1.7542ms  cudaHostAlloc
+                    0.00%  1.5500ms         4  387.51us  3.2640us  1.5352ms  cudaStreamCreateWithPriority
+                    0.00%  425.51us       285  1.4930us     416ns  52.961us  cuDeviceGetAttribute
+                    0.00%  417.22us         1  417.22us  417.22us  417.22us  cudaFreeHost
+                    0.00%  105.22us         4  26.304us  14.912us  56.832us  cudaMemsetAsync
+                    0.00%  86.369us        12  7.1970us  4.4800us  21.312us  cudaStreamDestroy
+                    0.00%  62.689us        28  2.2380us  1.7600us  6.3360us  cudaEventCreateWithFlags
+                    0.00%  61.632us        28  2.2010us  1.7280us  4.3520us  cudaEventDestroy
+                    0.00%  46.272us        40  1.1560us     928ns  3.0080us  cudaDeviceGetAttribute
+                    0.00%  39.744us         3  13.248us  9.9840us  16.352us  cuDeviceTotalMem
+                    0.00%  34.688us         4  8.6720us  5.6000us  13.824us  cudaDeviceSynchronize
+                    0.00%  32.257us         1  32.257us  32.257us  32.257us  cudaGetDeviceProperties
+                    0.00%  11.808us         2  5.9040us  5.8240us  5.9840us  cuInit
+                    0.00%  11.296us         5  2.2590us  1.2800us  5.0560us  cuDeviceGetCount
+                    0.00%  8.4480us         3  2.8160us  2.0480us  3.4560us  cudaGetDevice
+                    0.00%  7.8080us         1  7.8080us  7.8080us  7.8080us  cudaGetDeviceCount
+                    0.00%  7.1040us         1  7.1040us  7.1040us  7.1040us  cudaHostGetDevicePointer
+                    0.00%  5.8560us         2  2.9280us  2.4000us  3.4560us  cuDriverGetVersion
+                    0.00%  5.6960us         3  1.8980us  1.6000us  2.2080us  cuDeviceGetName
+                    0.00%  5.6000us         4  1.4000us     960ns  2.1120us  cuDeviceGet
+                    0.00%  3.4560us         2  1.7280us  1.5360us  1.9200us  cuDevicePrimaryCtxRelease
+                    0.00%  3.0400us         1  3.0400us  3.0400us  3.0400us  cudaDeviceGetStreamPriorityRange
+                    0.00%  2.4320us         3     810ns     704ns     896ns  cuDeviceGetUuid
+                    0.00%     896ns         1     896ns     896ns     896ns  cudaDriverGetVersion

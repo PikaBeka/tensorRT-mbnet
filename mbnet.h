@@ -2,7 +2,7 @@
 #define BATCH 1
 
 #define input_channels 512
-#define HW 42
+#define HW 52
 #define K 512
 
 #define RS 1
@@ -22,7 +22,7 @@
 #define CONV_SHARED 0
 
 #define CUDNN 1
-#define DARKNET 0
+#define DARKNET 1
 
 #define TRT 0
 
