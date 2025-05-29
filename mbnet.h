@@ -1,9 +1,9 @@
 #define images 10000 // number of images in batch
 #define BATCH 1
 
-#define input_channels 512
-#define HW 52
-#define K 512
+#define input_channels 1024
+#define HW 29
+#define K 255
 
 #define RS 1
 #define STRIDE 1
@@ -21,10 +21,10 @@
 #define DIRECT 0
 #define CONV_SHARED 0
 
-#define CUDNN 1
-#define DARKNET 1
+#define CUDNN 0
+#define DARKNET 0
 
-#define TRT 0
+#define TRT 1
 
 #define UNROLL 0
 #define GEMM_GLOBAL 0

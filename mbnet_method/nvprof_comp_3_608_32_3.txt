@@ -1,30 +1,107 @@
-==15051== NVPROF is profiling process 15051, command: ./mbnet
-==15051== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
-==15051== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
-==15051== Profiling application: ./mbnet
-==15051== Profiling result:
+==29085== NVPROF is profiling process 29085, command: ./mbnet
+==29085== Warning: Unified Memory Profiling is not supported on the underlying platform. System requirements for unified memory can be found at: http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#um-requirements
+==29085== Warning: Profiling results might be incorrect with current version of nvcc compiler used to compile cuda app. Compile with nvcc compiler 9.0 or later version to get correct profiling results. Ignore this warning if code is already compiled with the recommended nvcc version 
+==29085== Profiling application: ./mbnet
+==29085== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   52.19%  218.427s     10000  21.843ms  20.844ms  50.252ms  [CUDA memcpy DtoH]
-                   36.18%  151.432s     10000  15.143ms  14.513ms  79.856ms  sgemm_32x32x32_NN
-                    8.80%  36.8109s     10000  3.6811ms  3.5129ms  19.958ms  im2col_gpu_kernel(int, float const *, int, int, int, int, int, int, int, float*)
-                    2.82%  11.8006s     10003  1.1797ms  1.8240us  16.963ms  [CUDA memcpy HtoD]
-                    0.02%  70.230ms     10000  7.0220us  6.3990us  43.199us  ker2row_kernel(float[27]*, float[3][3][3]*)
-      API calls:   56.17%  247.824s     20003  12.389ms  55.008us  51.254ms  cudaMemcpy
-                   42.85%  189.039s     10003  18.898ms  5.5680us  99.594ms  cudaDeviceSynchronize
-                    0.47%  2.05643s        15  137.10ms  2.1120us  1.53789s  cudaFree
-                    0.39%  1.74250s     30000  58.083us  33.120us  763.87us  cudaLaunchKernel
-                    0.09%  418.81ms        12  34.901ms  12.064us  412.80ms  cudaMalloc
-                    0.02%  92.092ms     50002  1.8410us     480ns  1.0917ms  cudaGetLastError
-                    0.00%  428.29us       285  1.5020us     416ns  70.304us  cuDeviceGetAttribute
-                    0.00%  85.376us         1  85.376us  85.376us  85.376us  cudaStreamCreateWithFlags
-                    0.00%  69.921us        32  2.1850us  1.7920us  6.0800us  cudaEventCreateWithFlags
-                    0.00%  55.552us         3  18.517us  11.488us  22.944us  cuDeviceTotalMem
-                    0.00%  35.840us        16  2.2400us  1.6640us  5.1520us  cudaEventDestroy
-                    0.00%  28.288us        22  1.2850us     896ns  3.2640us  cudaDeviceGetAttribute
-                    0.00%  15.200us         5  3.0400us  1.0560us  7.6480us  cuDeviceGetCount
-                    0.00%  14.112us         4  3.5280us  2.4640us  4.0320us  cudaGetDevice
-                    0.00%  9.9840us         2  4.9920us  4.3840us  5.6000us  cuInit
-                    0.00%  7.5840us         4  1.8960us     864ns  3.5840us  cuDeviceGet
-                    0.00%  6.2080us         3  2.0690us  1.3760us  2.7840us  cuDeviceGetName
-                    0.00%  3.2320us         2  1.6160us  1.3120us  1.9200us  cuDriverGetVersion
-                    0.00%  2.6240us         3     874ns     640ns  1.3120us  cuDeviceGetUuid
+ GPU activities:   65.28%  294.288s     10026  29.352ms     640ns  75.108ms  [CUDA memcpy DtoH]
+                   30.38%  136.938s     10003  13.690ms  4.1694ms  19.508ms  trt_maxwell_scudnn_128x32_relu_medium_nn_v0
+                    3.11%  14.0248s     40099  349.75us     192ns  4.2458ms  [CUDA memcpy HtoD]
+                    0.96%  4.33616s     20060  216.16us  2.4640us  1.1566ms  [CUDA memcpy DtoD]
+                    0.03%  141.19ms         6  23.532ms  12.958ms  58.961ms  void CUTENSOR_NAMESPACE::permutationKernelPLC3<CUTENSOR_NAMESPACE::VectorWrite2DTensorView<unsigned char=0, unsigned char=1, bool=0, unsigned int=4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::VectorRead2DTensorView<unsigned char=1, unsigned char=0, bool=0, unsigned int=4, float, float, CUTENSOR_NAMESPACE::GeneralUnarySmall<float>>, CUTENSOR_NAMESPACE::ThreadLevelElementwise<CUTENSOR_NAMESPACE::ElementwiseConfig2DCommonCase<CUTENSOR_NAMESPACE::GeneralUnarySmall<float>, CUTENSOR_NAMESPACE::GeneralBinary<float>, int=2, int=64, int=64, int=256, char=4, bool=0, bool=1, bool=1, bool=1, bool=0>, float>, CUTENSOR_NAMESPACE::ElementwiseRuntimePLC3<float, float, float, float>::Params>(unsigned int=4)
+                    0.02%  96.099ms     40078  2.3970us     160ns  3.1734ms  [CUDA memset]
+                    0.02%  70.176ms         3  23.392ms  23.364ms  23.424ms  void genericReformat::copyPackedKernel<float, float, bool=0, bool=1, genericReformat::IdentityCoordMapper<int=4>, int=4>(unsigned int, unsigned int, void const *, genericReformat::ArrayN<genericReformat::IdentityCoordMapper<int=4>>, genericReformat::ArrayNWithReducedDivisors<genericReformat::IdentityCoordMapper<int=4>>, genericReformat::ArrayN, int, int, int, float const *, void*, genericReformat::ArrayN, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayN, int, int, int, float const , int=4)
+                    0.01%  61.452ms         3  20.484ms  20.463ms  20.495ms  trt_maxwell_scudnn_128x128_relu_large_nn_v0
+                    0.01%  43.632ms         3  14.544ms  14.534ms  14.558ms  trt_maxwell_scudnn_128x128_relu_small_nn_v0
+                    0.01%  40.681ms         3  13.560ms  13.555ms  13.564ms  trt_maxwell_scudnn_128x128_relu_medium_nn_v0
+                    0.01%  40.316ms         3  13.439ms  13.401ms  13.466ms  void implicit_convolve_sgemm<float, float, int=1024, int=5, int=5, int=3, int=3, int=3, int=1, bool=0, bool=0, bool=1>(int, int, int, float const *, int, float*, float const *, kernel_conv_params, __int64, int, float, float, int, float const *, float const *, bool, int, int)
+                    0.01%  40.136ms         3  13.379ms  13.187ms  13.476ms  trt_maxwell_scudnn_128x128_relu_interior_nn_v1
+                    0.01%  39.579ms         3  13.193ms  13.181ms  13.215ms  trt_maxwell_scudnn_128x128_relu_interior_nn_v0
+                    0.01%  39.000ms         3  13.000ms  12.591ms  13.768ms  trt_maxwell_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148n_nt_v1
+                    0.01%  38.268ms         3  12.756ms  12.741ms  12.769ms  trt_maxwell_scudnn_128x128_relu_large_nn_v1
+                    0.01%  38.254ms         3  12.751ms  12.696ms  12.845ms  trt_maxwell_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v1
+                    0.01%  37.981ms         3  12.660ms  12.645ms  12.673ms  trt_maxwell_scudnn_128x128_relu_medium_nn_v1
+                    0.01%  37.900ms         3  12.633ms  12.623ms  12.649ms  trt_maxwell_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148t_nt_v0
+                    0.01%  37.809ms         3  12.603ms  12.567ms  12.660ms  trt_maxwell_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148n_nt_v0
+                    0.01%  37.705ms         3  12.568ms  12.553ms  12.582ms  trt_maxwell_scudnn_128x128_relu_small_nn_v1
+                    0.01%  37.630ms         3  12.543ms  12.500ms  12.624ms  trt_maxwell_scudnn_winograd_128x128_ldg1_ldg4_mobile_relu_tile148t_nt_v0
+                    0.01%  37.490ms         3  12.497ms  12.476ms  12.510ms  trt_maxwell_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148m_nt_v1
+                    0.01%  24.134ms         3  8.0447ms  8.0444ms  8.0452ms  void op_generic_tensor_kernel<int=3, float, float, float, int=256, cudnnGenericOp_t=0, cudnnNanPropagation_t=0, int=0>(cudnnTensorStruct, float*, cudnnTensorStruct, float const *, cudnnTensorStruct, float const *, float, float, float, cudnnActivationStruct, reducedDivisorArray, int)
+                    0.00%  20.346ms         3  6.7819ms  6.4613ms  7.4114ms  trt_maxwell_scudnn_128x32_relu_medium_nn_v1
+                    0.00%  20.194ms         3  6.7314ms  6.5551ms  6.8220ms  trt_maxwell_scudnn_128x64_relu_small_nn_v1
+                    0.00%  19.864ms         3  6.6212ms  6.5935ms  6.6372ms  trt_maxwell_scudnn_128x64_relu_large_nn_v0
+                    0.00%  19.781ms         3  6.5938ms  6.5828ms  6.6141ms  trt_maxwell_scudnn_128x64_relu_medium_nn_v0
+                    0.00%  19.586ms         3  6.5286ms  6.5096ms  6.5426ms  trt_maxwell_scudnn_128x64_relu_small_nn_v0
+                    0.00%  19.466ms         3  6.4885ms  6.4792ms  6.5021ms  trt_maxwell_scudnn_128x64_relu_large_nn_v1
+                    0.00%  19.282ms         3  6.4272ms  6.4135ms  6.4480ms  trt_maxwell_scudnn_128x64_relu_medium_nn_v1
+                    0.00%  19.021ms         3  6.3405ms  6.3247ms  6.3491ms  trt_maxwell_scudnn_128x64_relu_interior_nn_v0
+                    0.00%  18.847ms         3  6.2823ms  6.2720ms  6.2990ms  trt_maxwell_scudnn_128x64_relu_interior_nn_v1
+                    0.00%  17.908ms         3  5.9694ms  5.9567ms  5.9912ms  trt_maxwell_scudnn_128x32_relu_large_nn_v0
+                    0.00%  15.469ms         3  5.1565ms  5.1434ms  5.1735ms  trt_maxwell_scudnn_128x32_relu_interior_nn_v0
+                    0.00%  13.677ms         3  4.5589ms  4.5246ms  4.5887ms  trt_maxwell_scudnn_128x32_relu_large_nn_v1
+                    0.00%  12.862ms         3  4.2875ms  4.2772ms  4.3046ms  trt_maxwell_scudnn_128x32_relu_small_nn_v0
+                    0.00%  12.807ms         3  4.2691ms  4.2501ms  4.2963ms  trt_maxwell_scudnn_128x32_relu_small_nn_v1
+                    0.00%  12.656ms         3  4.2186ms  4.1982ms  4.2378ms  trt_maxwell_scudnn_128x32_relu_interior_nn_v1
+                    0.00%  4.6755ms        25  187.02us  170.69us  263.81us  void cask_trt::computeOffsetsKernel<bool=0, bool=0>(cask_trt::ComputeOffsetsParams)
+                    0.00%  2.5460ms         3  848.66us  848.49us  848.81us  void genericReformat::copyPackedKernel<float, float, bool=1, bool=1, genericReformat::ArrayN<int=4>, int=4>(unsigned int, unsigned int, void const *, genericReformat::ArrayN<genericReformat::ArrayN<int=4>>, genericReformat::ArrayNWithReducedDivisors<genericReformat::ArrayN<int=4>>, void const *, int, int, int, float const *, void*, void const *, genericReformat::ArrayNWithReducedDivisors, genericReformat::ArrayNWithReducedDivisors, void const *, int, int, int, float const , int=4)
+                    0.00%  48.352us         4  12.088us  11.968us  12.224us  void cask_trt::generateWinogradTilesKernel<int=0, cask_trt::Element<float>, cask_trt::Element<float>, cask_trt::Element<float>>(cask_trt::GenerateWinogradTilesParams)
+                    0.00%  24.608us         2  12.304us  12.224us  12.384us  void cask_trt::generateWinogradTilesKernel<int=1, cask_trt::Element<float>, cask_trt::Element<float>, cask_trt::Element<float>>(cask_trt::GenerateWinogradTilesParams)
+      API calls:   57.55%  332.260s     50010  6.6439ms  27.808us  76.508ms  cudaMemcpy
+                   24.81%  143.239s     30040  4.7683ms  3.2640us  19.781ms  cudaStreamSynchronize
+                    5.65%  32.6446s    140128  232.96us  14.272us  34.435ms  cudaMalloc
+                    5.55%  32.0425s    260155  123.17us  1.2800us  1.50934s  cudaFree
+                    1.15%  6.62326s     10003  662.13us  98.401us  4.9226ms  cudaHostAlloc
+                    0.83%  4.79329s     80026  59.896us  8.7680us  2.88008s  cudaMemGetInfo
+                    0.69%  3.96045s     80025  49.490us  3.1040us  3.37788s  cudaStreamCreateWithFlags
+                    0.57%  3.26631s     10003  326.53us  68.321us  1.5354ms  cudaFreeHost
+                    0.50%  2.88152s     20207  142.60us  2.7520us  1.2569ms  cudaMemcpyAsync
+                    0.42%  2.42361s     10139  239.04us  42.017us  1.81152s  cudaLaunchKernel
+                    0.38%  2.21175s    810304  2.7290us     704ns  1.2921ms  cudaDeviceGetAttribute
+                    0.29%  1.64975s    480138  3.4350us  1.6320us  4.2747ms  cudaEventDestroy
+                    0.25%  1.46708s       159  9.2269ms  9.3440us  174.26ms  cuModuleUnload
+                    0.23%  1.30253s     30014  43.397us  29.376us  303.03us  cudaGetDeviceProperties
+                    0.23%  1.30098s    480138  2.7090us  1.4720us  686.09us  cudaEventCreateWithFlags
+                    0.21%  1.21338s       105  11.556ms  1.3449ms  61.180ms  cudaEventSynchronize
+                    0.20%  1.15636s     40078  28.852us  14.016us  116.36ms  cudaMemsetAsync
+                    0.18%  1.03468s    130038  7.9560us  3.8400us  1.1145ms  cudaStreamDestroy
+                    0.15%  886.61ms     70021  12.662us  3.8720us  1.5523ms  cudaDeviceSynchronize
+                    0.04%  225.38ms     60026  3.7540us  1.2480us  638.66us  cudaGetDevice
+                    0.03%  186.18ms     10001  18.616us  15.840us  487.65us  cudaStreamCreate
+                    0.03%  167.64ms     40012  4.1890us  2.9440us  657.89us  cudaStreamCreateWithPriority
+                    0.03%  146.19ms     10213  14.314us  3.8400us  1.6380ms  cudaEventRecord
+                    0.02%  90.179ms     50229  1.7950us     512ns  688.20us  cudaGetLastError
+                    0.01%  59.912ms     10003  5.9890us  3.8730us  83.264us  cudaHostGetDevicePointer
+                    0.01%  38.320ms     30010  1.2760us     416ns  645.16us  cudaGetDeviceCount
+                    0.00%  24.499ms     10003  2.4490us  1.9840us  77.825us  cudaDeviceGetStreamPriorityRange
+                    0.00%  12.939ms     20008     646ns     416ns  622.57us  cudaRuntimeGetVersion
+                    0.00%  8.8127ms       105  83.930us  23.840us  338.34us  cudaStreamAddCallback
+                    0.00%  7.0448ms     10004     704ns     416ns  36.160us  cudaDriverGetVersion
+                    0.00%  2.5990ms       105  24.752us  6.3360us  88.161us  cudaEventElapsedTime
+                    0.00%  730.18us       568  1.2850us     416ns  71.456us  cuDeviceGetAttribute
+                    0.00%  97.376us         6  16.229us  7.5200us  22.336us  cuDeviceTotalMem
+                    0.00%  28.608us         5  5.7210us  3.4240us  7.3600us  cuInit
+                    0.00%  21.920us         8  2.7400us  1.3440us  8.0000us  cuDeviceGetCount
+                    0.00%  14.112us         5  2.8220us  1.6960us  4.1280us  cuDriverGetVersion
+                    0.00%  12.993us         6  2.1650us  1.5680us  3.0090us  cuDeviceGetName
+                    0.00%  9.0880us         7  1.2980us     608ns  2.5600us  cuDeviceGet
+                    0.00%  4.4160us         6     736ns     608ns     832ns  cudaPeekAtLastError
+                    0.00%  4.3840us         6     730ns     544ns  1.0880us  cuDeviceGetUuid
+                    0.00%  4.2880us         2  2.1440us  1.6320us  2.6560us  cuDevicePrimaryCtxRelease
+
+==29085== NVTX result:
+==29085==   Thread "<unnamed>" (id = 1708888080)
+==29085==     Domain "TensorRT"
+==29085==       Range "(Unnamed Layer* 0) [Convolution]"
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+          Range:  100.00%  810.16ms     10000  81.015us  64.833us  1.3718ms  (Unnamed Layer* 0) [Convolution]
+ GPU activities:  100.00%  136.925s     10000  13.692ms  4.1694ms  19.508ms  trt_maxwell_scudnn_128x32_relu_medium_nn_v0
+      API calls:  100.00%  600.46ms     10000  60.045us  47.169us  1.3455ms  cudaLaunchKernel
+
+==29085==       Range "ExecutionContext::execute"
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+          Range:  100.00%  143.461s     10000  14.346ms  4.6499ms  20.181ms  ExecutionContext::execute
+ GPU activities:   98.46%  136.925s     10000  13.692ms  4.1694ms  19.508ms  trt_maxwell_scudnn_128x32_relu_medium_nn_v0
+                    1.54%  2.14450s     10000  214.45us  138.88us  1.1566ms  [CUDA memcpy DtoD]
+      API calls:   70.60%  1.44210s     10000  144.21us  126.21us  818.95us  cudaMemcpyAsync
+                   29.40%  600.46ms     10000  60.045us  47.169us  1.3455ms  cudaLaunchKernel
+
